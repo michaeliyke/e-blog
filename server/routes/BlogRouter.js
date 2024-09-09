@@ -4,7 +4,7 @@ import {
   createTestPosts,
   // createBlog,
   // updateBlog,
-} from "../controllers/control_blog.js";
+} from "../controllers/BlogController.js";
 
 const blogRouter = Router();
 // get all blogs (just for testing)
