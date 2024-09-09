@@ -1,6 +1,5 @@
 import User from "../models/user";
-
-const fakeData = [{}];
+import { fakeUsers } from "./FakeData.js";
 
 async function getAllUsers(req, res) {
   // get all blogs
@@ -9,9 +8,9 @@ async function getAllUsers(req, res) {
   return res.status(200).json(data);
 }
 
-async function createTestPosts(req, res) {
+async function createFakeUsers(req, res) {
   // create fake data
-  fakeData.map(async (data) => {
+  fakeUsers.map(async (data) => {
     // console.log({ ...data, userId });
     if (await Post.findOne({ title: data.title })) {
       return;
