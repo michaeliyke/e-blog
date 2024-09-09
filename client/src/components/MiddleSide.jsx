@@ -1,21 +1,33 @@
+import { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
-import { GoBookmark } from "react-icons/go";
-import { GoBookmarkFill } from "react-icons/go";
+// import { GoBookmark } from "react-icons/go";
+// import { GoBookmarkFill } from "react-icons/go";
 
 export const MiddleSide = () => {
-  const posts = [];
+  const [data, setData] = useState([]);
+
+  // get all the blog and store then in data
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/blogs/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setData((prev) => [...prev, ...data]);
+      });
+  }, []);
+
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
-      {posts.map((post) => (
+      {data.map((post) => (
         <div
-          key={post.id}
+          key={post._id}
           className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
         >
           {/* User Information */}
           <div className="flex items-center mb-4">
             <img
-              src="/male_avatar.png"
+              src="https://i.ibb.co/C5V20xt/image.jpg"
               alt="User avatar"
               className="w-10 h-10 rounded-full mr-3"
               width={40}
