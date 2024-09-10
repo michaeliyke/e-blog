@@ -9,7 +9,7 @@ export const MiddleSide = () => {
 
   // get all the blog and store then in data
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/blogs/")
+    fetch("http://127.0.0.1:3000/blogs/page/1")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -19,32 +19,38 @@ export const MiddleSide = () => {
 
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
-      {data.map((post) => (
+      {data.map(({ user, blog }) => (
         <div
-          key={post._id}
+          key={blog._id}
           className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
         >
           {/* User Information */}
           <div className="flex items-center mb-4">
-            <img
-              src="https://i.ibb.co/C5V20xt/image.jpg"
-              alt="User avatar"
-              className="w-10 h-10 rounded-full mr-3"
-              width={40}
-              height={40}
-            />
+            <a href={`/user/${user.href}`}>
+              <img
+                src={user.thumbnail}
+                alt="User avatar"
+                className="w-10 h-10 rounded-full mr-3"
+                width={40}
+                height={40}
+              />
+            </a>
             <div>
-              <h3 className="font-bold text-gray-700">User One</h3>
+              <h3 className="font-bold text-gray-700">
+                <a href={`/user/${user.href}`}>
+                  {user.firstname} {user.lastname}
+                </a>
+              </h3>
               <p className="text-xs text-gray-500">2 days ago</p>
             </div>
           </div>
 
-          {/* Post Title */}
-          <h2 className="text-blue-600 text-lg font-bold mb-2">{post.title}</h2>
+          {/* blog Title */}
+          <h2 className="text-blue-600 text-lg font-bold mb-2">{blog.title}</h2>
 
-          {/* Post Text */}
+          {/* blog Text */}
           <p className="text-gray-800 text-sm mb-3">
-            {post.text}
+            {blog.text}
             <a href="#" className="text-blue-500 ml-2">
               ...see more
             </a>
