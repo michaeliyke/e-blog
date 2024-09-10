@@ -12,10 +12,14 @@ export const MiddleSide = () => {
     fetch("http://127.0.0.1:3000/blogs/")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        console.log(data[0]);
         setData((prev) => [...prev, ...data]);
       });
   }, []);
+
+  function urlenCode(str) {
+	return str.replace(/\s+/g, '-');
+  }
 
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
@@ -40,15 +44,17 @@ export const MiddleSide = () => {
           </div>
 
           {/* Post Title */}
-          <h2 className="text-blue-600 text-lg font-bold mb-2">{post.title}</h2>
+          <h2 className="text-blue-600 text-lg font-bold mb-2">
+			<a href={`/posts/${urlenCode(post.title)}`}>{post.title}</a>
+			</h2>
 
           {/* Post Text */}
-          <p className="text-gray-800 text-sm mb-3">
+          {/* <p className="text-gray-800 text-sm mb-3">
             {post.text}
             <a href="#" className="text-blue-500 ml-2">
               ...see more
             </a>
-          </p>
+          </p> */}
 
           {/* Impressions and Comments */}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
@@ -56,8 +62,16 @@ export const MiddleSide = () => {
             <p>2 comments</p>
           </div>
 
+		  {/* The tags section */}
+		  <div className="flex gap-2 justify-start text-gray-300">
+			<span>#react</span>
+			<span>#javascript</span>
+			<span>#webdev</span>
+			<span>#beginner</span>
+		  </div>
+
           {/* Like and Comment Buttons */}
-          <div className="flex items-center justify-around border-t pt-2">
+          <div className="flex items-center justify-around pt-2">
             <button className="flex items-center space-x-2">
               <span role="img" aria-label="like" className="text-2xl">
                 <AiOutlineLike size={25} color="black" />
