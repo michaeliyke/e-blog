@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import blogRouter from "./routes/BlogRouter.js";
+import userRouter from "./routes/UserRouter.js";
 import mongoose from "./engine/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -27,7 +28,7 @@ app.get("/status", (req, res) => {
 // the blogs route
 app.use("/blogs", blogRouter);
 
-// app.use("/users", userRouter);
+app.use("/users", userRouter);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {
