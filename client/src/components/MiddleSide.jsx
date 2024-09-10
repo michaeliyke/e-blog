@@ -9,7 +9,7 @@ export const MiddleSide = () => {
 
   // get all the blog and store then in data
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/blogs/page/1")
+    fetch("http://127.0.0.1:3000/api/blogs/page/1")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -19,16 +19,16 @@ export const MiddleSide = () => {
 
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
-      {data.map(({ user, blog }) => (
+      {data.map(({ blog }) => (
         <div
           key={blog._id}
           className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
         >
           {/* User Information */}
           <div className="flex items-center mb-4">
-            <a href={`/user/${user.href}`}>
+            <a href={`/user/${blog.user.href}`}>
               <img
-                src={user.thumbnail}
+                src={blog.user.thumbnail}
                 alt="User avatar"
                 className="w-10 h-10 rounded-full mr-3"
                 width={40}
@@ -37,8 +37,8 @@ export const MiddleSide = () => {
             </a>
             <div>
               <h3 className="font-bold text-gray-700">
-                <a href={`/user/${user.href}`}>
-                  {user.firstname} {user.lastname}
+                <a href={`/user/${blog.user.href}`}>
+                  {blog.user.firstname} {blog.user.lastname}
                 </a>
               </h3>
               <p className="text-xs text-gray-500">2 days ago</p>

@@ -1,5 +1,5 @@
-import Post from "../models/blog.js";
-import User from "../models/user.js";
+import Post from "../models/Post.js";
+import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
 
 async function allBlogs(req, res) {
@@ -26,18 +26,15 @@ async function getPageOfBlogs(req, res) {
     const limit = 10;
     const skip = (pageNumber - 1) * limit;
 
-    const blogsList = await Post.find({}, "_id title text userId createdAt")
+    const blogsList = await Post.find({}, "_id title text user createdAt")
       .skip(skip)
       .limit(limit)
+      .populate("user", "firstname lastname href thumbnail -_id")
       .exec();
     // console.log(blogsList);
     const data = await Promise.all(
       blogsList.map(async (blog) => {
-        const user = await User.findById(
-          blog.userId,
-          "firstname lastname thumbnail href -_id"
-        ).exec();
-        return { blog, user };
+        return { blog };
         // console.log({ blog, user });
       })
     );
@@ -62,12 +59,13 @@ async function createTestPosts(req, res) {
       if (!user) {
         throw new Error();
       }
-      const newPost = new Post({ ...data, userId: user._id });
+      const newPost = new Post({ ...data, user: user });
       await newPost.save();
     });
     await Promise.all(postCreationPromises);
     return res.status(201).json({ status: "all fake posts created" });
   } catch (err) {
+    console.log(err);
     return res.status(404).json({
       status:
         "a fake user is missing, make sure you create it or all of them !",

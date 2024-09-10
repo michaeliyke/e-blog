@@ -1,10 +1,10 @@
-import User from "../models/user.js";
-import { generateHref, hashPassword } from "../utils/tools.js";
+import User from "../models/User.js";
+import { checkPassword, generateHref, hashPassword } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 
 async function getAllUsers(req, res) {
   // get all users
-  const data = await User.find({}, "_id firstname lastname email href").exec();
+  const data = await User.find({}, "-password").exec();
   return res.status(200).json(data);
 }
 
@@ -18,6 +18,16 @@ async function getUserByRef(req, res) {
   }
   return res.status(404).json("User not found !");
 }
+
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword, id } = req.body;
+
+  const user = await User.findById(id).exec();
+  if (checkPassword(oldPassword, user.password)) {
+    user.password = hashPassword(newPassword);
+    user.save();
+  }
+};
 
 async function getUserById(req, res) {
   // get a user by id
@@ -33,7 +43,7 @@ async function getUserById(req, res) {
   return res.status(404).json("User not found !");
 }
 
-async function createNewUser(req, res) {
+async function registerUser(req, res) {
   // create a new user
   // if email already exists abort
   // if href already exists add an 8 chars id after id --> href-xxxxxxxx
@@ -43,7 +53,6 @@ async function createNewUser(req, res) {
   if (await User.exists({ email }).exec()) {
     return res.status(409).json({ status: "User already exists" });
   }
-  console.log({ firstname, lastname, email, password });
 
   // check if teh href (firstname, lastname) both already exists
   let href = `${firstname.toLowerCase()}-${lastname.toLowerCase()}`;
@@ -59,11 +68,38 @@ async function createNewUser(req, res) {
     email,
     password: hashedPassword,
   });
-  await newUser.save();
-  return res.status(201).json({ status: "created", newUser });
+  try {
+    await newUser.save();
+    return res.status(201).json({ status: "user created" });
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      const errorMsgs = Object.values(err.errors).map((error) => error.message);
+      return res
+        .status(400)
+        .json({ error: "Validation Error", messages: errorMsgs });
+    }
+    return res.status(500).json({ message: "Server error" });
+  }
 }
 
-async function createFakeUsers(req, res) {
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    //Later try using static method to validate user
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Invalid user email" });
+    if (!(await checkPassword(password, user.password)))
+      return res.status(400).json({ message: "Invalid user password" });
+
+    // return the JWT
+    return res.json({ user });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+async function createUsers(req, res) {
   // create fake users
   console.log("create fake users ...");
   await Promise.all(
@@ -79,10 +115,42 @@ async function createFakeUsers(req, res) {
   return res.status(201).json({ status: "all fake users created" });
 }
 
+const updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const { firstName, lastName, email } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { firstName, lastName, email },
+      { runValidators: true, new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.json({ user });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    if (err.name === "ValidationError") {
+      const errorMsgs = Object.values(err.errors).map((error) => error.message);
+      return res
+        .status(400)
+        .json({ error: "Validation Error", messages: errorMsgs });
+    }
+    console.log(JSON.stringify(err));
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 export {
   getAllUsers,
   getUserById,
-  createFakeUsers,
-  createNewUser,
+  createUsers,
+  registerUser,
   getUserByRef,
+  loginUser,
+  updateUser,
 };
