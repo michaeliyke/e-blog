@@ -25,7 +25,7 @@ export const MiddleSide = () => {
           className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
         >
           {/* User Information */}
-          <div className="flex items-center mb-4">
+          <figure className="flex items-center mb-4">
             <a href={`/user/${blog.user.href}`}>
               <img
                 src={blog.user.thumbnail}
@@ -35,15 +35,15 @@ export const MiddleSide = () => {
                 height={40}
               />
             </a>
-            <div>
+            <figcaption>
               <h3 className="font-bold text-gray-700">
                 <a href={`/user/${blog.user.href}`}>
                   {blog.user.firstname} {blog.user.lastname}
                 </a>
               </h3>
               <p className="text-xs text-gray-500">2 days ago</p>
-            </div>
-          </div>
+            </figcaption>
+          </figure>
 
           {/* blog Title */}
           <h2 className="text-blue-600 text-lg font-bold mb-2">{blog.title}</h2>
