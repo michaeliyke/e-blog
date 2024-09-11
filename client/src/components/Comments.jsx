@@ -1,4 +1,17 @@
 export function Comments() {
+const comments = [
+	{
+		"author": "John Doe",
+		"avatar": "https://i.ibb.co/C5V20xt/image.jpg",
+		"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae metus ac nisl hendrerit lacinia. Nulla facilisi.",
+	},
+	{
+		"author": "Jane Smith",
+		"avatar": "https://i.ibb.co/C5V20xt/image.jpg",
+		"comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae metus ac nisl hendrerit lacinia. Nulla facilisi.",
+	},
+];
+
 return (
 	<div className="mt-8">
 			<h2 className="text-2xl font-bold mb-4">Comments</h2>
@@ -13,31 +26,26 @@ return (
 				</div>
 
 				{/* Dummy comments */}
-				<div className="flex space-x-4">
-					<div className="flex-shrink-0">
-						<img className="w-10 h-10 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar" />
-					</div>
-					<div className="flex-grow">
-						<div className="flex items-center justify-between">
-							<h3 className="text-lg font-medium">John Doe</h3>
+				{comments.map((comment, index) => (
+					<div key={index} className="flex space-x-4">
+						<div className="flex-shrink-0">
+							<img
+								src={comment.avatar}
+								alt="User avatar"
+								className="w-10 h-10 rounded-full mr-3"
+								width={40}
+								height={40}
+							/>
+						</div>
+						<div className="flex-grow">
+							<div className="flex items-center justify-between">
+								<h3 className="text-lg font-medium">{comment.author}</h3>
+							</div>
+							<p className="text-gray-600">{comment.comment}</p>
 							<button className="text-blue-500 hover:underline">Reply</button>
 						</div>
-						<p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae metus ac nisl hendrerit lacinia. Nulla facilisi.</p>
 					</div>
-				</div>
-				<div className="flex space-x-4">
-					<div className="flex-shrink-0">
-						<img className="w-10 h-10 rounded-full" src="https://via.placeholder.com/50" alt="User Avatar" />
-					</div>
-					<div className="flex-grow">
-						<div className="flex items-center justify-between">
-							<h3 className="text-lg font-medium">Jane Smith</h3>
-							<button className="text-blue-500 hover:underline">Reply</button>
-						</div>
-						<p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae metus ac nisl hendrerit lacinia. Nulla facilisi.</p>
-					</div>
-				</div>
-
+				))}
 			</div>
 		</div>
 )};
