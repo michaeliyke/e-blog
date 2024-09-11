@@ -1,5 +1,7 @@
 import express, { json } from "express";
-import blogRouter from "./routes/BlogRouter.js";
+import postRouter from "./routes/PostRouter.js";
+import userRouter from "./routes/UserRouter.js";
+import likeRouter from "./routes/LikeRouter.js";
 import mongoose from "./engine/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -20,14 +22,15 @@ app.use(
 );
 
 // check the status of the server
-app.get("/status", (req, res) => {
+app.get("/api/status", (req, res) => {
   return res.status(200).json({ status: "OK" });
 });
 
 // the blogs route
-app.use("/blogs", blogRouter);
+app.use("/api/blogs", postRouter);
+app.use("/api/likes", likeRouter);
 
-// app.use("/users", userRouter);
+app.use("/api/users", userRouter);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {

@@ -1,10 +1,29 @@
+import { useState } from "react";
+import { SignUp } from "./SignUp";
+import { SignIn } from "./SignIn";
+
 export const Header = () => {
+  const [popUpDisplayed, setPopUpDisplayed] = useState({
+    signin: false,
+    signup: false,
+  });
+  const toggleFormPopUp = () => {
+    setPopUpDisplayed({
+      signin: true,
+      signup: false,
+    });
+  };
   return (
-    <header className="h-15 w-full p-2">
-      <div
-        className="flex items-center border-2 border-black h-12 rounded-md justify-between
-                      p-1"
-      >
+    <header className="h-15 w-full">
+      <SignIn
+        displayed={popUpDisplayed.signin}
+        setDisplayed={setPopUpDisplayed}
+      />
+      <SignUp
+        displayed={popUpDisplayed.signup}
+        setDisplayed={setPopUpDisplayed}
+      />
+      <div className="flex items-center border-2 border-black bg-white h-12  justify-between p-1">
         <div
           className="flex items-center border border-black overflow-hidden h-9
         w-[90px] rounded-md ml-4"
@@ -50,7 +69,10 @@ export const Header = () => {
           />
         </div>
         <div className="mr-4">
-          <button className="bg-indigo-600 rounded-xl w-16 h-8 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5">
+          <button
+            onClick={toggleFormPopUp}
+            className="bg-indigo-600 rounded-xl w-16 h-8 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
+          >
             Sign in
           </button>
         </div>

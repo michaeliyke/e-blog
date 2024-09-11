@@ -1,6 +1,87 @@
-import Post from "../models/blog.js";
+const fakeUsers = [
+  {
+    href: "radouane-abounouas",
+    firstname: "Radouane",
+    lastname: "Abounouas",
+    email: "radouane@abn.com",
+    password: "password123",
+    thumbnail: "https://i.ibb.co/b6qFDBL/image.jpg",
+  },
+  {
+    href: "jane-smith",
+    firstname: "Jane",
+    lastname: "Smith",
+    email: "janesmith@example.com",
+    password: "mypassword456",
+    thumbnail: "https://i.ibb.co/g4Hm9nK/portrait-2231838-640.webp",
+  },
+  {
+    href: "emily-johnson",
+    firstname: "Emily",
+    lastname: "Johnson",
+    email: "emilyj@example.com",
+    password: "abc123!",
+    thumbnail: "https://i.ibb.co/YBcH51t/no-pic.png",
+  },
+  {
+    href: "michael-brown",
+    firstname: "Michael",
+    lastname: "Brown",
+    email: "michaelb@example.com",
+    password: "letmein987",
+    thumbnail: "https://i.ibb.co/sscz9PQ/image.jpg",
+  },
+  {
+    href: "david-miller",
+    firstname: "David",
+    lastname: "Miller",
+    email: "davidmiller@example.com",
+    password: "supersecret",
+    thumbnail: "https://i.ibb.co/YBcH51t/no-pic.png",
+  },
+  {
+    href: "sarah-wilson",
+    firstname: "Sarah",
+    lastname: "Wilson",
+    email: "sarahw@example.com",
+    password: "12345678",
+    thumbnail: "https://i.ibb.co/nkRxnKT/portrait-4599553-640.jpg",
+  },
+  {
+    href: "james-taylor",
+    firstname: "James",
+    lastname: "Taylor",
+    email: "jamestaylor@example.com",
+    password: "password99",
+    thumbnail: "https://i.ibb.co/DMNLK3m/portrait-7676482-640.webp",
+  },
+  {
+    href: "jessica-anderson",
+    firstname: "Jessica",
+    lastname: "Anderson",
+    email: "jessicaa@example.com",
+    password: "quickbrownfox",
+    thumbnail: "https://i.ibb.co/YBcH51t/no-pic.png",
+  },
+  {
+    href: "daniel-thomas",
+    firstname: "Daniel",
+    lastname: "Thomas",
+    email: "danielt@example.com",
+    password: "skyblue123",
+    thumbnail: "https://i.ibb.co/6XSLhC2/man-6339003-640.jpg",
+  },
+  {
+    href: "laura-jackson",
+    firstname: "Laura",
+    lastname: "Jackson",
+    email: "lauraj@example.com",
+    password: "laura2020",
+    thumbnail: "https://i.ibb.co/nkRxnKT/portrait-4599553-640.jpg",
+  },
+];
 
-const fakeData = [
+const fakeBlogs = [
   {
     title: "The Importance of Sleep",
     text: "A good night’s rest is essential for physical and mental health. Lack of sleep can lead to problems such as stress, weight gain, and weakened immunity.",
@@ -82,26 +163,5 @@ const fakeData = [
     text: "Music has a powerful effect on emotions. It can lift spirits, calm anxiety, and even improve focus. Listening to music is a simple way to enhance your mood and well-being.",
   },
 ];
-const userId = "123456";
 
-async function allBlogs(req, res) {
-  // get all blogs
-  const data = await Post.find({}).select("title _id text");
-
-  return res.status(200).json(data);
-}
-
-async function createTestPosts(req, res) {
-  // create fake data
-  fakeData.map(async (data) => {
-    // console.log({ ...data, userId });
-    if (await Post.findOne({ title: data.title })) {
-      return;
-    }
-    const newPost = new Post({ ...data, userId });
-    await newPost.save();
-  });
-  return res.status(201).json({ status: "all fake posts created" });
-}
-
-export { allBlogs, createTestPosts };
+export { fakeUsers, fakeBlogs };
