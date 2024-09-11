@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
+import { urlenCode } from "../util/basic";
 // import { GoBookmark } from "react-icons/go";
 // import { GoBookmarkFill } from "react-icons/go";
 
@@ -44,20 +45,26 @@ export const MiddleSide = () => {
               <p className="text-xs text-gray-500">2 days ago</p>
             </figcaption>
           </figure>
-          {/* blog Title */}
-          <h2 className="text-blue-600 text-lg font-bold mb-2">{blog.title}</h2>
-          {/* blog Text */}
-          <p className="text-gray-800 text-sm mb-3">
-            {blog.text}
+
+          {/* Post Title */}
+          <h2 className="text-blue-600 text-lg font-bold mb-2">
+            <a href={`/posts/${urlenCode(blog.title)}`}>{blog.title}</a>
+          </h2>
+
+          {/* Post Text */}
+          {/* <p className="text-gray-800 text-sm mb-3">
+            {post.text}
             <a href="#" className="text-blue-500 ml-2">
               ...see more
             </a>
-          </p>{" "}
+          </p> */}
+
           {/* Impressions and Comments */}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
             <p>19 impressions</p>
             <p>2 comments</p>
           </div>
+
           {/* The tags section */}
           <div className="flex gap-2 justify-start text-gray-300">
             <span>#react</span>
@@ -65,6 +72,7 @@ export const MiddleSide = () => {
             <span>#webdev</span>
             <span>#beginner</span>
           </div>
+
           {/* Like and Comment Buttons */}
           <div className="flex items-center justify-around pt-2">
             <button className="flex items-center space-x-2">
