@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
+import { urlenCode } from "../util/basic";
 // import { GoBookmark } from "react-icons/go";
 // import { GoBookmarkFill } from "react-icons/go";
 
@@ -17,9 +18,7 @@ export const MiddleSide = () => {
       });
   }, []);
 
-  function urlenCode(str) {
-	return str.replace(/\s+/g, '-');
-  }
+
 
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
