@@ -1,8 +1,11 @@
 import PropTypes from "prop-types";
 import { FaGithub } from "react-icons/fa";
+import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 export const SignIn = ({ displayed, setDisplayed }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const handlePopUp = (signin = false, signup = false) => {
     setDisplayed({ signin, signup });
   };
@@ -26,11 +29,31 @@ export const SignIn = ({ displayed, setDisplayed }) => {
           Welcome to e-Blog <br /> Your blogging platform
         </p>
         <form className="form__container mt-5 w-full px-9">
-          <div className="w-full">
-            <input type="text" placeholder="Email" className="w-full" />
+          <div className="w-full mb-3">
+            <input
+              type="email"
+              placeholder="Email"
+              className="input__box w-full"
+            />
           </div>
-          <div className="block">
-            <input className="w-full" type="password" placeholder="Password" />
+          <div className="relative flex items-center mb-3">
+            <input
+              className="input__box w-full"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+            />
+            <div
+              onClick={() => {
+                setShowPassword(!showPassword);
+              }}
+            >
+              {showPassword ? (
+                <FaRegEyeSlash className="eye__icon" size={20} />
+              ) : (
+                <FaRegEye className="eye__icon" size={20} />
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col h-full">

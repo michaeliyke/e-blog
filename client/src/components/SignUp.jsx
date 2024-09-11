@@ -1,8 +1,32 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 export const SignUp = ({ displayed, setDisplayed }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+    repeatedPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+    console.log(formData);
+  };
+
   const handlePopUp = (signin = false, signup = false) => {
     setDisplayed({ signin, signup });
   };
@@ -27,17 +51,80 @@ export const SignUp = ({ displayed, setDisplayed }) => {
         <p className="text-center underline underline-offset-[4px] font-pompiere text-[22px]  mb-7 font-medium text-gray-300">
           Welcome to e-Blog <br /> Where ideas Find words
         </p>
-        <form className="flex flex-col form__container mt-5">
+        <form className="flex flex-col gap-4 form__container mt-5">
           <div className="name__section flex gap-3 flex-col sm:flex-row">
-            <input className="" type="text" placeholder="First name" />
-            <input className="" type="text" placeholder="Last name" />
+            <input
+              className="input__box"
+              type="text"
+              name="firstname"
+              value={formData.firstname}
+              onChange={handleChange}
+              placeholder="First name"
+            />
+            <input
+              className="input__box"
+              type="text"
+              name="lastname"
+              placeholder="Last name"
+              value={formData.lastname}
+              onChange={handleChange}
+            />
           </div>
-          <input type="text" placeholder="Email" className="" />
-          <div className="password__section flex flex-col gap-3 sm:flex-row">
-            <input type="password" placeholder="Password" />
-            <input type="password" placeholder="Password" />
+          <input
+            className="input__box"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <div className="password__section flex gap-3">
+            <span>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <div
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? (
+                  <FaRegEyeSlash className="eye__icon" size={20} />
+                ) : (
+                  <FaRegEye className="eye__icon" size={20} />
+                )}
+              </div>
+            </span>
+            <span>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="repeatedPassword"
+                placeholder="Password"
+                value={formData.repeatedPassword}
+                onChange={handleChange}
+              />
+              <div
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? (
+                  <FaRegEyeSlash className="eye__icon" size={20} />
+                ) : (
+                  <FaRegEye className="eye__icon" size={20} />
+                )}
+              </div>
+            </span>
           </div>
           <div className="flex flex-col h-full px-2">
+            {/* <span className="flex items-center">
+              <input type="checkbox" name="" id="" className="" />
+              <p>Show password</p>
+            </span> */}
             <div className="flex items-center mb-4">
               <input type="checkbox" name="" id="" className="" />
 
@@ -49,7 +136,10 @@ export const SignUp = ({ displayed, setDisplayed }) => {
                 </a>
               </span>
             </div>
-            <button className="mb-2 mt-6 border border-black w-full h-10 text-white rounded-sm bg-[#6e54b5]">
+            <button
+              onClick={handleSubmit}
+              className="mb-2 mt-6 border border-black w-full h-10 text-white rounded-sm bg-[#6e54b5]"
+            >
               Create account
             </button>
           </div>

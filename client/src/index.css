@@ -30,8 +30,23 @@ body {
   transition: all 0.8s ease-in-out;
 }
 
-.form__container input {
-  @apply p-2 mb-4 h-10 text-[16px] rounded-sm border border-gray-600 shadow-md outline-none bg-[#3b364c];
+.input__box {
+  @apply p-2 h-10 text-[16px] rounded-sm border border-gray-600 shadow-md outline-none bg-[#3b364c];
+}
+
+.password__section span {
+  @apply border border-gray-600 shadow-md bg-[#3b364c] h-10 text-[16px] rounded-sm;
+  @apply relative flex-grow flex items-center;
+}
+
+.password__section input {
+  @apply bg-transparent outline-none ml-2 w-[78%];
+}
+
+.eye__icon {
+  @apply absolute right-1 top-1/2 transform -translate-y-1/2 cursor-pointer;
+  @apply hover:bg-[#5f587d] size-8 p-1.5 rounded-full;
+  transition: background-color 0.3s ease;
 }
 
 .form__container p {
