@@ -2,9 +2,9 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
 
-export const SignUp = ({ displayed, setDisplayed }) => {
+export const SignUp = ({ visible, setVisible }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstname: "",
@@ -28,13 +28,13 @@ export const SignUp = ({ displayed, setDisplayed }) => {
   };
 
   const handlePopUp = (signin = false, signup = false) => {
-    setDisplayed({ signin, signup });
+    setVisible({ signin, signup });
   };
   return (
     <>
       <div
         className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
-          displayed ? "opacity-60" : "opacity-0 pointer-events-none"
+          visible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => {
           handlePopUp();
@@ -43,7 +43,7 @@ export const SignUp = ({ displayed, setDisplayed }) => {
       <div
         className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
           rounded-md p-9 z-10
-          ${displayed ? "" : "hide__popup"}`}
+          ${visible ? "" : "hide__popup"}`}
       >
         <h3 className="font-bold text-3xl mb-5 text-white ">
           Create an account
@@ -87,17 +87,10 @@ export const SignUp = ({ displayed, setDisplayed }) => {
                 value={formData.password}
                 onChange={handleChange}
               />
-              <div
-                onClick={() => {
-                  setShowPassword(!showPassword);
-                }}
-              >
-                {showPassword ? (
-                  <FaRegEyeSlash className="eye__icon" size={20} />
-                ) : (
-                  <FaRegEye className="eye__icon" size={20} />
-                )}
-              </div>
+              <TogglePasswordVisibility
+                visible={showPassword}
+                setVisible={setShowPassword}
+              />
             </span>
             <span>
               <input
@@ -107,17 +100,10 @@ export const SignUp = ({ displayed, setDisplayed }) => {
                 value={formData.repeatedPassword}
                 onChange={handleChange}
               />
-              <div
-                onClick={() => {
-                  setShowPassword(!showPassword);
-                }}
-              >
-                {showPassword ? (
-                  <FaRegEyeSlash className="eye__icon" size={20} />
-                ) : (
-                  <FaRegEye className="eye__icon" size={20} />
-                )}
-              </div>
+              <TogglePasswordVisibility
+                visible={showPassword}
+                setVisible={setShowPassword}
+              />
             </span>
           </div>
           <div className="flex flex-col h-full px-2">
@@ -176,6 +162,6 @@ export const SignUp = ({ displayed, setDisplayed }) => {
 };
 
 SignUp.propTypes = {
-  displayed: PropTypes.bool.isRequired,
-  setDisplayed: PropTypes.func.isRequired,
+  visible: PropTypes.bool.isRequired,
+  setVisible: PropTypes.func.isRequired,
 };

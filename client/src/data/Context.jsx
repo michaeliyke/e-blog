@@ -5,11 +5,16 @@ import { urlenCode } from "../util/basic";
 export const DataContext = createContext();
 
 export function ContextProvider({ children }) {
+  const [visible, setVisible] = useState({
+    signin: false,
+    signup: false,
+  });
   const [data, setData] = useState([]);
   let [mapped, setMapped] = useState({});
 
   // get all the blog and store then in data
   useEffect(() => {
+    console.log("back");
     fetch("http://127.0.0.1:3000/api/blogs/page/1")
       .then((response) => {
         return response.json();
@@ -31,7 +36,9 @@ export function ContextProvider({ children }) {
     }
   }, [data]); // Re-run this effect when `data` changes
   return (
-    <DataContext.Provider value={{ data, setData, mapped }}>
+    <DataContext.Provider
+      value={{ data, setData, mapped, visible, setVisible }}
+    >
       {children}
     </DataContext.Provider>
   );

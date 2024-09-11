@@ -6,12 +6,12 @@ import "./index.css";
 
 function App() {
   return (
-	  <ContextProvider>
-		<Routes>
-		<Route path="/" element={<Home />} />
-		<Route path="/posts/:post_title" element={<Posts />} />
-		</Routes>
-	  </ContextProvider>
+    <ContextProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts/:post_title" element={<Posts />} />
+      </Routes>
+    </ContextProvider>
   );
 }
 

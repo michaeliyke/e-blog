@@ -1,28 +1,20 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { SignUp } from "./SignUp";
 import { SignIn } from "./SignIn";
+import { DataContext } from "../data/Context";
 
 export const Header = () => {
-  const [popUpDisplayed, setPopUpDisplayed] = useState({
-    signin: false,
-    signup: false,
-  });
+  const { visible, setVisible } = useContext(DataContext);
   const toggleFormPopUp = () => {
-    setPopUpDisplayed({
+    setVisible({
       signin: true,
       signup: false,
     });
   };
   return (
     <header className="h-15 w-full">
-      <SignIn
-        displayed={popUpDisplayed.signin}
-        setDisplayed={setPopUpDisplayed}
-      />
-      <SignUp
-        displayed={popUpDisplayed.signup}
-        setDisplayed={setPopUpDisplayed}
-      />
+      <SignIn visible={visible.signin} setVisible={setVisible} />
+      <SignUp visible={visible.signup} setVisible={setVisible} />
       <div className="flex items-center border-2 border-black bg-white h-12  justify-between p-1">
         <div
           className="flex items-center border border-black overflow-hidden h-9
