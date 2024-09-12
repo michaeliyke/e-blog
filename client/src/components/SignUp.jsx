@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -200,9 +199,4 @@ export const SignUp = () => {
       </div>
     </>
   );
-};
-
-SignUp.propTypes = {
-  visible: PropTypes.bool.isRequired,
-  setVisible: PropTypes.func.isRequired,
 };
