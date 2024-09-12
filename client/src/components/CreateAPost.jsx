@@ -63,6 +63,13 @@ export function CreateAPost(){
 		console.log('Post submitted:', postData);
 
 		// Submit form
+
+	// Clear form details
+    setTitle('');
+    setTags([]);
+    setInput('');
+    setContent('');
+    setImagePreview(null);
   }
 
   function handleKeyDown(eventOb) {
