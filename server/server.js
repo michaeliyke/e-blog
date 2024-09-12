@@ -5,6 +5,8 @@ import likeRouter from "./routes/LikeRouter.js";
 import mongoose from "./engine/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { getProfile } from "./controllers/UserController.js";
+import { isAuthenticated } from "./middlewares/AuthMiddleware.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -29,8 +31,10 @@ app.get("/api/status", (req, res) => {
 // the blogs route
 app.use("/api/blogs", postRouter);
 app.use("/api/likes", likeRouter);
-
 app.use("/api/users", userRouter);
+
+// this route gets user info using the jwt token
+app.get("/api/auth/@me", isAuthenticated, getProfile);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {
