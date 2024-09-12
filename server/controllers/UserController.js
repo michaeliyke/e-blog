@@ -1,14 +1,58 @@
 import User from "../models/User.js";
 import { checkPassword, generateHref, hashPassword } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
+import { createJwtToken } from "../utils/JwtUtils.js";
 
-async function getAllUsers(req, res) {
+export const getProfile = async (req, res) => {
+  // get a user by id
+  // or 404 (not found) status if teh user is not found
+  const userId = req.userId;
+  const user = await User.findById(
+    userId,
+    "-_id firstname lastname email"
+  ).exec();
+  if (user) {
+    return res.status(200).json({ user });
+  }
+  return res.status(404).json({ message: "User not found !" });
+};
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(401).json({ status: "credential(s) missing" });
+  }
+
+  try {
+    //Later try using static method to validate user
+    const user = await User.findOne(
+      { email },
+      "firstname lastname href email password"
+    );
+    if (!user) return res.status(403).json({ message: "Invalid user email" });
+    if (!(await checkPassword(password, user.password)))
+      return res.status(403).json({ message: "Invalid user password" });
+
+    // return the JWT
+    const token = await createJwtToken({ userId: user._id });
+    res.cookie("_token", `Barear ${token}`);
+    user.password = undefined;
+    user._id = undefined;
+    return res.status(200).json({ user });
+  } catch (err) {
+    console.log({ err });
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
   // get all users
   const data = await User.find({}, "-password").exec();
   return res.status(200).json(data);
-}
+};
 
-async function getUserByRef(req, res) {
+export const getUserByRef = async (req, res) => {
   // get a user by ref --> firstname-lastname/(xxxxxxxxx)
   // or 404 (not found) status if teh user is not found
   const href = req.params.href;
@@ -17,9 +61,9 @@ async function getUserByRef(req, res) {
     return res.status(200).json(user);
   }
   return res.status(404).json("User not found !");
-}
+};
 
-const changePassword = async (req, res) => {
+export const changePassword = async (req, res) => {
   const { oldPassword, newPassword, id } = req.body;
 
   const user = await User.findById(id).exec();
@@ -29,21 +73,18 @@ const changePassword = async (req, res) => {
   }
 };
 
-async function getUserById(req, res) {
+export async function getUserById(req, res) {
   // get a user by id
   // or 404 (not found) status if teh user is not found
   const userId = req.params.id;
-  const user = await User.findById(
-    userId,
-    "_id firstname lastname email"
-  ).exec();
+  const user = await User.findById(userId, "firstname lastname email").exec();
   if (user) {
     return res.status(200).json(user);
   }
   return res.status(404).json("User not found !");
 }
 
-async function registerUser(req, res) {
+export const registerUser = async (req, res) => {
   // create a new user
   // if email already exists abort
   // if href already exists add an 8 chars id after id --> href-xxxxxxxx
@@ -80,35 +121,9 @@ async function registerUser(req, res) {
     }
     return res.status(500).json({ message: "Server error" });
   }
-}
-
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(401).json({ status: "credential(s) missing" });
-  }
-
-  try {
-    //Later try using static method to validate user
-    const user = await User.findOne(
-      { email },
-      "firstname lastname href email password -_id"
-    );
-    if (!user) return res.status(403).json({ message: "Invalid user email" });
-    if (!(await checkPassword(password, user.password)))
-      return res.status(403).json({ message: "Invalid user password" });
-
-    // return the JWT
-    user.password = undefined;
-    return res.status(200).json({ user });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
-  }
 };
 
-async function createUsers(req, res) {
+export const createUsers = async (req, res) => {
   // create fake users
   console.log("create fake users ...");
   await Promise.all(
@@ -122,9 +137,9 @@ async function createUsers(req, res) {
     })
   );
   return res.status(201).json({ status: "all fake users created" });
-}
+};
 
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   const userId = req.params.id;
   const { firstName, lastName, email } = req.body;
 
@@ -152,14 +167,4 @@ const updateUser = async (req, res) => {
     console.log(JSON.stringify(err));
     return res.status(500).json({ message: "Server error" });
   }
-};
-
-export {
-  getAllUsers,
-  getUserById,
-  createUsers,
-  registerUser,
-  getUserByRef,
-  loginUser,
-  updateUser,
 };
