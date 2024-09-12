@@ -26,7 +26,7 @@ export const formValidator = (form, setError) => {
     // return false if no email is given
     setError("** Please enter your email **");
     return false;
-  } else if (!/[^@]+@[^@]+\.\w+/.test(email)) {
+  } else if (!/^[^@\s]+@[^@\s]+\.\w+$/.test(email)) {
     // return false if the email is not the right format
     setError("** Email is not in the correct format **");
     return false;
@@ -86,4 +86,41 @@ export const register = async ({
     }),
   });
   return res;
+};
+
+export const signInFormValidator = (form, setError) => {
+  const { email, password } = form;
+
+  if (!email) {
+    // return false if no email is given
+    setError("** Please enter your email **");
+    return false;
+  } else if (!/^[^@\s]+@[^@\s]+\.\w+$/.test(email)) {
+    // return false if the email is not the right format
+    setError("** Email is not in the correct format **");
+    return false;
+  }
+  if (!password) {
+    // return false if no password is given
+    setError("** Please set a password **");
+    return false;
+  }
+
+  return true;
+};
+
+export const login = async ({ email, password }) => {
+  // send post request to create a new user
+  const res = await fetch("http://127.0.0.1:3000/api/users/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json", // Specify JSON data in the request
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+  const { message } = await res.json();
+  return { status: res.status, message };
 };
