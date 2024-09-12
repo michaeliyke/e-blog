@@ -3,15 +3,23 @@ import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
+import { formValidator } from "../util/Tools";
+import { register } from "../util/Tools";
+import { useContext } from "react";
+import { DataContext } from "../data/Context";
 
-export const SignUp = ({ visible, setVisible }) => {
+export const SignUp = () => {
+  const { visible, setVisible } = useContext(DataContext);
+  const cardisVisible = visible.signup;
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(<br />);
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
     email: "",
     password: "",
     repeatedPassword: "",
+    termsAgreed: false,
   });
 
   const handleChange = (e) => {
@@ -22,9 +30,32 @@ export const SignUp = ({ visible, setVisible }) => {
     });
   };
 
-  const handleSubmit = () => {
-    // e.preventDefault();
+  const handleSubmit = (e) => {
     console.log(formData);
+    e.preventDefault();
+    setError(<br />);
+    if (!formValidator(formData, setError)) {
+      return;
+    }
+    console.log(formData);
+    register(formData).then((res) => {
+      if (res.status === 201) {
+        setVisible({
+          signin: true,
+          signup: false,
+        });
+      } else if (res.status === 409) {
+        setError("** Please choose another email **");
+      }
+    });
+  };
+
+  const handleCheckBox = (e) => {
+    const { name, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: checked,
+    });
   };
 
   const handlePopUp = (signin = false, signup = false) => {
@@ -34,7 +65,7 @@ export const SignUp = ({ visible, setVisible }) => {
     <>
       <div
         className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
-          visible ? "opacity-60" : "opacity-0 pointer-events-none"
+          cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => {
           handlePopUp();
@@ -43,15 +74,16 @@ export const SignUp = ({ visible, setVisible }) => {
       <div
         className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
           rounded-md p-9 z-10
-          ${visible ? "" : "hide__popup"}`}
+          ${cardisVisible ? "" : "hide__popup"}`}
       >
         <h3 className="font-bold text-3xl mb-5 text-white ">
           Create an account
         </h3>
-        <p className="text-center underline underline-offset-[4px] font-pompiere text-[22px]  mb-7 font-medium text-gray-300">
+        <p className="text-center underline underline-offset-[4px] font-pompiere text-[22px]  mb-6 font-medium text-gray-300">
           Welcome to e-Blog <br /> Where ideas Find words
         </p>
-        <form className="flex flex-col gap-4 form__container mt-5">
+        <p className="error__box text-red-400">{error}</p>
+        <form className="flex flex-col gap-4 form__container mt-4">
           <div className="name__section flex gap-3 flex-col sm:flex-row">
             <input
               className="input__box"
@@ -62,6 +94,7 @@ export const SignUp = ({ visible, setVisible }) => {
               placeholder="First name"
             />
             <input
+              required
               className="input__box"
               type="text"
               name="lastname"
@@ -71,6 +104,7 @@ export const SignUp = ({ visible, setVisible }) => {
             />
           </div>
           <input
+            required
             className="input__box"
             type="email"
             name="email"
@@ -81,6 +115,7 @@ export const SignUp = ({ visible, setVisible }) => {
           <div className="password__section flex gap-3">
             <span>
               <input
+                required
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
@@ -94,6 +129,7 @@ export const SignUp = ({ visible, setVisible }) => {
             </span>
             <span>
               <input
+                required
                 type={showPassword ? "text" : "password"}
                 name="repeatedPassword"
                 placeholder="Password"
@@ -112,7 +148,12 @@ export const SignUp = ({ visible, setVisible }) => {
               <p>Show password</p>
             </span> */}
             <div className="flex items-center mb-4">
-              <input type="checkbox" name="" id="" className="" />
+              <input
+                type="checkbox"
+                name="termsAgreed"
+                checked={formData.agreedToTerms}
+                onChange={handleCheckBox}
+              />
 
               <span className="text-[15px] text-white">
                 {" "}
