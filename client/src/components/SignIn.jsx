@@ -3,8 +3,12 @@ import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
+import { useContext } from "react";
+import { DataContext } from "../data/Context";
 
-export const SignIn = ({ visible, setVisible }) => {
+export const SignIn = () => {
+  const { visible, setVisible } = useContext(DataContext);
+  const cardisVisible = visible.signin;
   const [showPassword, setShowPassword] = useState(false);
   const handlePopUp = (signin = false, signup = false) => {
     setVisible({ signin, signup });
@@ -13,7 +17,7 @@ export const SignIn = ({ visible, setVisible }) => {
     <>
       <div
         className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
-          visible ? "opacity-60" : "opacity-0 pointer-events-none"
+          cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => {
           handlePopUp();
@@ -22,7 +26,7 @@ export const SignIn = ({ visible, setVisible }) => {
       <div
         className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
               rounded-md p-9 z-10
-              ${visible ? "" : "hide__popup"}`}
+              ${cardisVisible ? "" : "hide__popup"}`}
       >
         <h3 className="font-bold text-3xl mb-5 text-white ">Sign In</h3>
         <p className="text-center underline underline-offset-[4px] font-pompiere text-[22px]  mb-7 font-medium text-gray-300">
