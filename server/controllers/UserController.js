@@ -85,16 +85,25 @@ async function registerUser(req, res) {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(401).json({ status: "credential(s) missing" });
+  }
+
   try {
     //Later try using static method to validate user
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid user email" });
+    const user = await User.findOne(
+      { email },
+      "firstname lastname href email password -_id"
+    );
+    if (!user) return res.status(403).json({ message: "Invalid user email" });
     if (!(await checkPassword(password, user.password)))
-      return res.status(400).json({ message: "Invalid user password" });
+      return res.status(403).json({ message: "Invalid user password" });
 
     // return the JWT
-    return res.json({ user });
+    user.password = undefined;
+    return res.status(200).json({ user });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
