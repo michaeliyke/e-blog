@@ -4,7 +4,8 @@ import { SignIn } from "./SignIn";
 import { DataContext } from "../data/Context";
 
 export const Header = () => {
-  const { visible, setVisible } = useContext(DataContext);
+  // use useContext to get and set the state of the sign cards
+  const { setVisible } = useContext(DataContext);
   const toggleFormPopUp = () => {
     setVisible({
       signin: true,
@@ -13,8 +14,8 @@ export const Header = () => {
   };
   return (
     <header className="h-15 w-full">
-      <SignIn visible={visible.signin} setVisible={setVisible} />
-      <SignUp visible={visible.signup} setVisible={setVisible} />
+      <SignIn />
+      <SignUp />
       <div className="flex items-center border-2 border-black bg-white h-12  justify-between p-1">
         <div
           className="flex items-center border border-black overflow-hidden h-9
