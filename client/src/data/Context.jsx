@@ -5,6 +5,8 @@ import { urlenCode } from "../util/basic";
 export const DataContext = createContext();
 
 export function ContextProvider({ children }) {
+  // this will store the state of the sign cards
+  // we will need to prompt the sign cards from inside a lot of components
   const [visible, setVisible] = useState({
     signin: false,
     signup: false,
@@ -12,7 +14,7 @@ export function ContextProvider({ children }) {
   const [data, setData] = useState([]);
   let [mapped, setMapped] = useState({});
 
-  // get all the blog and store then in data
+  // get 1 page of blog from db
   useEffect(() => {
     console.log("back");
     fetch("http://127.0.0.1:3000/api/blogs/page/1")
