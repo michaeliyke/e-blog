@@ -6,6 +6,7 @@ import {
   createUsers,
   registerUser,
   updateUser,
+  loginUser,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 
@@ -26,6 +27,8 @@ userRouter.post("/", registerUser);
 userRouter.post("/create_db", createUsers);
 
 userRouter.put("/:id", updateUser);
+
+userRouter.post("/login", loginUser);
 
 // drops the users collection
 userRouter.delete("/", async (req, res) => {
