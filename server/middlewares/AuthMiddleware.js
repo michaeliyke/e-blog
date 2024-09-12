@@ -14,6 +14,7 @@ export const isAuthenticated = async (req, res, next) => {
     }
   } catch (err) {
     console.log("JWT Error: \\/ \\/ \\/ \\/\n", err);
+    res.clearCookie("_token");
     return res.status(401).json({ message: "UNAUTHORIZED" });
   }
 };
