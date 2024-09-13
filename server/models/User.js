@@ -54,7 +54,7 @@ const userSchema = new Schema(
       original: { type: String },
       delete: { type: String },
     },
-    thumbnail: { type: String },
+    thumbnail: { type: String, default: "https://i.ibb.co/YBcH51t/no-pic.png" },
   },
   { timestamps: true }
 );
