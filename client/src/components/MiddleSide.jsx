@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import { AiOutlineLike } from "react-icons/ai";
-import { FaRegComment } from "react-icons/fa";
 import { urlenCode } from "../util/basic";
-// import { GoBookmark } from "react-icons/go";
-// import { GoBookmarkFill } from "react-icons/go";
+import { PostStats } from "./PostStats";
 
 export const MiddleSide = () => {
   const [data, setData] = useState([]);
@@ -13,10 +10,10 @@ export const MiddleSide = () => {
     fetch("http://127.0.0.1:3000/api/blogs/page/1")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data[0]);
         setData((prev) => [...prev, ...data]);
       });
   }, []);
+
 
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
@@ -74,20 +71,9 @@ export const MiddleSide = () => {
           </div>
 
           {/* Like and Comment Buttons */}
-          <div className="flex items-center justify-around pt-2">
-            <button className="flex items-center space-x-2">
-              <span role="img" aria-label="like" className="text-2xl">
-                <AiOutlineLike size={25} color="black" />
-              </span>
-              <span className="text-black font-bold">Like</span>
-            </button>
-            <button className="flex items-center space-x-2">
-              <span role="img" aria-label="comment" className="text-2xl">
-                <FaRegComment size={25} color="black" />
-              </span>
-              <span className="text-black font-bold">Comment</span>
-            </button>
-          </div>
+          <PostStats post={blog} />
+
+		  {/* Bookmark Button */}
         </div>
       ))}
     </div>
