@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { AiOutlineLike, AiFillLike, AiOutlineStar } from "react-icons/ai"; // Add AiFillLike for the filled icon
+import {
+	AiOutlineLike,
+	AiFillLike,
+	AiOutlineStar,
+	AiFillStar,
+ } from "react-icons/ai"; // Add AiFillLike for the filled icon
 import { FaRegComment } from "react-icons/fa";
 import { urlenCode, blogPostSchema } from "../util/basic";
 
@@ -34,7 +39,7 @@ function BookmarkButton({post}) {
 
   return (
       <button className="flex items-center space-x-2" onClick={handleBookmark}>
-        <AiOutlineStar size={25} color={bookmarked ? "yellow" : "black"} />
+		{ bookmarked ? <AiFillStar size={25} color="green" /> : <AiOutlineStar size={25} color="black" /> }
         <span className="text-black font-bold">{bookmarked ? "Bookmarked" : "Bookmark"}</span>
       </button>
   );
