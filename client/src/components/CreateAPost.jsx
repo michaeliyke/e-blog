@@ -7,6 +7,7 @@ export function CreateAPost() {
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const textAreaRef = useRef(null);
 
   // Add a tag when the user types a space or a comma
   function handleInputChange(eventObj) {
@@ -64,15 +65,15 @@ export function CreateAPost() {
     console.log("Post submitted:", postData);
 
     // Submit form
-
     // Clear form details
-    setTitle("");
-    setTags([]);
-    setInput("");
-    setContent("");
-    setImagePreview(null);
+    // setTitle("");
+    // setTags([]);
+    // setInput("");
+    // setContent("");
+    // setImagePreview(null);
   }
 
+  // handle the separation of tags
   function handleKeyDown(eventOb) {
     if (eventOb.key === " " || eventOb.key === "," || eventOb.key === "Enter") {
       eventOb.preventDefault();
@@ -84,46 +85,18 @@ export function CreateAPost() {
   }
 
   return (
-    <div className="bg-white p-10 pt-10 w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center h-full">
       {/* Preview image when selected */}
-      <div className="max-w-[900px] w-[90%]">
+      <div className="mt-10 flex-1 max-w-[900px] w-[90%] overflow-y-scroll scrool__style px-5">
         {imagePreview && (
-          <div className="flex justify-start mb-0 gap-6">
+          <div className="flex justify-start mb-0 gap-6 max-h-[150px]">
             <img
               src={imagePreview}
               alt="Preview of selected image"
               className="w-150 h-auto object-cover mb-1 rounded"
-              style={{ width: "150px", height: "auto", objectFit: "cover" }}
+              style={{ width: "auto", height: "auto", objectFit: "contain" }}
             />
-
-            {/* Buttons to change or remove image */}
-            <div className="flex flex-row items-center space-x-4">
-              <button
-                className="bg-white text-black border-gray-500 border py-2 px-4 mb-2 rounded"
-                onClick={triggerFileInput}
-                style={{ boxShadow: "0 0 5px gray" }}
-                title="Use a ration for of 1000x420 for best result."
-              >
-                Change
-              </button>
-              <button
-                className="text-red-500 py-2 px-4 mb-2 border border-white hover:bg-gray-50 rounded"
-                onClick={handleRemoveImage}
-              >
-                Remove
-              </button>
-            </div>
           </div>
-        )}
-        {Boolean(imagePreview) || (
-          <button
-            className="bg-white text-black border-gray-500 border py-2 px-4 mb-4 rounded"
-            title="Use a ration for of 1000x420 for best result."
-            onClick={triggerFileInput}
-            aria-label="Add a Cover Image"
-          >
-            Add a Cover Image
-          </button>
         )}
 
         {/* Hidden input for file selection */}
@@ -139,7 +112,7 @@ export function CreateAPost() {
         {/* Textarea for post title and tags */}
         <div className="border-2 shadow-md border-gray-300 rounded-md p-4">
           <textarea
-            className="scrool__style mt-1 columns-3xl overflow-y-scroll text-ellipsis  w-full h-20 focus:outline-none appearance-none resize-none text-xl"
+            className="scrool__style mt-1  text-ellipsis  w-full h-20 focus:outline-none appearance-none resize-none text-2xl font-poppins font-medium"
             placeholder="New post title here..."
             onChange={(eventObj) => setTitle(eventObj.target.value)}
             value={title}
@@ -152,7 +125,7 @@ export function CreateAPost() {
           {/* Input for tags */}
           <div
             className="w-full  rounded appearance-none
-		flex items-center h-auto min-h-7"
+						flex items-center h-auto min-h-7"
           >
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
@@ -191,22 +164,52 @@ export function CreateAPost() {
         </div>
 
         {/* Textarea for post content */}
-        <textarea
-          className="w-full focus:outline-none p-6 pt-0 mt-4 border-none rounded appearance-none resize-none text-[22px]"
-          placeholder="Post Content"
-          onChange={(eventObj) => setContent(eventObj.target.value)}
-          value={content}
-        ></textarea>
+        <div className=" h-[50%] mt-6  rounded-md p-4">
+          <hr className="mb-5 border-t-[3px] border-gray-200" />
+          <textarea
+            ref={textAreaRef}
+            className="scrool__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none "
+            placeholder="Start Writing ..."
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
+          ></textarea>
+        </div>
       </div>
-
-      {/* Submit button */}
-      <div className="flex justify-start mt-6">
+      {/* footer */}
+      <div className="max-w-[900px] w-[90%] h-15 border-t-2 border-gray-400  bottom-0 py-5 px-5 flex bg-white z-10">
         <button
-          className="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded"
-          type="submit"
+          onClick={handleSubmit}
+          className=" bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded mr-2"
         >
           Publish
         </button>
+        {!imagePreview ? (
+          <button
+            title="cover preview"
+            onClick={triggerFileInput}
+            aria-label="Add a Cover Image"
+            className=" bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded mr-2"
+          >
+            Upload a cover image
+          </button>
+        ) : (
+          <div>
+            <button
+              onClick={triggerFileInput}
+              style={{ boxShadow: "0 0 5px gray" }}
+              title="cover preview"
+              className=" bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded mr-2"
+            >
+              Change
+            </button>
+            <button
+              onClick={handleRemoveImage}
+              className=" bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded mr-2"
+            >
+              Remove
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
