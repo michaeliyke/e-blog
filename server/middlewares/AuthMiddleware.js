@@ -3,7 +3,8 @@ import User from "../models/User.js";
 
 export const isAuthenticated = async (req, res, next) => {
   const token = req.cookies._token;
-  if (!token || token.startsWith("Bearer ")) {
+  if (!token || !token.startsWith("Bearer ")) {
+    // console.log("token from cookie:", token);
     return res.status(401).json({ message: "UNAUTHORIZED" });
   }
   try {
