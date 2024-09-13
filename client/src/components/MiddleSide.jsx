@@ -14,9 +14,23 @@ export const MiddleSide = () => {
       });
   }, []);
 
-
   return (
     <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
+      <div className="bg-white text-center mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
+        <h2 className="text-lg font-bold mb-4 text-gray-700">
+          Got something on your mind?
+        </h2>
+        <p className="text-gray-600 mb-6 font-pompiere text-xl font-bold">
+          Share your ideas, stories, or updates with the world!
+        </p>
+        <button
+          className="bg-blue-500 text-white w-full py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+          onClick={() => (window.location.href = "/posts/create")}
+        >
+          <span>Create Post</span>
+        </button>
+      </div>
+
       {data.map(({ blog }) => (
         <div
           key={blog._id}
@@ -73,7 +87,7 @@ export const MiddleSide = () => {
           {/* Like and Comment Buttons */}
           <PostStats post={blog} />
 
-		  {/* Bookmark Button */}
+          {/* Bookmark Button */}
         </div>
       ))}
     </div>
