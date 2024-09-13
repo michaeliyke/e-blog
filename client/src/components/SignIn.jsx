@@ -16,6 +16,7 @@ export const SignIn = () => {
   const [error, setError] = useState(<br />);
   const cardisVisible = visible.signin;
   const [showPassword, setShowPassword] = useState(false);
+
   const handlePopUp = (signin = false, signup = false) => {
     setVisible({ signin, signup });
   };
@@ -29,18 +30,14 @@ export const SignIn = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(formData);
     e.preventDefault();
     setError(<br />);
     if (!signInFormValidator(formData, setError)) {
       return;
     }
-    console.log(formData);
     login(formData).then(({ status, message }) => {
       if (status === 200) {
         window.location.href = "/";
-      } else if (status === 409) {
-        setError("** Please choose another email **");
       } else if (status === 403) {
         setError(message);
       }

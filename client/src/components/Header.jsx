@@ -2,9 +2,12 @@ import { useContext } from "react";
 import { SignUp } from "./SignUp";
 import { SignIn } from "./SignIn";
 import { DataContext } from "../data/Context";
+import { useSelector } from "react-redux";
+import { UserSettings } from "./UserSettings";
 
 export const Header = () => {
   // use useContext to get and set the state of the sign cards
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const { setVisible } = useContext(DataContext);
   const toggleFormPopUp = () => {
     setVisible({
@@ -13,10 +16,14 @@ export const Header = () => {
     });
   };
   return (
-    <header className="h-15 w-full">
-      <SignIn />
-      <SignUp />
-      <div className="flex items-center border-2 border-black bg-white h-12  justify-between p-1">
+    <header className="h-16 w-full">
+      {!isAuthenticated && (
+        <>
+          <SignIn />
+          <SignUp />
+        </>
+      )}
+      <div className="flex items-center border-b-2 border-black bg-white h-16  justify-between p-1">
         <div
           className="flex items-center border border-black overflow-hidden h-9
         w-[90px] rounded-md ml-4"
@@ -44,7 +51,6 @@ export const Header = () => {
                 strokeLinejoin="round"
               />
               <g id="SVGRepo_iconCarrier">
-                {" "}
                 <path
                   d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
                   stroke="#000000"
@@ -62,12 +68,16 @@ export const Header = () => {
           />
         </div>
         <div className="mr-4">
-          <button
-            onClick={toggleFormPopUp}
-            className="bg-indigo-600 rounded-xl w-16 h-8 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
-          >
-            Sign in
-          </button>
+          {isAuthenticated ? (
+            <UserSettings />
+          ) : (
+            <button
+              onClick={toggleFormPopUp}
+              className="bg-indigo-600 text-lg font-poppins text-white border-2 border-indigo-800 rounded-xl w-20 h-10 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
+            >
+              Sign in
+            </button>
+          )}
         </div>
       </div>
     </header>

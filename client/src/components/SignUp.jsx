@@ -37,14 +37,14 @@ export const SignUp = () => {
       return;
     }
     console.log(formData);
-    register(formData).then((res) => {
-      if (res.status === 201) {
+    register(formData).then((status) => {
+      if (status === 201) {
         setVisible({
           signin: true,
           signup: false,
         });
-      } else if (res.status === 409) {
-        setError("** Please choose another email **");
+      } else if (status === 409) {
+        setError("** Email already used **");
       }
     });
   };

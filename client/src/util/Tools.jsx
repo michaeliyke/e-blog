@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const formValidator = (form, setError) => {
   // form validator
   // check teh validity of the form
@@ -64,28 +66,16 @@ export const formValidator = (form, setError) => {
   return true;
 };
 
-export const register = async ({
+export const register = async (form) => {
   // send post request to create a new user
-  firstname,
-  lastname,
-  email,
-  password,
-  repeatedPassword,
-}) => {
-  const res = await fetch("http://127.0.0.1:3000/api/users/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json", // Specify JSON data in the request
-    },
-    body: JSON.stringify({
-      firstname,
-      lastname,
-      email,
-      password,
-      repeatedPassword,
-    }),
-  });
-  return res;
+  try {
+    const res = await request.post("http://127.0.0.1:3000/api/users/", {
+      ...form,
+    });
+    return res.status;
+  } catch (err) {
+    return err.status;
+  }
 };
 
 export const signInFormValidator = (form, setError) => {
@@ -102,25 +92,36 @@ export const signInFormValidator = (form, setError) => {
   }
   if (!password) {
     // return false if no password is given
-    setError("** Please set a password **");
+    setError("** Please enter your password **");
     return false;
   }
 
   return true;
 };
 
-export const login = async ({ email, password }) => {
+export const login = async (form) => {
   // send post request to create a new user
-  const res = await fetch("http://127.0.0.1:3000/api/users/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json", // Specify JSON data in the request
-    },
-    body: JSON.stringify({
-      email,
-      password,
-    }),
-  });
-  const { message } = await res.json();
-  return { status: res.status, message };
+  try {
+    const res = await request.post("http://127.0.0.1:3000/api/users/login", {
+      ...form,
+    });
+    return { status: res.status };
+  } catch (err) {
+    // const { message } = err.response.data;
+    const { message } = err.response.data;
+    return { status: err.status, message };
+  }
+};
+
+export const request = axios.create({
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
+
+export const deleteCookie = (name, path = "/", domain = "") => {
+  let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path};`;
+  if (domain) {
+    cookieString += ` domain=${domain};`;
+  }
+  document.cookie = cookieString;
 };
