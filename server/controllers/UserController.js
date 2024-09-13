@@ -9,15 +9,19 @@ export const getProfile = async (req, res) => {
   const userId = req.userId;
   const user = await User.findById(
     userId,
-    "-_id firstname lastname email"
+    "-_id firstname lastname email thumbnail"
   ).exec();
   if (user) {
+    if (!user.thumbnail) {
+      user.thumbnail = "https://i.ibb.co/YBcH51t/no-pic.png";
+    }
     return res.status(200).json({ user });
   }
   return res.status(404).json({ message: "User not found !" });
 };
 
 export const loginUser = async (req, res) => {
+  // login function
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -26,20 +30,15 @@ export const loginUser = async (req, res) => {
 
   try {
     //Later try using static method to validate user
-    const user = await User.findOne(
-      { email },
-      "firstname lastname href email password"
-    );
+    const user = await User.findOne({ email }, "password");
     if (!user) return res.status(403).json({ message: "Invalid user email" });
     if (!(await checkPassword(password, user.password)))
       return res.status(403).json({ message: "Invalid user password" });
 
     // return the JWT
     const token = await createJwtToken({ userId: user._id });
-    res.cookie("_token", `Barear ${token}`);
-    user.password = undefined;
-    user._id = undefined;
-    return res.status(200).json({ user });
+    res.cookie("_token", `Bearer ${token}`);
+    return res.status(200).json({ message: "success" });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ message: "Server error" });
