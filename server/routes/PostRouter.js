@@ -4,10 +4,12 @@ import {
   createTestPosts,
   getPageOfBlogs,
   getPostById,
+  createNewPost,
   // createBlog,
   // updateBlog,
 } from "../controllers/PostController.js";
 import Post from "../models/Post.js";
+import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
 
 const postRouter = Router();
 
@@ -19,6 +21,8 @@ postRouter.post("/create_db", createTestPosts);
 
 // get a page of posts
 postRouter.get("/page/:page", getPageOfBlogs);
+
+postRouter.post("/new", isAuthenticated, createNewPost);
 
 // get post by its id
 postRouter.get("/:id", getPostById);

@@ -73,4 +73,8 @@ async function createTestPosts(req, res) {
   }
 }
 
+// export const createNewPost = async (req, res) => {
+//   const userId
+// }
+
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };
