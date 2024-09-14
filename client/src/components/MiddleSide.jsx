@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { urlenCode } from "../util/basic";
 import { PostStats } from "./PostStats";
 
 export const MiddleSide = () => {
@@ -87,21 +86,20 @@ export const MiddleSide = () => {
 
           {/* Post Title */}
           <h2 className="text-blue-600 text-lg font-bold mb-2">
-            <a href={`/posts/${urlenCode(blog.title)}`}>{blog.title}</a>
+            <a href={`/posts/${blog.slug}`}>{blog.title}</a>
           </h2>
 
           {/* Impressions and Comments */}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-            <p>19 impressions</p>
-            <p>2 comments</p>
+            <p>{blog.likes.count} impressions</p>
+            <p>{blog.comments.count} comments</p>
           </div>
 
           {/* The tags section */}
-          <div className="flex gap-2 justify-start text-gray-300">
-            <span>#react</span>
-            <span>#javascript</span>
-            <span>#webdev</span>
-            <span>#beginner</span>
+          <div className="flex gap-2 justify-start text-gray-400 font-poppins text-[13px]">
+            {blog.tags.map((tag) => (
+              <span key={tag._id}>#{tag.name}</span>
+            ))}
           </div>
 
           {/* Like and Comment Buttons */}

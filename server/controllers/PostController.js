@@ -5,6 +5,7 @@ import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
 import { createShortId, getNextTagId } from "../utils/tools.js";
+import { populate } from "dotenv";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -30,10 +31,14 @@ async function getPageOfBlogs(req, res) {
     const limit = 10;
     const skip = (pageNumber - 1) * limit;
 
-    const blogsList = await Post.find({}, "_id title text user createdAt")
+    const blogsList = await Post.find(
+      {},
+      "_id title text user slug tags createdAt likes.count comments.count"
+    )
       .skip(skip)
       .limit(limit)
       .populate("user", "firstname lastname href thumbnail -_id")
+      .populate("tags", "name")
       .exec();
     // console.log(blogsList);
     const data = await Promise.all(
@@ -119,7 +124,12 @@ export const getPostBySlug = async (req, res) => {
   const slug = req.params.slug;
   if (!slug) return res.sendStatus(404);
 
-  const post = await Post.findOne({ slug });
+  const post = await Post.findOne({ slug }, "user title text tags")
+    .populate("user", "firstname lastname href thumbnail -_id")
+    .populate("tags", "name")
+    .exec();
+  // console.log(post);
+  return res.json({ post });
 };
 
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };

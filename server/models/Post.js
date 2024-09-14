@@ -15,12 +15,15 @@ const postSchema = new Schema(
         ref: "Tag",
       },
     ],
-    comments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
+    comments: {
+      ids: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Comment",
+        },
+      ],
+      count: { type: Number, default: 0 },
+    },
     likes: {
       users: [likeSchema],
       count: { type: Number, default: 0 },

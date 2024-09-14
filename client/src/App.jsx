@@ -10,7 +10,10 @@ function App() {
     <Routes>
       <Route path="/" element={<PrivateRoute open={true} element={Home} />} />
       <Route path="/post/new" element={<PrivateRoute element={CreatePost} />} />
-      <Route path="/posts/:post_title" element={<Posts />} />
+      <Route
+        path="/posts/:post_title"
+        element={<PrivateRoute open={true} element={Posts} />}
+      />
       {/* <PrivateRoute path='/profile' element={Profile} /> */}
     </Routes>
   );

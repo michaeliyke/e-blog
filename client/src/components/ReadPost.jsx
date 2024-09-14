@@ -1,21 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { request } from "../util/Tools";
 
 export function ReadPost({ post_title, children }) {
-  const post = {
-    text: "hhhhhhhhhhhhhhhhhhhhhhh",
-    title: "ggggggggggggggggggg",
-  };
+  const [post, setPost] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       const data = await request.get(
-        `http://127.0.0.1:3000/blogs/slug/${post_title}`
+        `http://127.0.0.1:3000/blogs/h/${post_title}`
       );
-      console.log(data);
+      setPost(data.data.post);
     };
     fetchData();
   });
+
   if (!post) {
     // if post is not found in mapped due to async fetch of data
     return <div>Loading...</div>;

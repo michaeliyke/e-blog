@@ -5,6 +5,7 @@ import {
   getPageOfBlogs,
   getPostById,
   createNewPost,
+  getPostBySlug,
   // createBlog,
   // updateBlog,
 } from "../controllers/PostController.js";
@@ -23,6 +24,8 @@ postRouter.post("/create_db", createTestPosts);
 postRouter.get("/page/:page", getPageOfBlogs);
 
 postRouter.post("/new", isAuthenticated, createNewPost);
+
+postRouter.get("/h/:slug", getPostBySlug);
 
 // get post by its id
 postRouter.get("/:id", getPostById);
