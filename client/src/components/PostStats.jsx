@@ -7,7 +7,6 @@ import {
 } from "react-icons/ai"; // Add AiFillLike for the filled icon
 import { FaRegComment } from "react-icons/fa";
 import { urlenCode, blogPostSchema } from "../util/basic";
-import { request } from "../util/Tools";
 
 function CommentButton({ post }) {
   post.numOfComments = post.numOfComments || 0;
@@ -49,52 +48,38 @@ function BookmarkButton({ post }) {
   );
 }
 
-function LikeButton({ post, setPosts }) {
-  async function handleLikeClick() {
-    console.log(post);
-    const res = await request.post(
-      `http://127.0.0.1:3000/blogs/likes?postId=${post._id}`
-    );
-    console.log(res.data.liked);
-    console.log(res.data.likes);
-    setPosts((prev) => {
-      return prev.map((prevPost) => {
-        // Add return here to return the new array
-        if (prevPost._id === post._id) {
-          return {
-            ...prevPost,
-            likes: { ...prevPost.likes, count: res.data.likes },
-            liked: res.data.liked,
-          };
-        }
-        return prevPost;
-      });
-    });
-    // setLiked(res.data.liked);
-    // setNumOfLikes(res.data.likes);
+function LikeButton({ post }) {
+  post.numOfLikes = post.numOfLikes || 0;
+  const [liked, setLiked] = useState(false);
+  const [numOfLikes, setNumOfLikes] = useState(post.numOfLikes);
+
+  function handleLikeClick() {
+    setLiked(!liked);
+    setNumOfLikes(liked ? numOfLikes - 1 : numOfLikes + 1);
+    // api calls: PUST/POST to update the backend with numOfLikes
   }
 
   return (
     <button className="flex items-center space-x-2" onClick={handleLikeClick}>
       <span role="img" aria-label="like" className="text-2xl">
-        {post.liked ? (
+        {liked ? (
           <AiFillLike size={25} color="blue" />
         ) : (
           <AiOutlineLike size={25} color="black" />
         )}
       </span>
-      <span className="text-black font-bold">{post.likes.count}</span>
+      <span className="text-black font-bold">{numOfLikes}</span>
     </button>
   );
 }
 
-export function PostStats({ post, setPosts }) {
+export function PostStats({ post }) {
   {
     /* Like, Comment, Bookmark Buttons */
   }
   return (
     <div className="flex items-center justify-around pt-2">
-      <LikeButton post={post} setPosts={setPosts} />
+      <LikeButton post={post} />
       <BookmarkButton post={post} />
       <CommentButton post={post} />
     </div>

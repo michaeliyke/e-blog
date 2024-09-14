@@ -67,7 +67,7 @@ export const MiddleSide = () => {
           <figure className="flex items-center mb-4">
             <a href={`/user/${blog.user.href}`}>
               <img
-                src={blog.user.thumbnail}
+                src={blog.user.profilePicture.thumbnail}
                 alt="User avatar"
                 className="w-10 h-10 rounded-full mr-3"
                 width={40}
@@ -103,7 +103,7 @@ export const MiddleSide = () => {
           </div>
 
           {/* Like and Comment Buttons */}
-          <PostStats post={blog} setPosts={setData} />
+          <PostStats post={blog} />
 
           {/* Bookmark Button */}
         </div>

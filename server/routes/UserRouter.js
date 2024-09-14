@@ -4,8 +4,11 @@ import {
   createUsers,
   updateUser,
   getUserInfo,
+  getUserProfile,
+  getUserPosts,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
+import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
 
 const userRouter = Router();
 
@@ -17,6 +20,10 @@ userRouter.get("/info", getUserInfo);
 
 // update a user
 userRouter.put("/:id", updateUser);
+
+userRouter.get("/profile", isAuthenticated, getUserProfile);
+
+userRouter.get("/posts", isAuthenticated, getUserPosts);
 
 // drops the users collection
 userRouter.delete("/", async (req, res) => {

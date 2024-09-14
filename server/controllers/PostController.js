@@ -42,7 +42,7 @@ async function getPageOfBlogs(req, res) {
     )
       .skip(skip)
       .limit(limit)
-      .populate("user", "firstname lastname href thumbnail -_id")
+      .populate("user", "firstname lastname href profilePicture -_id")
       .populate("tags", "name")
       .exec();
     // console.log(blogsList);
@@ -137,7 +137,7 @@ export const getPostBySlug = async (req, res) => {
   if (!slug) return res.sendStatus(404);
 
   const post = await Post.findOne({ slug }, "user title text tags")
-    .populate("user", "firstname lastname href thumbnail -_id")
+    .populate("user", "firstname lastname href profilePicture.thumbnail -_id")
     .populate("tags", "name")
     .exec();
   // console.log(post);
