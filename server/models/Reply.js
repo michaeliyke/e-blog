@@ -5,7 +5,10 @@ const replySchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     text: { type: String, required: true },
-    likes: [likeSchema]
+    likes: {
+      users: [likeSchema],
+      count: { type: Number, default: 0 },
+    },
   },
   { _id: false, timestamps: true }
 );

@@ -51,17 +51,6 @@ export const getAllUsers = async (req, res) => {
   return res.status(200).json(data);
 };
 
-export const getUserByRef = async (req, res) => {
-  // get a user by ref --> firstname-lastname/(xxxxxxxxx)
-  // or 404 (not found) status if teh user is not found
-  const href = req.params.href;
-  const user = await User.findOne({ href }, "firstname lastname email").exec();
-  if (user) {
-    return res.status(200).json(user);
-  }
-  return res.status(404).json("User not found !");
-};
-
 export const changePassword = async (req, res) => {
   const { oldPassword, newPassword, id } = req.body;
 
@@ -72,15 +61,29 @@ export const changePassword = async (req, res) => {
   }
 };
 
-export async function getUserById(req, res) {
+export async function getUserInfo(req, res) {
   // get a user by id
   // or 404 (not found) status if teh user is not found
-  const userId = req.params.id;
-  const user = await User.findById(userId, "firstname lastname email").exec();
-  if (user) {
-    return res.status(200).json(user);
+  const userId = req.query.userId;
+  const slug = req.query.slug;
+  if (userId) {
+    const user = await User.findById(userId, "firstname lastname email").exec();
+    if (user) {
+      return res.status(200).json(user);
+    }
+    return res.status(404).json("User not found !");
+  } else if (slug) {
+    const user = await User.findOne(
+      { href: slug },
+      "firstname lastname email"
+    ).exec();
+    if (user) {
+      return res.status(200).json(user);
+    }
+    return res.status(404).json("User not found !");
+  } else {
+    return res.status(400).json({ message: "Query parameters invalide" });
   }
-  return res.status(404).json("User not found !");
 }
 
 export const registerUser = async (req, res) => {

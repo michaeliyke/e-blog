@@ -69,7 +69,7 @@ export const formValidator = (form, setError) => {
 export const register = async (form) => {
   // send post request to create a new user
   try {
-    const res = await request.post("http://127.0.0.1:3000/api/users/", {
+    const res = await request.post("http://127.0.0.1:3000/auth/register/", {
       ...form,
     });
     return res.status;
@@ -102,7 +102,7 @@ export const signInFormValidator = (form, setError) => {
 export const login = async (form) => {
   // send post request to create a new user
   try {
-    const res = await request.post("http://127.0.0.1:3000/api/users/login", {
+    const res = await request.post("http://127.0.0.1:3000/auth/login", {
       ...form,
     });
     return { status: res.status };

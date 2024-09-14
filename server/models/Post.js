@@ -18,7 +18,10 @@ const postSchema = new Schema(
         ref: "Comment",
       },
     ],
-    likes: [likeSchema],
+    likes: {
+      users: [likeSchema],
+      count: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 );

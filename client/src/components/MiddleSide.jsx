@@ -7,7 +7,7 @@ export const MiddleSide = () => {
 
   // get all the blog and store then in data
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/blogs/page/1")
+    fetch("http://127.0.0.1:3000/blogs/page/1")
       .then((response) => response.json())
       .then((data) => {
         setData((prev) => [...prev, ...data]);

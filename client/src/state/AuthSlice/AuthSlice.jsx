@@ -32,7 +32,7 @@ export const authenticateUser = createAsyncThunk(
   "auth/authenticateUser",
   async () => {
     // This is the function that the reducer will use to check the jwt token
-    const res = await request.get("http://127.0.0.1:3000/api/auth/@me");
+    const res = await request.get("http://127.0.0.1:3000/auth/@me");
     if (res.status !== 200) throw new Error();
     return res.data.user;
   }

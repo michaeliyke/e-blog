@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { getProfile } from "./controllers/UserController.js";
 import { isAuthenticated } from "./middlewares/AuthMiddleware.js";
+import authRouter from "./routes/AuthRouter.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -24,17 +25,18 @@ app.use(
 );
 
 // check the status of the server
-app.get("/api/status", (req, res) => {
+app.get("/status", (req, res) => {
   return res.status(200).json({ status: "OK" });
 });
 
 // the blogs route
-app.use("/api/blogs", postRouter);
-app.use("/api/likes", likeRouter);
-app.use("/api/users", userRouter);
+app.use("/users", userRouter);
+app.use("/blogs", postRouter);
+app.use("/likes", likeRouter);
+app.use("/auth", authRouter);
 
 // this route gets user info using the jwt token
-app.get("/api/auth/@me", isAuthenticated, getProfile);
+app.get("/auth/@me", isAuthenticated, getProfile);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {
