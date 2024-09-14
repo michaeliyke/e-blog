@@ -103,7 +103,7 @@ export const MiddleSide = () => {
           </div>
 
           {/* Like and Comment Buttons */}
-          <PostStats post={blog} />
+          <PostStats post={blog} setPosts={setData} />
 
           {/* Bookmark Button */}
         </div>

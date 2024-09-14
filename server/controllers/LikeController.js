@@ -24,11 +24,13 @@ import { Reply } from "../models/Reply.js";
 // };
 
 export const likeUnlike = async (req, res) => {
+  console.log("like");
   const userId = req.userId;
-
   const postId = req.query.postId;
   const commentId = req.query.commentId;
   const replyId = req.query.replyId;
+
+  console.log({ userId, postId, commentId, replyId });
 
   let model;
   let id;
@@ -65,10 +67,11 @@ export const likeUnlike = async (req, res) => {
       content.likes.users.push(userId);
       content.likes.count++;
     }
+    console.log(content);
     await content.save();
     return res.json({
       likes: content.likes.count,
-      message: alreadyLiked ? "Unliked" : "Liked",
+      liked: !alreadyLiked,
     });
   } catch (err) {
     return res.status(500).json({ message: "Server error" });
@@ -104,7 +107,7 @@ export const getLikes = async (req, res) => {
       .select("likes")
       .populate({
         path: "likes.users",
-        select: "firstname lastname thumbnail",
+        select: "firstname lastname thumbnail href -_id",
         options: { limit: limit, skip: skip },
       })
       .lean();

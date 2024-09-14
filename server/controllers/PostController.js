@@ -6,6 +6,7 @@ import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
 import { createShortId, getNextTagId } from "../utils/tools.js";
 import { populate } from "dotenv";
+import { Types } from "mongoose";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -26,6 +27,10 @@ async function getPostById(req, res) {
 
 async function getPageOfBlogs(req, res) {
   // gets a page of 10 posts
+  const userId = req.userId;
+  console.log(userId);
+
+  // console.log(req);
   try {
     const pageNumber = parseInt(req.params.page) || 1;
     const limit = 10;
@@ -33,7 +38,7 @@ async function getPageOfBlogs(req, res) {
 
     const blogsList = await Post.find(
       {},
-      "_id title text user slug tags createdAt likes.count comments.count"
+      "_id title text user slug tags createdAt likes comments.count"
     )
       .skip(skip)
       .limit(limit)
@@ -41,9 +46,16 @@ async function getPageOfBlogs(req, res) {
       .populate("tags", "name")
       .exec();
     // console.log(blogsList);
-    const data = await Promise.all(
+    let data;
+    // console.log(userId);
+    data = await Promise.all(
       blogsList.map(async (blog) => {
-        return { blog };
+        const liked = userId ? blog.likes.users.includes(userId) : false;
+        const newBlog = blog.toObject();
+        delete newBlog.likes.users;
+        return {
+          blog: { ...newBlog, liked },
+        };
         // console.log({ blog, user });
       })
     );
