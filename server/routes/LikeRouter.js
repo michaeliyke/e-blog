@@ -1,7 +1,10 @@
 import { Router } from "express";
-import { likePost } from "../controllers/LikeController.js";
+import { getLikes, likeUnlike } from "../controllers/LikeController.js";
+import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
 
 const likeRouter = Router();
-likeRouter.post("/", likePost);
+
+likeRouter.post("/", isAuthenticated, likeUnlike);
+likeRouter.get("/", getLikes);
 
 export default likeRouter;

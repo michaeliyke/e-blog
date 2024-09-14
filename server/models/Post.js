@@ -9,23 +9,14 @@ const postSchema = new Schema(
     title: { type: String, required: true },
     text: { type: String, required: true },
     slug: { type: String, required: true },
-    tags: [
-      {
-        type: Number,
-        ref: "Tag",
-      },
-    ],
+    tags: [{ type: Number, ref: "Tag" }],
     comments: {
-      ids: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Comment",
-        },
-      ],
+      ids: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
       count: { type: Number, default: 0 },
     },
     likes: {
-      users: [likeSchema],
+      // users: [likeSchema], changed this for easier query
+      users: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
       count: { type: Number, default: 0 },
     },
   },
