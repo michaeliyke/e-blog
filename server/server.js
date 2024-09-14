@@ -8,6 +8,7 @@ import cors from "cors";
 import { getProfile } from "./controllers/UserController.js";
 import { isAuthenticated } from "./middlewares/AuthMiddleware.js";
 import authRouter from "./routes/AuthRouter.js";
+import tagRouter from "./routes/TagRouter.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -34,6 +35,7 @@ app.use("/users", userRouter);
 app.use("/blogs", postRouter);
 app.use("/likes", likeRouter);
 app.use("/auth", authRouter);
+app.use("/tags", tagRouter);
 
 // this route gets user info using the jwt token
 app.get("/auth/@me", isAuthenticated, getProfile);

@@ -1,6 +1,10 @@
+import { set } from "mongoose";
+import dbInfo from "../models/DbInfo.js";
 import Post from "../models/Post.js";
+import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
+import { createShortId, getNextTagId } from "../utils/tools.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -73,8 +77,49 @@ async function createTestPosts(req, res) {
   }
 }
 
-// export const createNewPost = async (req, res) => {
-//   const userId
-// }
+export const createNewPost = async (req, res) => {
+  const userId = req.userId;
+  const tagList = [];
+  const { title, text, tags, image } = req.body;
+  if (!title || !text || !tags) {
+    return res.status(400).json({ message: "Not enough data" });
+  }
+
+  console.log({ title, text, tags, image });
+
+  for (const tag of tags) {
+    const tagInfo = await Tag.findOne({ name: tag }).exec();
+    if (tagInfo) {
+      tagList.push(tagInfo._id);
+    } else {
+      const _id = await getNextTagId();
+      const newTag = await Tag({ name: tag, _id });
+      await newTag.save();
+      tagList.push(newTag._id);
+    }
+  }
+  try {
+    const post = new Post({
+      title,
+      text,
+      user: userId,
+      tags: tagList,
+      slug: `${title.toLowerCase().replace(/\s+/g, "-")}-${createShortId()}`,
+    });
+    console.log(post);
+    await post.save();
+    return res.status(200).json({ post });
+  } catch (err) {
+    const statusCode = err.status || 500;
+    return res.sendStatus(statusCode);
+  }
+};
+
+export const getPostBySlug = async (req, res) => {
+  const slug = req.params.slug;
+  if (!slug) return res.sendStatus(404);
+
+  const post = await Post.findOne({ slug });
+};
 
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };

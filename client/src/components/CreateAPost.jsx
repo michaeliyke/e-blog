@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { request } from "../util/Tools";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
@@ -58,19 +59,17 @@ export function CreateAPost() {
     eventObj.preventDefault();
     const postData = {
       title,
-      content,
-      tags,
+      text: content,
+      tags: tags.map((tag) => tag.name),
       image: imagePreview,
     };
     console.log("Post submitted:", postData);
-
-    // Submit form
-    // Clear form details
-    // setTitle("");
-    // setTags([]);
-    // setInput("");
-    // setContent("");
-    // setImagePreview(null);
+    request
+      .post("http://127.0.0.1:3000/blogs/new", postData)
+      .then(() => {
+        window.location.href = "/";
+      })
+      .catch((err) => console.log(err));
   }
 
   // handle the separation of tags

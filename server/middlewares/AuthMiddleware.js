@@ -12,6 +12,8 @@ export const isAuthenticated = async (req, res, next) => {
     if (await User.exists({ _id: userId })) {
       req.userId = userId;
       next();
+    } else {
+      return res.status(401).json({ message: "UNAUTHORIZED" });
     }
   } catch (err) {
     console.log("JWT Error: \\/ \\/ \\/ \\/\n", err);

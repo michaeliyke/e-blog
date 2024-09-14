@@ -53,7 +53,7 @@ export const MiddleSide = () => {
         </p>
         <button
           className="bg-blue-500 text-white w-full py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-          onClick={() => (window.location.href = "/posts/create")}
+          onClick={() => (window.location.href = "/post/new")}
         >
           <span>Create Post</span>
         </button>
