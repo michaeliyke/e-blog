@@ -17,7 +17,7 @@ export function ContextProvider({ children }) {
   // get 1 page of blog from db
   useEffect(() => {
     console.log("back");
-    fetch("http://127.0.0.1:3000/api/blogs/page/1")
+    fetch("http://127.0.0.1:3000/blogs/page/1")
       .then((response) => {
         return response.json();
       })

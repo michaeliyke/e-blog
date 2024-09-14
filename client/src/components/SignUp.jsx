@@ -4,12 +4,16 @@ import { FcGoogle } from "react-icons/fc";
 import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
 import { formValidator } from "../util/Tools";
 import { register } from "../util/Tools";
-import { useContext } from "react";
-import { DataContext } from "../data/Context";
+import {
+  toggleSignUp,
+  clearSign,
+  toggleSignIn,
+} from "../state/appSlice/appSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export const SignUp = () => {
-  const { visible, setVisible } = useContext(DataContext);
-  const cardisVisible = visible.signup;
+  const dispatch = useDispatch();
+  const cardisVisible = useSelector((state) => state.app.card.signup);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(<br />);
   const [formData, setFormData] = useState({
@@ -29,6 +33,14 @@ export const SignUp = () => {
     });
   };
 
+  const clearPopUp = () => {
+    dispatch(clearSign());
+  };
+
+  const switchToSignIn = () => {
+    dispatch(toggleSignUp());
+  };
+
   const handleSubmit = (e) => {
     console.log(formData);
     e.preventDefault();
@@ -39,10 +51,7 @@ export const SignUp = () => {
     console.log(formData);
     register(formData).then((status) => {
       if (status === 201) {
-        setVisible({
-          signin: true,
-          signup: false,
-        });
+        dispatch(toggleSignIn());
       } else if (status === 409) {
         setError("** Email already used **");
       }
@@ -57,18 +66,13 @@ export const SignUp = () => {
     });
   };
 
-  const handlePopUp = (signin = false, signup = false) => {
-    setVisible({ signin, signup });
-  };
   return (
     <>
       <div
         className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
           cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => {
-          handlePopUp();
-        }}
+        onClick={clearPopUp}
       ></div>
       <div
         className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
@@ -173,9 +177,7 @@ export const SignUp = () => {
         <span className="text-sm text-center">
           Already have an account:{" "}
           <button
-            onClick={() => {
-              handlePopUp(true, false);
-            }}
+            onClick={switchToSignIn}
             className="my-3 underline underline-offset-2 text-[16px] text-sky-300"
           >
             Sign in

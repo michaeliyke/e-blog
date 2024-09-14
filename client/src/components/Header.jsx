@@ -1,20 +1,18 @@
-import { useContext } from "react";
 import { SignUp } from "./SignUp";
 import { SignIn } from "./SignIn";
-import { DataContext } from "../data/Context";
-import { useSelector } from "react-redux";
 import { UserSettings } from "./UserSettings";
+import { toggleSignIn } from "../state/appSlice/appSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Header = () => {
-  // use useContext to get and set the state of the sign cards
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { setVisible } = useContext(DataContext);
+  const dispatch = useDispatch();
+
   const toggleFormPopUp = () => {
-    setVisible({
-      signin: true,
-      signup: false,
-    });
+    // prompt the login card
+    dispatch(toggleSignIn());
   };
+
   return (
     <header className="h-16 w-full">
       {!isAuthenticated && (

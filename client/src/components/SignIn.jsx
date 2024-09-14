@@ -2,23 +2,27 @@ import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
-import { useContext } from "react";
-import { DataContext } from "../data/Context";
 import { signInFormValidator } from "../util/Tools";
 import { login } from "../util/Tools";
+import { toggleSignUp, clearSign } from "../state/appSlice/appSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export const SignIn = () => {
-  const { visible, setVisible } = useContext(DataContext);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState(<br />);
-  const cardisVisible = visible.signin;
+  const cardisVisible = useSelector((state) => state.app.card.signin);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handlePopUp = (signin = false, signup = false) => {
-    setVisible({ signin, signup });
+  const clearPopUp = () => {
+    dispatch(clearSign());
+  };
+
+  const switchToSignUp = () => {
+    dispatch(toggleSignUp());
   };
 
   const handleCheckBox = (e) => {
@@ -49,9 +53,7 @@ export const SignIn = () => {
         className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
           cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => {
-          handlePopUp();
-        }}
+        onClick={clearPopUp}
       ></div>
       <div
         className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
@@ -104,9 +106,7 @@ export const SignIn = () => {
         <span className="text-sm text-center">
           You don&apos;t have an account:{" "}
           <button
-            onClick={() => {
-              handlePopUp(false, true);
-            }}
+            onClick={switchToSignUp}
             className="my-3 underline underline-offset-2 text-[16px] text-sky-300"
           >
             Register

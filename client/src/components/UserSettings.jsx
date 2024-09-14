@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { clearUser } from "../state/AuthSlice/AuthSlice";
 import profilePic from "../../public/profile.svg";
 import logOutPic from "../../public/logout2.svg";
@@ -8,6 +8,7 @@ import { deleteCookie } from "../util/Tools";
 export const UserSettings = () => {
   const { user } = useSelector((state) => state.auth);
   const [showOptions, setShowOptions] = useState(false);
+  const dispatch = useDispatch();
   const optionsRef = useRef(null);
   const triggerRef = useRef(null);
 
@@ -17,7 +18,7 @@ export const UserSettings = () => {
 
   const handleLogOut = () => {
     deleteCookie("_token");
-    clearUser();
+    dispatch(clearUser());
     window.location.href = "/";
   };
 
