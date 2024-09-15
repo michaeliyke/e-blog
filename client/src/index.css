@@ -77,15 +77,15 @@ input[type="checkbox"] {
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */
-.scrool__style::-webkit-scrollbar {
+.scroll__style::-webkit-scrollbar {
   width: 8px; /* Width of the scrollbar */
 }
 
-.scrool__style::-webkit-scrollbar-track {
+.scroll__style::-webkit-scrollbar-track {
   background: #f1f1f1; /* Track color */
 }
 
-.scrool__style::-webkit-scrollbar-thumb {
+.scroll__style::-webkit-scrollbar-thumb {
   background: #888; /* Thumb color */
   border-radius: 10px; /* Rounded corners for the thumb */
 }
