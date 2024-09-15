@@ -12,11 +12,11 @@ export const getComments = async (req, res) => {
       .select("comments")
       .populate({
         path: "comments.ids",
+        populate: {
+          path: "user",
+          select: "firstname lastname email",
+        },
         option: { limit: limit, skip: skip },
-      })
-      .populate({
-        path: "comments.ids.user",
-        select: "firstname lastname email",
       })
       .lean();
     if (!post) return res.status(400).json({ message: "Invalid postId" });
@@ -58,7 +58,7 @@ export const makeComment = async (req, res) => {
       }
     });
 
-    return res.json({ count: commentCount, message: "successful" });
+    return res.sendStatus(201);
   } catch (err) {
     if (err.statusCode === 400)
       return res.status(400).json({ message: err.message });
