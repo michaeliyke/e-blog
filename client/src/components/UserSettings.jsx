@@ -77,7 +77,9 @@ export const UserSettings = () => {
           <ul className="font-medium text-[15px]">
             <li className="hover:bg-gray-300 pl-3 py-2 grid grid-cols-[20px_1fr] items-center">
               <img src={profilePic} width={15} height={15} />
-              <button className="ml-1 text-left">Profile</button>
+              <button className="ml-1 text-left" onClick={() => window.location.href = "/profile"}>
+				Profile
+				</button>
             </li>
             <li className="hover:bg-gray-300 pl-3 py-2 grid grid-cols-[20px_1fr] items-center">
               <img src={logOutPic} width={16} height={16} />
