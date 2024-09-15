@@ -6,6 +6,7 @@ import axios from "axios";
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [tags, setTags] = useState([]);
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
@@ -108,18 +109,24 @@ export function CreateAPost() {
   // Handle form submission
   function handleSubmit(eventObj) {
     eventObj.preventDefault();
+    if (isLoading) return;
     const postData = {
       title,
       text: content,
       tags: tags.map((tag) => tag.name),
       image: imagePreview,
     };
+    setIsLoading(true);
     request
       .post("http://127.0.0.1:3000/blogs/new", postData)
       .then(() => {
         window.location.href = "/";
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        alert("make sure you fill all fields");
+      });
   }
 
   // handle the separation of tags
@@ -263,9 +270,43 @@ export function CreateAPost() {
       <div className="max-w-[900px] w-[90%] h-15 border-t-2 border-gray-400  bottom-0 py-5 px-5 flex bg-white z-10">
         <button
           onClick={handleSubmit}
-          className=" bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded mr-2"
+          className=" bg-blue-700 hover:bg-blue-900 text-white font-bold w-[130px] rounded mr-2
+          flex space-x-2 justify-center items-center"
         >
-          Publish
+          {isLoading ? (
+            <>
+              <svg
+                className="inline size-6 me-1 text-white animate-spin"
+                aria-hidden="true"
+                role="status"
+                viewBox="-2.4 -2.4 20.80 20.80"
+                xmlns="http://www.w3.org/2000/svg"
+                fill=""
+                stroke="#fff"
+                strokeWidth="0.544"
+              >
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <g fill="#fff" fillRule="evenodd" clipRule="evenodd">
+                    <path
+                      d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z"
+                      fill="#fff"
+                      opacity=".2"
+                    ></path>
+                    <path d="M7.25.75A.75.75 0 018 0a8 8 0 018 8 .75.75 0 01-1.5 0A6.5 6.5 0 008 1.5a.75.75 0 01-.75-.75z"></path>{" "}
+                  </g>{" "}
+                </g>
+              </svg>
+              Posting ...
+            </>
+          ) : (
+            "Publish"
+          )}
         </button>
         {!imagePreview ? (
           <button
