@@ -5,7 +5,7 @@ const jwtSecret = process.env["JWT_SECRET"] || "create a new secret";
 
 export const createJwtToken = async (payload) => {
   // create a JWT token
-  return jwt.sign(payload, jwtSecret, { expiresIn: "1h" });
+  return jwt.sign(payload, jwtSecret, { expiresIn: "15d" });
 };
 
 export const verifyToken = async (token) => {
