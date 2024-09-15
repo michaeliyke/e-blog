@@ -3,6 +3,6 @@ import { getLikes } from "../controllers/LikeController.js";
 
 const likeRouter = Router();
 
-likeRouter.get("/", getLikes);
+// likeRouter.get("/", getLikes);
 
 export default likeRouter;

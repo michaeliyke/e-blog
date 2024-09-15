@@ -9,7 +9,7 @@ import {
   // createBlog,
   // updateBlog,
 } from "../controllers/PostController.js";
-import { likeUnlike } from "../controllers/LikeController.js";
+import { getLikes, likeUnlike } from "../controllers/LikeController.js";
 import Post from "../models/Post.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
 import {
@@ -36,7 +36,9 @@ postRouter.get("/h/:slug", getPostBySlug);
 // get post by its id
 postRouter.get("/id/:id", getPostById);
 
-postRouter.post("/likes", isAuthenticated, likeUnlike);
+postRouter.post("/:id/likes", isAuthenticated, likeUnlike);
+
+postRouter.get("/:id/likes", getLikes);
 
 // get comments on a post
 postRouter.get("/:postId/comments", getComments);

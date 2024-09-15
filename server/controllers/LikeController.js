@@ -3,27 +3,19 @@ import Comment from "../models/Comment.js";
 import { Reply } from "../models/Reply.js";
 
 export const likeUnlike = async (req, res) => {
-  console.log("like");
   const userId = req.userId;
-  const postId = req.query.postId;
-  const commentId = req.query.commentId;
-  const replyId = req.query.replyId;
 
-  let model;
-  let id;
+  const model = {
+    "/blogs": Post,
+    "/comments": Comment,
+    "/replies": Reply,
+  }[req.baseUrl];
 
-  if (postId) {
-    model = Post;
-    id = postId;
-  } else if (commentId) {
-    model = Comment;
-    id = commentId;
-  } else if (replyId) {
-    model = Reply;
-    id = replyId;
-  } else {
-    return res.status(400).json({ message: "No content tye found!" });
+  if (!model) {
+    return res.status(400).json({ message: "No content type found!" });
   }
+
+  const id = req.params.id;
 
   try {
     const content = await model.findById(id, "likes");
@@ -55,27 +47,20 @@ export const likeUnlike = async (req, res) => {
 };
 
 export const getLikes = async (req, res) => {
-  const postId = req.query.postId;
-  const commentId = req.query.commentId;
-  const replyId = req.query.replyId;
+  const model = {
+    "/blogs": Post,
+    "/comments": Comment,
+    "/replies": Reply,
+  }[req.baseUrl];
+
+  if (!model) {
+    return res.status(400).json({ message: "No content type found!" });
+  }
+
+  const id = req.params.id;
+
   const skip = req.query.skip;
   const limit = req.query.limit;
-
-  let model;
-  let id;
-
-  if (postId) {
-    model = Post;
-    id = postId;
-  } else if (commentId) {
-    model = Comment;
-    id = commentId;
-  } else if (replyId) {
-    model = Reply;
-    id = replyId;
-  } else {
-    return res.status(400).json({ message: "No content tye found!" });
-  }
 
   try {
     const content = await model
