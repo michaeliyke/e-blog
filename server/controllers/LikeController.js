@@ -9,8 +9,6 @@ export const likeUnlike = async (req, res) => {
   const commentId = req.query.commentId;
   const replyId = req.query.replyId;
 
-  console.log({ userId, postId, commentId, replyId });
-
   let model;
   let id;
 
@@ -46,7 +44,6 @@ export const likeUnlike = async (req, res) => {
       content.likes.users.push(userId);
       content.likes.count++;
     }
-    console.log(content);
     await content.save();
     return res.json({
       likes: content.likes.count,
@@ -58,7 +55,7 @@ export const likeUnlike = async (req, res) => {
 };
 
 export const getLikes = async (req, res) => {
-  const postId = req.query.id;
+  const postId = req.query.postId;
   const commentId = req.query.commentId;
   const replyId = req.query.replyId;
   const skip = req.query.skip;
