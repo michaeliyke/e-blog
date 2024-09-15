@@ -2,8 +2,12 @@ import { Router } from "express";
 import Tag from "../models/Tag.js";
 import dbInfo from "../models/DbInfo.js";
 import { getNextTagId } from "../utils/tools.js";
+import { autoComplete } from "../controllers/TagConntroller.js";
 
 const tagRouter = Router();
+
+tagRouter.get("/suggest", autoComplete);
+
 tagRouter.post("/", async (req, res) => {
   const { tag } = req.body;
   console.log("create tag");

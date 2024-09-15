@@ -1,5 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { request } from "../util/Tools";
+import { debounce } from "lodash";
+import axios from "axios";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
@@ -8,7 +10,40 @@ export function CreateAPost() {
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [tagSuggestions, setTagSuggestions] = useState([]);
+  const [displaySuggestions, setDisplaySuggestions] = useState(false);
+  const [suggestionsStyle, setSuggestionsStyle] = useState({ display: "none" });
   const textAreaRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // we use useMemo
+  const suggest = useMemo(
+    () =>
+      debounce(async (name) => {
+        // console.log("search");
+        try {
+          const suggestionUrl = new URL("http://127.0.0.1:3000/tags/suggest");
+          suggestionUrl.searchParams.set("tag", name);
+          const { data } = await axios.get(suggestionUrl);
+          setTagSuggestions(
+            data.filter(
+              (newTag) => !tags.map((tag) => tag.name).includes(newTag.name)
+            )
+          );
+        } catch (err) {
+          console.log({ err });
+        }
+      }, 200), // 200 ms delay
+    [tags]
+  );
+
+  useEffect(() => {
+    if (tagSuggestions.length > 0 && displaySuggestions) {
+      setSuggestionsStyle({ display: "block" });
+    } else if (displaySuggestions) {
+      setSuggestionsStyle({ display: "none" });
+    }
+  }, [displaySuggestions, tagSuggestions]);
 
   // Add a tag when the user types a space or a comma
   function handleInputChange(eventObj) {
@@ -21,6 +56,8 @@ export function CreateAPost() {
       setInput(""); // Clear the input after adding the tag
     } else {
       setInput(value); // Continue typing
+      if (value) suggest(value);
+      else setTagSuggestions([]);
     }
   }
 
@@ -54,6 +91,20 @@ export function CreateAPost() {
     setImagePreview(null);
   }
 
+  const handleSuggestion = (e, suggestion = null) => {
+    let value;
+    if (suggestion) {
+      value = suggestion.name.trim();
+    } else {
+      value = e.currentTarget.getAttribute("data-value").trim();
+    }
+    setTags([...tags, { id: tags.length, name: value }]);
+    setInput("");
+    setTagSuggestions([]);
+    if (tags.length === 4) textAreaRef.current.focus();
+    else inputRef.current.focus();
+  };
+
   // Handle form submission
   function handleSubmit(eventObj) {
     eventObj.preventDefault();
@@ -63,7 +114,6 @@ export function CreateAPost() {
       tags: tags.map((tag) => tag.name),
       image: imagePreview,
     };
-    console.log("Post submitted:", postData);
     request
       .post("http://127.0.0.1:3000/blogs/new", postData)
       .then(() => {
@@ -73,6 +123,7 @@ export function CreateAPost() {
   }
 
   // handle the separation of tags
+  //
   function handleKeyDown(eventOb) {
     if (eventOb.key === " " || eventOb.key === "," || eventOb.key === "Enter") {
       eventOb.preventDefault();
@@ -80,13 +131,23 @@ export function CreateAPost() {
         setTags([...tags, { id: tags.length, name: input.trim() }]);
         setInput("");
       }
+    } else if (eventOb.key === "Tab") {
+      eventOb.preventDefault();
+      if (tagSuggestions[0]) handleSuggestion(eventOb, tagSuggestions[0]);
+      else if (input) handleSuggestion(eventOb, { name: input });
+    } else if (eventOb.key === "Backspace") {
+      if (!input && tags.length !== 0) {
+        eventOb.preventDefault();
+        setInput(tags[tags.length - 1].name);
+        setTags(tags.slice(0, -1));
+      }
     }
   }
 
   return (
     <div className="w-full flex flex-col items-center h-full">
       {/* Preview image when selected */}
-      <div className="mt-10 flex-1 max-w-[900px] w-[90%] overflow-y-scroll scrool__style px-5">
+      <div className="mt-10 flex-1 max-w-[900px] w-[90%] overflow-y-scroll scroll__style px-5">
         {imagePreview && (
           <div className="flex justify-start mb-0 gap-6 max-h-[150px]">
             <img
@@ -111,7 +172,7 @@ export function CreateAPost() {
         {/* Textarea for post title and tags */}
         <div className="border-2 shadow-md border-gray-300 rounded-md p-4">
           <textarea
-            className="scrool__style mt-1  text-ellipsis  w-full h-20 focus:outline-none appearance-none resize-none text-2xl font-poppins font-medium"
+            className="scroll__style mt-1  text-ellipsis  w-full h-20 focus:outline-none appearance-none resize-none text-2xl font-poppins font-medium"
             placeholder="New post title here..."
             onChange={(eventObj) => setTitle(eventObj.target.value)}
             value={title}
@@ -145,13 +206,37 @@ export function CreateAPost() {
               ))}
             </div>
             {tags.length < 4 ? (
-              <input
-                className="ml-3 flex-1 w-auto text-sm focus:outline-none  rounded appearance-none "
-                placeholder="Add up to 4 tags"
-                value={input}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-              />
+              <div>
+                <input
+                  className="ml-3 flex-1 w-auto text-sm focus:outline-none  rounded appearance-none"
+                  placeholder="Add up to 4 tags"
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  maxLength={20}
+                  onFocus={() => setDisplaySuggestions(true)}
+                  onBlur={() => setDisplaySuggestions(false)}
+                  ref={inputRef}
+                />
+                <div
+                  style={suggestionsStyle}
+                  className="scroll__style absolute border border-black h-auto max-h-40 w-44 bg-slate-100 rounded-md shadow-lg font-poppins
+                text-[15px] overflow-y-scroll py-1"
+                >
+                  <ul>
+                    {tagSuggestions.map((tag) => (
+                      <li
+                        className="py-1 px-2 hover:bg-slate-300"
+                        onClick={handleSuggestion}
+                        key={tag._id}
+                        data-value={tag.name}
+                      >
+                        #{tag.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             ) : (
               <span className="">
                 <p className="ml-3 text-sm text-gray-500">
@@ -167,7 +252,7 @@ export function CreateAPost() {
           <hr className="mb-5 border-t-[3px] border-gray-200" />
           <textarea
             ref={textAreaRef}
-            className="scrool__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none "
+            className="scroll__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none "
             placeholder="Start Writing ..."
             onChange={(e) => setContent(e.target.value)}
             value={content}

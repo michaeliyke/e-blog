@@ -27,6 +27,14 @@ export const checkPassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
+export const stringToSlug = (str) => {
+  let newStr = str.toLowerCase();
+  newStr = newStr.replace(/[^a-zA-Z0-9\s]/g, "");
+  newStr = newStr.replace(/\s+/g, "-");
+  newStr += `-${createShortId()}`;
+  return newStr;
+};
+
 export const getNextTagId = async () => {
   const info = await dbInfo.findOneAndUpdate(
     {},

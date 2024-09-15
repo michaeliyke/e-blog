@@ -1,12 +1,8 @@
-import { set } from "mongoose";
-import dbInfo from "../models/DbInfo.js";
 import Post from "../models/Post.js";
 import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
-import { createShortId, getNextTagId } from "../utils/tools.js";
-import { populate } from "dotenv";
-import { Types } from "mongoose";
+import { getNextTagId, stringToSlug } from "../utils/tools.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -17,7 +13,6 @@ async function allBlogs(req, res) {
 async function getPostById(req, res) {
   // get a post by its id
   const id = req.params.id;
-  // console.log(req.query);
   const post = await Post.findById(id, "_id title text createdAt").exec();
   if (!post) {
     return res.status(404).json({ status: "post not found" });
@@ -28,9 +23,6 @@ async function getPostById(req, res) {
 async function getPageOfBlogs(req, res) {
   // gets a page of 10 posts
   const userId = req.userId;
-  console.log(userId);
-
-  // console.log(req);
   try {
     const pageNumber = parseInt(req.params.page) || 1;
     const limit = 10;
@@ -40,14 +32,13 @@ async function getPageOfBlogs(req, res) {
       {},
       "_id title text user slug tags createdAt likes comments.count"
     )
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("user", "firstname lastname href profilePicture -_id")
       .populate("tags", "name")
       .exec();
-    // console.log(blogsList);
     let data;
-    // console.log(userId);
     data = await Promise.all(
       blogsList.map(async (blog) => {
         const liked = userId ? blog.likes.users.includes(userId) : false;
@@ -56,10 +47,8 @@ async function getPageOfBlogs(req, res) {
         return {
           blog: { ...newBlog, liked },
         };
-        // console.log({ blog, user });
       })
     );
-    // console.log(data);
     return res.status(200).json(data);
   } catch (err) {
     console.log(err);
@@ -96,23 +85,25 @@ async function createTestPosts(req, res) {
 
 export const createNewPost = async (req, res) => {
   const userId = req.userId;
+  let currentTag;
   const tagList = [];
+  const tagObjects = [];
   const { title, text, tags, image } = req.body;
   if (!title || !text || !tags) {
     return res.status(400).json({ message: "Not enough data" });
   }
 
-  console.log({ title, text, tags, image });
-
   for (const tag of tags) {
-    const tagInfo = await Tag.findOne({ name: tag }).exec();
-    if (tagInfo) {
-      tagList.push(tagInfo._id);
+    currentTag = await Tag.findOne({ name: tag }).exec();
+    if (currentTag) {
+      tagList.push(currentTag._id);
+      tagObjects.push(currentTag);
     } else {
       const _id = await getNextTagId();
-      const newTag = await Tag({ name: tag, _id });
-      await newTag.save();
-      tagList.push(newTag._id);
+      currentTag = await Tag({ name: tag, _id });
+      await currentTag.save();
+      tagList.push(currentTag._id);
+      tagObjects.push(currentTag);
     }
   }
   try {
@@ -121,10 +112,13 @@ export const createNewPost = async (req, res) => {
       text,
       user: userId,
       tags: tagList,
-      slug: `${title.toLowerCase().replace(/\s+/g, "-")}-${createShortId()}`,
+      slug: stringToSlug(title),
     });
-    console.log(post);
     await post.save();
+    for (const tag of tagObjects) {
+      tag.count++;
+      tag.save();
+    }
     return res.status(200).json({ post });
   } catch (err) {
     const statusCode = err.status || 500;
@@ -140,7 +134,6 @@ export const getPostBySlug = async (req, res) => {
     .populate("user", "firstname lastname href profilePicture.thumbnail -_id")
     .populate("tags", "name")
     .exec();
-  // console.log(post);
   return res.json({ post });
 };
 
