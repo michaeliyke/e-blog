@@ -8,6 +8,7 @@ export default {
         poppins: ["Poppins", "sans-serif"],
         comorant: ["Cormorant Garamond", "sans-serif"],
         pompiere: ["Pompiere", "sans-serif"],
+        Teko: ["Teko", "sans-serif"],
       },
     },
   },

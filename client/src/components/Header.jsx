@@ -3,8 +3,10 @@ import { SignIn } from "./SignIn";
 import { UserSettings } from "./UserSettings";
 import { toggleSignIn } from "../state/appSlice/appSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
+  const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -21,12 +23,26 @@ export const Header = () => {
           <SignUp />
         </>
       )}
-      <div className="flex items-center border-b-2 border-black bg-white h-16  justify-between p-1">
+      <div
+        onClick={() => navigate("/")}
+        className="flex items-center border-b-2 border-black h-16  justify-between p-1
+      bg-[#f2f2f2]"
+      >
         <div
-          className="flex items-center border border-black overflow-hidden h-9
-        w-[90px] rounded-md ml-4"
+          className="flex items-center justify-center pb-0.5 h-auto bg-[#b5b5b5]
+        w-[120px] rounded-md ml-4 z-10 cursor-pointer border-2 border-[#8e8e8e]
+        home__btn hover:bg-[#969696]"
         >
-          <img src="/E.png" width={200} height={200} alt="pic" />
+          <span className="relative top-1 font-Teko text-[40px] font-bold">
+            <p style={{ lineHeight: 0.9 }}>Blog</p>
+          </span>
+          <img
+            className="relative bottom-1 size-9 home__img_btn"
+            src="/pic_1.png"
+            width={200}
+            height={200}
+            alt="pic"
+          />
         </div>
         <div
           className="flex items-center border border-black w-[40%] h-9

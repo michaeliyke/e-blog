@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Pompiere&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -14,7 +15,8 @@ body {
 }
 
 body {
-  background-color: #cecece;
+  background-color: #fff;
+  /* background-color: #cecece; */
   background-image: url("/public/noisy-texture-100x100.png");
   /* background-size: cover; */
   z-index: 5;
@@ -88,4 +90,8 @@ input[type="checkbox"] {
 .scroll__style::-webkit-scrollbar-thumb {
   background: #888; /* Thumb color */
   border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.home__btn:hover .home__img_btn {
+  @apply animate-bounce;
 }
