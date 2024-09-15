@@ -110,6 +110,13 @@ export function CreateAPost() {
   function handleSubmit(eventObj) {
     eventObj.preventDefault();
     if (isLoading) return;
+    if (!title) {
+      alert("Please enter a title");
+      return;
+    } else if (!content) {
+      alert("Please write a post");
+      return;
+    }
     const postData = {
       title,
       text: content,
