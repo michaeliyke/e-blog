@@ -4,11 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import TogglePasswordVisibility from "../util/TogglePasswordVisibility";
 import { formValidator } from "../util/Tools";
 import { register } from "../util/Tools";
-import {
-  toggleSignUp,
-  clearSign,
-  toggleSignIn,
-} from "../state/appSlice/appSlice";
+import { clearSign, toggleSignIn } from "../state/appSlice/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export const SignUp = () => {
