@@ -1,5 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { request } from "../util/Tools";
+import { debounce } from "lodash";
+import axios from "axios";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
@@ -8,7 +10,23 @@ export function CreateAPost() {
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [tagSuggestions, setTagSuggestions] = useState([]);
   const textAreaRef = useRef(null);
+  const suggestionUrl = new URL("http://127.0.0.1:3000/tags/suggest");
+  const suggest = debounce(async (name) => {
+    try {
+      suggestionUrl.searchParams.set("tag", name);
+      console.log(suggestionUrl);
+      const data = await axios.get(suggestionUrl);
+      setTagSuggestions((prev) => [...prev, ...data.data]);
+    } catch (err) {
+      console.log({ err });
+    }
+  }, 500);
+
+  useEffect(() => {
+    console.log(tagSuggestions);
+  }, [tagSuggestions]);
 
   // Add a tag when the user types a space or a comma
   function handleInputChange(eventObj) {
@@ -21,6 +39,7 @@ export function CreateAPost() {
       setInput(""); // Clear the input after adding the tag
     } else {
       setInput(value); // Continue typing
+      suggest(value);
     }
   }
 
@@ -151,6 +170,7 @@ export function CreateAPost() {
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
+                maxLength={20}
               />
             ) : (
               <span className="">
