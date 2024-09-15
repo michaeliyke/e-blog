@@ -12,6 +12,11 @@ import {
 import { likeUnlike } from "../controllers/LikeController.js";
 import Post from "../models/Post.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
+import {
+  getComments,
+  makeComment,
+  modComment,
+} from "../controllers/CommentController.js";
 
 const postRouter = Router();
 
@@ -32,6 +37,15 @@ postRouter.get("/h/:slug", getPostBySlug);
 postRouter.get("/id/:id", getPostById);
 
 postRouter.post("/likes", isAuthenticated, likeUnlike);
+
+// get comments on a post
+postRouter.get("/:postId/comments", getComments);
+
+// comment on a post
+postRouter.post("/:postId/comments", isAuthenticated, makeComment);
+
+// edit or delete a comment
+postRouter.all("/:postId/comments/:commentId", isAuthenticated, modComment);
 
 // drop blogs collection
 postRouter.delete("/", async (req, res) => {
