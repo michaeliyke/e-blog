@@ -6,6 +6,9 @@ export const autoComplete = async (req, res) => {
   if (!tag) {
     return res.sendStatus(400);
   }
-  const tags = await Tag.find({ name: regex }, "name").limit(10).lean();
+  const tags = await Tag.find({ name: regex }, "name")
+    .sort({ count: -1 })
+    .limit(10)
+    .lean();
   return res.json(tags);
 };
