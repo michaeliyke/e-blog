@@ -38,7 +38,7 @@ export const SignUp = () => {
   };
 
   const switchToSignIn = () => {
-    dispatch(toggleSignUp());
+    dispatch(toggleSignIn());
   };
 
   const handleSubmit = (e) => {

@@ -50,10 +50,13 @@ const userSchema = new Schema(
     ],
     paginationToken: { type: String },
     profilePicture: {
+      thumbnail: {
+        type: String,
+        default: "https://i.ibb.co/YBcH51t/no-pic.png",
+      },
       original: { type: String },
       delete: { type: String },
     },
-    thumbnail: { type: String, default: "https://i.ibb.co/YBcH51t/no-pic.png" },
   },
   { timestamps: true }
 );

@@ -60,7 +60,7 @@ export const UserSettings = () => {
     <div className="relative">
       <figure onClick={handleShowOptions} ref={triggerRef}>
         <img
-          src={user.thumbnail}
+          src={user.profilePicture.thumbnail}
           className="rounded-full w-12 h-12 hover:shadow-xl transition-all duration-200 border-2 border-transparent hover:border-gray-500"
           alt="User Thumbnail"
         />

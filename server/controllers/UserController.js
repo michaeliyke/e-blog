@@ -2,14 +2,15 @@ import User from "../models/User.js";
 import { checkPassword, generateHref, hashPassword } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
+import Post from "../models/Post.js";
 
-export const getProfile = async (req, res) => {
+export const getAuthInfo = async (req, res) => {
   // get a user by id
   // or 404 (not found) status if teh user is not found
   const userId = req.userId;
   const user = await User.findById(
     userId,
-    "-_id firstname lastname email thumbnail"
+    "-_id firstname lastname profilePicture.thumbnail"
   ).exec();
   if (user) {
     if (!user.thumbnail) {
@@ -18,6 +19,31 @@ export const getProfile = async (req, res) => {
     return res.status(200).json({ user });
   }
   return res.status(404).json({ message: "User not found !" });
+};
+
+export const getUserProfile = async (req, res) => {
+  // get a user by id
+  // or 404 (not found) status if teh user is not found
+  const userId = req.userId;
+  const user = await User.findById(
+    userId,
+    "firstname lastname email profilePicture"
+  ).exec();
+  if (user) {
+    return res.status(200).json({ user });
+  }
+  return res.status(404).json({ message: "User not found !" });
+};
+
+export const getUserPosts = async (req, res) => {
+  const userId = req.userId;
+  const posts = await Post.find({ user: userId }, "_id")
+    .sort({ createdAt: -1 })
+    .lean();
+  if (!posts) {
+    return res.sendStatus(404);
+  }
+  return res.status(200).json({ posts });
 };
 
 export const loginUser = async (req, res) => {
