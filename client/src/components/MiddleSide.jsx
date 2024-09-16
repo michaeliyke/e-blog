@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PostStats } from "./PostStats";
 import { useSelector } from "react-redux";
+import { request } from "../util/Tools";
 
 export const MiddleSide = () => {
   const [data, setData] = useState([]);
@@ -10,14 +11,16 @@ export const MiddleSide = () => {
 
   // get all the blog and store then in data
   useEffect(() => {
-    fetch(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.length) return;
-        setData((prev) => [...prev, ...data]);
+    request
+      .get(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
+      .then((res) => {
+        if (!res.data.length) return;
+        setData((prev) => [...prev, ...res.data]);
+        console.log(data);
         setPageLoading(false);
-      });
-  }, [pageNumber]);
+      })
+      .catch((err) => console.log("err:", err));
+  }, [data, pageNumber]);
 
   useEffect(() => {
     // Function to check if the user is at the bottom of the page
