@@ -16,6 +16,7 @@ export const MiddleSide = () => {
       .then((res) => {
         if (!res.data.length) return;
         setData((prev) => [...prev, ...res.data]);
+        setPageNumber(pageNumber + 1);
         console.log(data);
         setPageLoading(false);
       })
