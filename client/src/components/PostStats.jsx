@@ -13,7 +13,7 @@ function CommentButton({ post }) {
   const [numOfComments, setNumOfComments] = useState(post.numOfComments);
 
   function gotToComments() {
-    window.location = `/posts/${urlenCode(post.title)}`;
+    window.location = `/posts/${urlenCode(post.slug)}`;
   }
 
   return (
