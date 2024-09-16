@@ -92,27 +92,23 @@ export const modComment = async (req, res) => {
     let comment;
     await session.withTransaction(async () => {
       comment = await Comment.findById(commentId, "user text").session(session);
-
-      const duplicate = await Comment.findOne({
-        text: req.body.text,
-        user: Types.ObjectId.createFromHexString(userId),
-        _id: { $ne: Types.ObjectId.createFromHexString(commentId) },
-      }).session(session);
-
-      if (!duplicate && comment && comment.user.toString() === userId) {
-        if (req.method === "PUT") {
-          comment.text = req.body.text;
-          await comment.save({ session });
+      if (comment && comment.user.toString() === userId) {
+        if (method === "PUT") {
+          if (comment.text !== req.body.text) {
+            comment.text = req.body.text;
+            await comment.save({ session });
+          }
           return;
         }
-
-        const post = await Post.findById(postId, "comments").session(session);
-        if (post && post.comments.ids.includes(comment._id)) {
-          post.comments.ids.pull(comment._id);
-          post.comments.count--;
-          await post.save({ session });
-          await comment.deleteOne({ session });
-          return;
+        if (method === "DELETE") {
+          const post = await Post.findById(postId, "comments").session(session);
+          if (post && post.comments.ids.includes(comment._id)) {
+            post.comments.ids.pull(comment._id);
+            post.comments.count--;
+            await post.save({ session });
+            await comment.deleteOne({ session });
+            return;
+          }
         }
       }
 
@@ -127,6 +123,7 @@ export const modComment = async (req, res) => {
   } catch (err) {
     if (err.statusCode === 400)
       return res.status(400).json({ message: err.message });
+    console.log(err);
     return res.status(500).json({ message: "server error" });
   } finally {
     session.endSession();
