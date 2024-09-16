@@ -1,13 +1,13 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 export const TrendingTagsCard = () => {
   const [trending, setTrending] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get("http://127.0.0.1:3000/tags/top");
+      const res = await axios.get('http://127.0.0.1:3000/tags/top');
       const data = res.data.topTags;
-      console.log(data);
+      //   console.log(data);
       setTrending(data);
     };
     fetchData();
@@ -23,8 +23,7 @@ export const TrendingTagsCard = () => {
           <li
             key={tag._id}
             className="px-2 py-1 bg-gray-200 rounded-full border border-gray-300 text-sm
-            hover:bg-indigo-200 hover:border-gray-500 "
-          >
+            hover:bg-indigo-200 hover:border-gray-500 ">
             {tag.name}
           </li>
         ))}

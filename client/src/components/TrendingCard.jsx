@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { FaGripfire } from "react-icons/fa6";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import { FaGripfire } from 'react-icons/fa6';
+import axios from 'axios';
 
 export const TrendingCard = () => {
   const [trending, setTrending] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get("http://127.0.0.1:3000/blogs/top-ten");
+      const res = await axios.get('http://127.0.0.1:3000/blogs/top-ten');
       const data = res.data.topPosts;
-      console.log(data);
+      //   console.log(data);
       setTrending(data);
     };
     fetchData();
@@ -21,14 +21,15 @@ export const TrendingCard = () => {
       </div>
       <ul className="list-none px-3 py-1 m-0 font-medium">
         {trending.map((post, index) => (
-          <li key={index} className="px-1 pb-0.5">
+          <li
+            key={index}
+            className="px-1 pb-0.5">
             <a href={`/posts/${post.slug}`}>
               <div className="flex items-center gap-2">
                 <FaGripfire color="red" />
                 <p
                   className="whitespace-nowrap overflow-hidden text-ellipsis
-                hover:underline "
-                >
+                hover:underline ">
                   {post.title}
                 </p>
               </div>
