@@ -14,7 +14,7 @@ export const getComments = async (req, res) => {
         path: "comments.ids",
         populate: {
           path: "user",
-          select: "firstname lastname email",
+          select: "firstname lastname email href profilePicture.thumbnail -_id",
         },
         option: { limit: limit, skip: skip },
       })
