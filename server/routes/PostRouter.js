@@ -58,7 +58,4 @@ postRouter.delete("/", async (req, res) => {
   return res.status(200).json({ status: "posts collection droped" });
 });
 
-// postRouter.post("/", createBlog);
-// postRouter.put("/:id", updateBlog);
-
 export default postRouter;

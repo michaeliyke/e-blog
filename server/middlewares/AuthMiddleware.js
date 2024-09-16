@@ -23,22 +23,4 @@ export const isAuthenticated = async (req, res, next) => {
     return next();
   }
   return res.status(401).json({ message: "UNAUTHORIZED" });
-
-  // if (!token || !token.startsWith("Bearer ")) {
-  //   // console.log("token from cookie:", token);
-  //   return res.status(401).json({ message: "UNAUTHORIZED" });
-  // }
-  // try {
-  //   const { userId } = await verifyToken(token.slice(7));
-  //   if (await User.exists({ _id: userId })) {
-  //     req.userId = userId;
-  //     next();
-  //   } else {
-  //     return res.status(401).json({ message: "UNAUTHORIZED" });
-  //   }
-  // } catch (err) {
-  //   console.log("JWT Error: \\/ \\/ \\/ \\/\n", err);
-  //   res.clearCookie("_token");
-  //   return res.status(401).json({ message: "UNAUTHORIZED" });
-  // }
 };

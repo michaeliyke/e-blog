@@ -6,6 +6,7 @@ import {
   getUserInfo,
   getUserProfile,
   getUserPosts,
+  updateUserPassword,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
@@ -15,15 +16,20 @@ const userRouter = Router();
 // get all users
 userRouter.get("/", getAllUsers);
 
-// get a user by userId or by slug
+// get a user by userId or by slug (for public users)
 userRouter.get("/info", getUserInfo);
 
 // update a user
-userRouter.put("/:id", updateUser);
+userRouter.put("/profile", isAuthenticated, updateUser);
 
+// get user info
 userRouter.get("/profile", isAuthenticated, getUserProfile);
 
+// get user posts
 userRouter.get("/posts", isAuthenticated, getUserPosts);
+
+// update user password
+userRouter.put("/pwd-ch", isAuthenticated, updateUserPassword);
 
 // drops the users collection
 userRouter.delete("/", async (req, res) => {

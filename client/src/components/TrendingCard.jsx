@@ -19,14 +19,14 @@ export const TrendingCard = () => {
         <h2 className="text-md font-bold text-center">Trending Posts</h2>
         <hr className="border-b-1 border-black" />
       </div>
-      <ul className="list-none px-3 py-1 m-0 font-medium">
+      <ul className="list-none px-3 py-1 font-medium text-sm">
         {trending.map((post, index) => (
           <li
             key={index}
             className="px-1 pb-0.5">
             <a href={`/posts/${post.slug}`}>
-              <div className="flex items-center gap-2">
-                <FaGripfire color="red" />
+              <div className="items-center grid grid-cols-[17px_auto]">
+                <FaGripfire color="red" className="-rotate-45" />
                 <p
                   className="whitespace-nowrap overflow-hidden text-ellipsis
                 hover:underline ">
