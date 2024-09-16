@@ -14,7 +14,7 @@ export const getComments = async (req, res) => {
         path: "comments.ids",
         populate: {
           path: "user",
-          select: "firstname lastname email",
+          select: "firstname lastname email href profilePicture.thumbnail -_id",
         },
         option: { limit: limit, skip: skip },
       })
@@ -31,34 +31,39 @@ export const makeComment = async (req, res) => {
   const postId = req.params.postId;
   const text = req.body.text;
 
-  let session = null;
+  let session;
   try {
     session = await startSession();
-
-    let commentCount;
+    let newComment;
+    let commentsCount;
     await session.withTransaction(async () => {
-      const post = await Post.findById(postId, "comments").session(session);
+      const post = await Post.findById(postId, "comments")
+        .populate({
+          path: "comments.ids",
+          select: "user text",
+        })
+        .session(session);
       if (!post) {
         const error = new Error("Invalid postId");
         error.statusCode = 400;
         throw error;
       }
-
-      const existingComment = post.comments.ids.some(
-        (comment) => comment.user.toString() === userId && comment.text === text
+      const alreadyExixts = post.comments.ids.some(
+        (comment) =>
+          comment.user.toString() === userId &&
+          comment.text === text &&
+          comment._id === (newComment && newComment._id)
       );
-      if (!existingComment) {
-        const comment = new Comment({ user: userId, text });
-        await comment.save({ session });
-
-        post.comments.ids.push(comment._id);
+      if (!alreadyExixts) {
+        newComment = new Comment({ user: userId, text });
+        await newComment.save({ session });
+        post.comments.ids.push(newComment._id);
         post.comments.count++;
         await post.save({ session });
-        commentCount = post.comments.count;
+        commentsCount = post.comments.count;
       }
     });
-
-    return res.sendStatus(201);
+    return res.status(201).json({ commentsCount, currentComment: newComment });
   } catch (err) {
     if (err.statusCode === 400)
       return res.status(400).json({ message: err.message });
@@ -87,27 +92,23 @@ export const modComment = async (req, res) => {
     let comment;
     await session.withTransaction(async () => {
       comment = await Comment.findById(commentId, "user text").session(session);
-
-      const duplicate = await Comment.findOne({
-        text: req.body.text,
-        user: Types.ObjectId(userId),
-        _id: { $ne: Types.ObjectId(commentId) },
-      }).session(session);
-
-      if (!duplicate && comment && comment.user.toString() === userId) {
-        if (req.method === "PUT") {
-          comment.text = req.body.text;
-          await comment.save({ session });
+      if (comment && comment.user.toString() === userId) {
+        if (method === "PUT") {
+          if (comment.text !== req.body.text) {
+            comment.text = req.body.text;
+            await comment.save({ session });
+          }
           return;
         }
-
-        const post = await Post.findById(postId, "comments").session(session);
-        if (post && post.comments.ids.includes(comment._id)) {
-          post.comments.ids.pull(comment._id);
-          post.comments.count--;
-          await post.save({ session });
-          await comment.deleteOne({ session });
-          return;
+        if (method === "DELETE") {
+          const post = await Post.findById(postId, "comments").session(session);
+          if (post && post.comments.ids.includes(comment._id)) {
+            post.comments.ids.pull(comment._id);
+            post.comments.count--;
+            await post.save({ session });
+            await comment.deleteOne({ session });
+            return;
+          }
         }
       }
 
@@ -122,6 +123,7 @@ export const modComment = async (req, res) => {
   } catch (err) {
     if (err.statusCode === 400)
       return res.status(400).json({ message: err.message });
+    console.log(err);
     return res.status(500).json({ message: "server error" });
   } finally {
     session.endSession();
