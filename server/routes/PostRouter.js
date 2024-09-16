@@ -6,6 +6,7 @@ import {
   getPostById,
   createNewPost,
   getPostBySlug,
+  getTopTen,
   // createBlog,
   // updateBlog,
 } from "../controllers/PostController.js";
@@ -48,6 +49,8 @@ postRouter.post("/:postId/comments", isAuthenticated, makeComment);
 
 // edit or delete a comment
 postRouter.all("/:postId/comments/:commentId", isAuthenticated, modComment);
+
+postRouter.get("/top-ten", getTopTen);
 
 // drop blogs collection
 postRouter.delete("/", async (req, res) => {

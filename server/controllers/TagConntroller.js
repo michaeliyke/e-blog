@@ -12,3 +12,11 @@ export const autoComplete = async (req, res) => {
     .lean();
   return res.json(tags);
 };
+
+export const getTopTags = async (req, res) => {
+  const topTags = await Tag.find({}, "name _id")
+    .sort({ count: -1 }) // Sort by most likes
+    .limit(30)
+    .lean();
+  return res.json({ topTags });
+};

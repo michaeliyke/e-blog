@@ -137,4 +137,17 @@ export const getPostBySlug = async (req, res) => {
   return res.json({ post });
 };
 
+export const getTopTen = async (req, res) => {
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const topPosts = await Post.find(
+    { createdAt: { $gte: oneWeekAgo } },
+    "title slug -_id"
+  )
+    .sort({ "likes.count": -1 }) // Sort by most likes
+    .limit(10)
+    .lean();
+  return res.json({ topPosts });
+};
+
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };
