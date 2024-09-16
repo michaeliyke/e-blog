@@ -168,19 +168,22 @@ export const createUsers = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const userId = req.params.id;
-  const { firstName, lastName, email } = req.body;
+  const userId = req.userId;
+  const { firstname, lastname, email } = req.body;
+  const newData = {};
+  if (firstname) newData.firstname = firstname;
+  if (lastname) newData.lastname = lastname;
+  if (email) newData.email = email;
 
   try {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { firstName, lastName, email },
-      { runValidators: true, new: true }
-    );
+    const user = await User.findByIdAndUpdate(userId, newData, {
+      runValidators: true,
+      new: true,
+    });
 
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    return res.json({ user });
+    await user.save();
+    return res.sendStatus(200);
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: "Email already exists" });
@@ -194,5 +197,30 @@ export const updateUser = async (req, res) => {
     }
     console.log(JSON.stringify(err));
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateUserPassword = async (req, res) => {
+  const userId = req.userId;
+  const { oldPassword, newPassword } = req.body;
+
+  if ((!oldPassword || !newPassword, !userId)) {
+    return res
+      .status(400)
+      .json({ message: "Old and new password are required" });
+  }
+
+  try {
+    const user = await User.findById(userId, "password").exec();
+    if (!(await checkPassword(oldPassword, user.password)))
+      return res.status(403).json({ message: "Invalid user password" });
+
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    user.save();
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ message: "Password update failed" });
   }
 };
