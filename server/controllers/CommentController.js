@@ -31,34 +31,39 @@ export const makeComment = async (req, res) => {
   const postId = req.params.postId;
   const text = req.body.text;
 
-  let session = null;
+  let session;
   try {
     session = await startSession();
-
-    let commentCount;
+    let newComment;
+    let commentsCount;
     await session.withTransaction(async () => {
-      const post = await Post.findById(postId, "comments").session(session);
+      const post = await Post.findById(postId, "comments")
+        .populate({
+          path: "comments.ids",
+          select: "user text",
+        })
+        .session(session);
       if (!post) {
         const error = new Error("Invalid postId");
         error.statusCode = 400;
         throw error;
       }
-
-      const existingComment = post.comments.ids.some(
-        (comment) => comment.user.toString() === userId && comment.text === text
+      const alreadyExixts = post.comments.ids.some(
+        (comment) =>
+          comment.user.toString() === userId &&
+          comment.text === text &&
+          comment._id === (newComment && newComment._id)
       );
-      if (!existingComment) {
-        const comment = new Comment({ user: userId, text });
-        await comment.save({ session });
-
-        post.comments.ids.push(comment._id);
+      if (!alreadyExixts) {
+        newComment = new Comment({ user: userId, text });
+        await newComment.save({ session });
+        post.comments.ids.push(newComment._id);
         post.comments.count++;
         await post.save({ session });
-        commentCount = post.comments.count;
+        commentsCount = post.comments.count;
       }
     });
-
-    return res.sendStatus(201);
+    return res.status(201).json({ commentsCount, currentComment: newComment });
   } catch (err) {
     if (err.statusCode === 400)
       return res.status(400).json({ message: err.message });
@@ -90,8 +95,8 @@ export const modComment = async (req, res) => {
 
       const duplicate = await Comment.findOne({
         text: req.body.text,
-        user: Types.ObjectId(userId),
-        _id: { $ne: Types.ObjectId(commentId) },
+        user: Types.ObjectId.createFromHexString(userId),
+        _id: { $ne: Types.ObjectId.createFromHexString(commentId) },
       }).session(session);
 
       if (!duplicate && comment && comment.user.toString() === userId) {
