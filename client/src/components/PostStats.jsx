@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from 'react';
 import {
   AiOutlineLike,
   AiFillLike,
   AiOutlineStar,
   AiFillStar,
-} from "react-icons/ai"; // Add AiFillLike for the filled icon
-import { FaRegComment } from "react-icons/fa";
-import { urlenCode, blogPostSchema } from "../util/basic";
-const log = console.log;
+} from 'react-icons/ai'; // Add AiFillLike for the filled icon
+import { FaRegComment } from 'react-icons/fa';
+import { urlenCode, blogPostSchema } from '../util/basic';
 
 function CommentButton({ post }) {
   post.numOfComments = post.numOfComments || 0;
@@ -18,9 +17,17 @@ function CommentButton({ post }) {
   }
 
   return (
-    <button className="flex items-center space-x-2" onClick={gotToComments}>
-      <span role="img" aria-label="comment" className="text-2xl">
-        <FaRegComment size={25} color="black" />
+    <button
+      className="flex items-center space-x-2"
+      onClick={gotToComments}>
+      <span
+        role="img"
+        aria-label="comment"
+        className="text-2xl">
+        <FaRegComment
+          size={25}
+          color="black"
+        />
       </span>
       <span className="text-black font-bold">Comment</span>
     </button>
@@ -36,73 +43,75 @@ function BookmarkButton({ post }) {
   }
 
   return (
-    <button className="flex items-center space-x-2" onClick={handleBookmark}>
+    <button
+      className="flex items-center space-x-2"
+      onClick={handleBookmark}>
       {bookmarked ? (
-        <AiFillStar size={25} color="green" />
+        <AiFillStar
+          size={25}
+          color="green"
+        />
       ) : (
-        <AiOutlineStar size={25} color="black" />
+        <AiOutlineStar
+          size={25}
+          color="black"
+        />
       )}
       <span className="text-black font-bold">
-        {bookmarked ? "Bookmarked" : "Bookmark"}
+        {bookmarked ? 'Bookmarked' : 'Bookmark'}
       </span>
     </button>
   );
 }
 
 function LikeButton({ post }) {
-  const [liked, setLiked] = useState(false);
-  const [numOfLikes, setNumOfLikes] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [liked, setLiked] = useState(post.liked || false);
+  const [numOfLikes, setNumOfLikes] = useState(post.likes.count || 0);
   const url = `http://127.0.0.1:3000/blogs/${post._id}/likes`;
 
   function handleLikeClick() {
-	const newLikedState = !liked;
+    const newLikedState = !liked;
 
-	// Update the state before sending the request
+    // Update the state before sending the request
     setLiked(newLikedState);
-	setNumOfLikes((prevNumOfLikes) => {
-		return newLikedState ? prevNumOfLikes + 1 : prevNumOfLikes - 1;
-	});
+    setNumOfLikes((prevNumOfLikes) => {
+      return newLikedState ? prevNumOfLikes + 1 : prevNumOfLikes - 1;
+    });
 
-	fetch(url, {
-		method: "POST",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	}).then((res) => res.json()).then((data) => {
-		setNumOfLikes(data.likes);
-	}).catch((error) => {
-		console.log("Error updating likes:", error);
-	});
+    fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setNumOfLikes(data.likes);
+      })
+      .catch((error) => {
+        console.log('Error updating likes:', error);
+      });
   }
-
-  if(post.likes.count > 0) {
-	  log("Liked: ", post.liked);
-	  log("Likes: ", post.likes.count);
-	}
-//   Simulate initial state update with delay using setTimeout
-useEffect(() => {
-	const timer = setTimeout(() => {
-		setLiked(post.liked);
-		setNumOfLikes(post.likes.count);
-		setLoading(false);
-	}, 1000);
-	return () => clearTimeout(timer);
-}, [post.liked, post.likes.count]);
-
- if (loading) {
-    return <div>Loading...</div>;
-  }
-
 
   return (
-    <button className="flex items-center space-x-2" onClick={handleLikeClick}>
-      <span role="img" aria-label="like" className="text-2xl">
+    <button
+      className="flex items-center space-x-2"
+      onClick={handleLikeClick}>
+      <span
+        role="img"
+        aria-label="like"
+        className="text-2xl">
         {liked ? (
-          <AiFillLike size={25} color="blue" />
+          <AiFillLike
+            size={25}
+            color="blue"
+          />
         ) : (
-          <AiOutlineLike size={25} color="black" />
+          <AiOutlineLike
+            size={25}
+            color="black"
+          />
         )}
       </span>
       <span className="text-black font-bold">{numOfLikes}</span>
