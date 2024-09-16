@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { PostStats } from "./PostStats";
+import { useSelector } from "react-redux";
 
 export const MiddleSide = () => {
   const [data, setData] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageLoading, setPageLoading] = useState(true);
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   // get all the blog and store then in data
   useEffect(() => {
@@ -42,20 +44,35 @@ export const MiddleSide = () => {
   }, [pageNumber, pageLoading]);
 
   return (
-    <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 border h-full ">
+    <div className="lg:w-[700px] md:w-[600px] w-[90%] mx-0 md:mx-5 h-full ">
       <div className="bg-white text-center mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
-        <h2 className="text-lg font-bold mb-4 text-gray-700">
-          Got something on your mind?
-        </h2>
-        <p className="text-gray-600 mb-6 font-pompiere text-xl font-bold">
-          Share your ideas, stories, or updates with the world!
-        </p>
-        <button
-          className="bg-blue-500 text-white w-full py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-          onClick={() => (window.location.href = "/post/new")}
-        >
-          <span>Create Post</span>
-        </button>
+        {isAuthenticated ? (
+          <>
+            <h2 className="text-lg font-bold mb-4 text-gray-700">
+              Got something on your mind?
+            </h2>
+            <p className="text-gray-600 mb-6 font-pompiere text-xl font-bold">
+              Share your ideas, stories, or updates with the world!
+            </p>
+            <button
+              className="bg-blue-500 text-white w-full py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+              onClick={() => (window.location.href = "/post/new")}
+            >
+              <span>Create Post</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-bold mb-4 text-gray-700">e-Blog</h2>
+            <p className="text-gray-600 mb-6 font-pompiere text-xl font-bold">
+              e-blog is your go-to platform for effortless blogging. Whether
+              you’re an experienced writer or a beginner, e-blog offers an
+              easy-to-use space to publish, share, and connect with a vibrant
+              community. Explore topics, follow bloggers, and let your
+              creativity shine!
+            </p>
+          </>
+        )}
       </div>
 
       {data.map(({ blog }) => (
