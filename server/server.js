@@ -5,8 +5,6 @@ import likeRouter from "./routes/LikeRouter.js";
 import mongoose from "./engine/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { getAuthInfo } from "./controllers/UserController.js";
-import { isAuthenticated } from "./middlewares/AuthMiddleware.js";
 import authRouter from "./routes/AuthRouter.js";
 import tagRouter from "./routes/TagRouter.js";
 import commentRouter from "./routes/CommentsRouter.js";
@@ -38,9 +36,6 @@ app.use("/likes", likeRouter);
 app.use("/auth", authRouter);
 app.use("/tags", tagRouter);
 app.use("/comments", commentRouter);
-
-// this route gets user info using the jwt token
-app.get("/auth/@me", isAuthenticated, getAuthInfo);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {
