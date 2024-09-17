@@ -76,37 +76,71 @@ export function Comments(post) {
           </div>
         </div>
 
-        {/* Dummy comments */}
+        {/* Main Comments */}
         {comments &&
           Array.isArray(comments) &&
           comments.map((comment, index) => (
             <div
               key={index}
-              className="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-              <div className="flex-shrink-0">
-                <img
-                  src="https://randomuser.me/api/portraits/men/75.jpg"
-                  alt="User avatar"
-                  className="w-12 h-12 rounded-full mr-3 hover:opacity-80 transition duration-200"
-                  width={48}
-                  height={48}
-                />
-              </div>
-              <div className="flex-grow">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium">
-                    <a
-                      href={comment.user.href}
-                      className="text-blue-500 hover:underline">
-                      {comment.user.firstname} {comment.user.lastname}
-                    </a>
-                  </h3>
+              className="space-y-4">
+              {/* Parent Comment */}
+              <div className="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
+                <div className="flex-shrink-0">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/75.jpg"
+                    alt="User avatar"
+                    className="w-12 h-12 rounded-full mr-3 hover:opacity-80 transition duration-200"
+                    width={48}
+                    height={48}
+                  />
                 </div>
-                <p className="text-gray-700 text-base">{comment.text}</p>
-                <button className="text-blue-500 hover:underline mt-2">
-                  Reply
-                </button>
+                <div className="flex-grow">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium">
+                      <a
+                        href={comment.user.href}
+                        className="text-blue-500 hover:underline">
+                        {comment.user.firstname} {comment.user.lastname}
+                      </a>
+                    </h3>
+                  </div>
+                  <p className="text-gray-700 text-base">{comment.text}</p>
+                  <button className="text-blue-500 hover:underline mt-2">
+                    Reply
+                  </button>
+                </div>
               </div>
+
+              {/* Replies (One-Level) */}
+              {comment.replies &&
+                Array.isArray(comment.replies) &&
+                comment.replies.map((reply, replyIndex) => (
+                  <div
+                    key={replyIndex}
+                    className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg">
+                    <div className="flex-shrink-0">
+                      <img
+                        src="https://randomuser.me/api/portraits/women/25.jpg"
+                        alt="User avatar"
+                        className="w-10 h-10 rounded-full hover:opacity-80 transition duration-200"
+                        width={40}
+                        height={40}
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-md font-medium">
+                          <a
+                            href={reply.user.href}
+                            className="text-blue-500 hover:underline">
+                            {reply.user.firstname} {reply.user.lastname}
+                          </a>
+                        </h3>
+                      </div>
+                      <p className="text-gray-600">{reply.text}</p>
+                    </div>
+                  </div>
+                ))}
             </div>
           ))}
       </div>
