@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import {
   AiOutlineLike,
   AiFillLike,
@@ -37,9 +38,9 @@ function BookmarkButton({ post }) {
   return (
     <button className="flex items-center space-x-2" onClick={handleBookmark}>
       {bookmarked ? (
-        <AiFillStar size={25} color="green" />
+        <FaBookmark size={25} color="green" />
       ) : (
-        <AiOutlineStar size={25} color="black" />
+        <FaRegBookmark size={25} color="black" />
       )}
       <span className="text-black font-bold">
         {bookmarked ? "Bookmarked" : "Bookmark"}
