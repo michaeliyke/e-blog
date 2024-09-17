@@ -50,7 +50,7 @@ export const SignIn = () => {
   return (
     <>
       <div
-        className={`popup__container fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
+        className={`popup__container z-10 fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
           cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
         onClick={clearPopUp}
