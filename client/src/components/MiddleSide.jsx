@@ -116,9 +116,9 @@ export const MiddleSide = () => {
                 {/* Post Text */}
                 <p className="font-poppins text-sm whitespace-pre-wrap overflow-hidden overflow-ellipsis">
                   {blog.text}... <br />
-                  <p className="text-indigo-500 text-[13px]">
-                    click to continue reading
-                  </p>
+                </p>
+                <p className="text-indigo-500 text-[13px]">
+                  click to continue reading
                 </p>
               </a>
             </div>

@@ -10,8 +10,10 @@ import {
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
+import multer from "multer";
 
 const userRouter = Router();
+export const upload = multer({ storage: multer.memoryStorage() });
 
 // get all users
 userRouter.get("/", getAllUsers);
@@ -20,7 +22,7 @@ userRouter.get("/", getAllUsers);
 userRouter.get("/info", getUserInfo);
 
 // update a user
-userRouter.put("/profile", isAuthenticated, updateUser);
+userRouter.put("/profile", isAuthenticated, upload.single("image"), updateUser);
 
 // get user info
 userRouter.get("/profile", isAuthenticated, getUserProfile);
