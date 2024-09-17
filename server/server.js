@@ -8,6 +8,7 @@ import cors from "cors";
 import authRouter from "./routes/AuthRouter.js";
 import tagRouter from "./routes/TagRouter.js";
 import commentRouter from "./routes/CommentsRouter.js";
+import replyRouter from "./routes/ReplyRouter.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -36,6 +37,7 @@ app.use("/likes", likeRouter);
 app.use("/auth", authRouter);
 app.use("/tags", tagRouter);
 app.use("/comments", commentRouter);
+app.use("/replies", replyRouter);
 
 // wait until the database is up before running the server
 mongoose.connection.once("open", () => {

@@ -129,3 +129,10 @@ export const modComment = async (req, res) => {
     session.endSession();
   }
 };
+
+// // Test purpose only
+// export const getComment = async (req, res) => {
+//   const id = req.params.id;
+//   const comment = await Comment.findById(id);
+//   return res.json(comment);
+// };
