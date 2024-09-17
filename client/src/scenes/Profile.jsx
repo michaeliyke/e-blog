@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
-import { Header } from "../components/Header";
+import { useEffect, useState } from 'react';
+import { Header } from '../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const url = "http://127.0.0.1:3000/users/profile";
+  const url = 'http://127.0.0.1:3000/users/profile';
+  const navigate = useNavigate();
 
   useEffect(function cb() {
     const options = {
-      method: "GET",
-      credentials: "include",
+      method: 'GET',
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     };
 
@@ -48,7 +50,7 @@ export function Profile() {
               {/* Profile image */}
               <img
                 src={
-                  profile.user.profilePicture.thumbnail || "/default-avatar.png"
+                  profile.user.profilePicture.thumbnail || '/default-avatar.png'
                 }
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-4 border-white"
@@ -56,7 +58,9 @@ export function Profile() {
             </div>
 
             {/* Edit profile button */}
-            <button className="absolute top-6 right-6 bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
+            <button
+              onClick={() => navigate('/profile/settings')}
+              className="absolute top-6 right-6 bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
               Edit profile
             </button>
 

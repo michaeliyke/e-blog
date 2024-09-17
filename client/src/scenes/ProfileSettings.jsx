@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
 import axios from 'axios';
 import { getCookie } from '../util/basic';
+import { useNavigate } from 'react-router-dom';
 
 export function ProfileSettings() {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState({
     firstname: '',
     lastname: '',
@@ -86,7 +89,7 @@ export function ProfileSettings() {
       .then(() => {
         setSuccess(true);
         setLoading(false);
-        setTimeout(() => history.push('/profile'), 3000);
+        setTimeout(() => navigate('/profile'), 3000);
       })
       .catch((err) => {
         setError(err);
@@ -107,7 +110,7 @@ export function ProfileSettings() {
   return (
     <>
       <Header />
-      <div className="max-w-4xl mx-auto mt-14 p-5">
+      <div className="max-w-4xl mx-auto -mt-2 p-5">
         <div className="bg-white shadow-lg rounded-lg p-8">
           <h2 className="text-2xl font-semibold mb-6">Edit Profile</h2>
           <form onSubmit={handleSubmit}>
