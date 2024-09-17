@@ -1,33 +1,25 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   AiOutlineLike,
   AiFillLike,
   AiOutlineStar,
   AiFillStar,
-} from 'react-icons/ai'; // Add AiFillLike for the filled icon
-import { FaRegComment } from 'react-icons/fa';
-import { urlenCode, blogPostSchema } from '../util/basic';
+} from "react-icons/ai"; // Add AiFillLike for the filled icon
+import { FaRegComment } from "react-icons/fa";
+import { urlenCode, blogPostSchema } from "../util/basic";
 
 function CommentButton({ post }) {
   post.numOfComments = post.numOfComments || 0;
-  const [numOfComments, setNumOfComments] = useState(post.numOfComments);
+  // const [numOfComments, setNumOfComments] = useState(post.numOfComments);
 
   function gotToComments() {
     window.location = `/posts/${urlenCode(post.slug)}`;
   }
 
   return (
-    <button
-      className="flex items-center space-x-2"
-      onClick={gotToComments}>
-      <span
-        role="img"
-        aria-label="comment"
-        className="text-2xl">
-        <FaRegComment
-          size={25}
-          color="black"
-        />
+    <button className="flex items-center space-x-2" onClick={gotToComments}>
+      <span role="img" aria-label="comment" className="text-2xl">
+        <FaRegComment size={25} color="black" />
       </span>
       <span className="text-black font-bold">Comment</span>
     </button>
@@ -43,22 +35,14 @@ function BookmarkButton({ post }) {
   }
 
   return (
-    <button
-      className="flex items-center space-x-2"
-      onClick={handleBookmark}>
+    <button className="flex items-center space-x-2" onClick={handleBookmark}>
       {bookmarked ? (
-        <AiFillStar
-          size={25}
-          color="green"
-        />
+        <AiFillStar size={25} color="green" />
       ) : (
-        <AiOutlineStar
-          size={25}
-          color="black"
-        />
+        <AiOutlineStar size={25} color="black" />
       )}
       <span className="text-black font-bold">
-        {bookmarked ? 'Bookmarked' : 'Bookmark'}
+        {bookmarked ? "Bookmarked" : "Bookmark"}
       </span>
     </button>
   );
@@ -79,10 +63,10 @@ function LikeButton({ post }) {
     });
 
     fetch(url, {
-      method: 'POST',
-      credentials: 'include',
+      method: "POST",
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     })
       .then((res) => res.json())
@@ -90,28 +74,17 @@ function LikeButton({ post }) {
         setNumOfLikes(data.likes);
       })
       .catch((error) => {
-        console.log('Error updating likes:', error);
+        console.log("Error updating likes:", error);
       });
   }
 
   return (
-    <button
-      className="flex items-center space-x-2"
-      onClick={handleLikeClick}>
-      <span
-        role="img"
-        aria-label="like"
-        className="text-2xl">
+    <button className="flex items-center space-x-2" onClick={handleLikeClick}>
+      <span role="img" aria-label="like" className="text-2xl">
         {liked ? (
-          <AiFillLike
-            size={25}
-            color="blue"
-          />
+          <AiFillLike size={25} color="blue" />
         ) : (
-          <AiOutlineLike
-            size={25}
-            color="black"
-          />
+          <AiOutlineLike size={25} color="black" />
         )}
       </span>
       <span className="text-black font-bold">{numOfLikes}</span>

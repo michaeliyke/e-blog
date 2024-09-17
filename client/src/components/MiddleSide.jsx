@@ -11,17 +11,16 @@ export const MiddleSide = () => {
 
   // get all the blog and store then in data
   useEffect(() => {
+    console.log("get page:", pageNumber);
     request
       .get(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
       .then((res) => {
         if (!res.data.length) return;
         setData((prev) => [...prev, ...res.data]);
-        setPageNumber(pageNumber + 1);
-        console.log(data);
         setPageLoading(false);
       })
       .catch((err) => console.log("err:", err));
-  }, [data, pageNumber]);
+  }, [pageNumber]);
 
   useEffect(() => {
     // Function to check if the user is at the bottom of the page
@@ -32,6 +31,7 @@ export const MiddleSide = () => {
       const documentHeight = document.documentElement.scrollHeight; // Total height of the page
 
       // Check if the scroll position is at the bottom
+      // console.log(`${scrollTop} + ${windowHeight} >= ${documentHeight} - 50`);
       if (scrollTop + windowHeight >= documentHeight - 50) {
         setPageLoading(true);
         setPageNumber(pageNumber + 1);
@@ -105,10 +105,33 @@ export const MiddleSide = () => {
             </figcaption>
           </figure>
 
-          {/* Post Title */}
-          <h2 className="text-blue-600 text-lg font-bold mb-2">
-            <a href={`/posts/${blog.slug}`}>{blog.title}</a>
-          </h2>
+          {/* Post Content */}
+          <div className="flex items-start max-h-[40%] overflow-clip">
+            <div className="flex-1">
+              <a href={`/posts/${blog.slug}`}>
+                {/* Post Title */}
+                <h2 className="text-blue-600 text-xl font-[600] mb-2 font-poppins">
+                  {blog.title}
+                </h2>
+                {/* Post Text */}
+                <p className="font-poppins text-sm whitespace-pre-wrap overflow-hidden overflow-ellipsis">
+                  {blog.text}... <br />
+                  <p className="text-indigo-500 text-[13px]">
+                    click to continue reading
+                  </p>
+                </p>
+              </a>
+            </div>
+          </div>
+          {blog.cover?.medium && (
+            <a href={`/posts/${blog.slug}`}>
+              <img
+                className="w-auto mx-auto max-h-[300px] my-3"
+                src={blog.cover.medium}
+                alt="Post cover"
+              />
+            </a>
+          )}
 
           {/* Impressions and Comments */}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
@@ -118,8 +141,8 @@ export const MiddleSide = () => {
 
           {/* The tags section */}
           <div className="flex gap-2 justify-start text-gray-400 font-poppins text-[13px]">
-            {blog.tags.map((tag) => (
-              <span key={tag._id}>#{tag.name}</span>
+            {blog.tags.map((tag, index) => (
+              <span key={index}>#{tag.name}</span>
             ))}
           </div>
 

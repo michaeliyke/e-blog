@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   allBlogs,
-  createTestPosts,
   getPageOfBlogs,
   getPostById,
   createNewPost,
@@ -19,6 +18,9 @@ import {
   modComment,
 } from "../controllers/CommentController.js";
 
+import multer from "multer";
+export const upload = multer({ storage: multer.memoryStorage() });
+
 const postRouter = Router();
 
 // get all blogs (just for testing)
@@ -30,7 +32,7 @@ postRouter.get("/", allBlogs);
 // get a page of posts
 postRouter.get("/page/:page", isAuthenticated, getPageOfBlogs);
 
-postRouter.post("/new", isAuthenticated, createNewPost);
+postRouter.post("/new", isAuthenticated, upload.single("image"), createNewPost);
 
 postRouter.get("/h/:slug", getPostBySlug);
 
