@@ -95,3 +95,16 @@ input[type="checkbox"] {
 .home__btn:hover .home__img_btn {
   @apply animate-bounce;
 }
+
+@keyframes horizontalBounce {
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.bouncing__msg__container:hover .bouncing__msg {
+  animation: horizontalBounce 1s ease-in-out infinite;
+}

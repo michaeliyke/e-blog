@@ -2,6 +2,8 @@ import { v4 } from "uuid";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import dbInfo from "../models/DbInfo.js";
+import axios from "axios";
+import sharp from "sharp";
 
 export const createId = () => {
   return v4();
@@ -42,4 +44,31 @@ export const getNextTagId = async () => {
     { new: true, upsert: true } // Create the document if it doesn't exist
   );
   return info.tagCount;
+};
+
+export const uploadPicture = async (image, post) => {
+  const IMG_BB = process.env.IMGBB_KEY;
+  const IMG_BB_URL = `https://api.imgbb.com/1/upload?&key=${IMG_BB}`;
+  // compress the image first
+  const compressedImageBuffer = await sharp(image.buffer)
+    .jpeg({ quality: 80 })
+    .toBuffer();
+  const base64Image = compressedImageBuffer.toString("base64");
+  const formData = new URLSearchParams();
+  formData.append("image", base64Image);
+  try {
+    const res = await axios.post(IMG_BB_URL, formData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    (post.cover.image = res.data.data.url),
+      (post.cover.thumbnail = res.data.data.thumb.url),
+      (post.cover.deleteUrl = res.data.data.delete_url),
+      (post.cover.medium = res.data.data.medium.url),
+      post.save();
+  } catch (err) {
+    console.dir(err);
+    axios.delete(res.data.data.delete_url);
+  }
 };

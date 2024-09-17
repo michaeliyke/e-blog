@@ -17,12 +17,29 @@ export function ReadPost({ post_title }) {
 
   if (!post) {
     // if post is not found in mapped due to async fetch of data
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center font-bold text-lg font-poppins">
+        Loading...
+      </div>
+    );
   }
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold">{post.title}</h1>
-      <p>{post.text}</p>
+    <div className="col-span-2 whitespace-pre-wrap relative z-20">
+      <h1 className="text-3xl font-bold text-center mb-5">{post.title}</h1>
+      <div>
+        {post.cover?.image && (
+          <img
+            src={post.cover?.image}
+            className="w-auto h-auto"
+          />
+        )}
+      </div>
+      <p
+        className="whitespace-pre-wrap font-serif text-[#333333] font-bold
+      border-t-2 border-gray-500 pt-5 mt-5">
+        {post.text}
+      </p>
       <Comments post={post} />
     </div>
   );

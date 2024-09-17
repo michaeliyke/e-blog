@@ -24,13 +24,13 @@ export const Header = () => {
         </>
       )}
       <div
-        onClick={() => navigate("/")}
         className="flex items-center border-b-2 border-black h-16  justify-between p-1
       bg-[#f2f2f2]"
       >
         <div
+          onClick={() => navigate("/")}
           className="flex items-center justify-center pb-0.5 h-auto bg-[#b5b5b5]
-        w-[120px] rounded-md ml-4 z-10 cursor-pointer border-2 border-[#8e8e8e]
+        w-[120px] rounded-md ml-4 cursor-pointer border-2 border-[#8e8e8e]
         home__btn hover:bg-[#969696]"
         >
           <span className="relative top-1 font-Teko text-[40px] font-bold">

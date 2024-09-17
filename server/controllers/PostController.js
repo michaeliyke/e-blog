@@ -1,8 +1,9 @@
+import { json } from "express";
 import Post from "../models/Post.js";
 import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
-import { getNextTagId, stringToSlug } from "../utils/tools.js";
+import { getNextTagId, stringToSlug, uploadPicture } from "../utils/tools.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -30,7 +31,7 @@ async function getPageOfBlogs(req, res) {
 
     const blogsList = await Post.find(
       {},
-      "_id title text user slug tags createdAt likes comments.count"
+      "_id title text user slug tags createdAt likes comments.count cover.medium"
     )
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -43,6 +44,7 @@ async function getPageOfBlogs(req, res) {
       blogsList.map(async (blog) => {
         const liked = userId ? blog.likes.users.includes(userId) : false;
         const newBlog = blog.toObject();
+        newBlog.text = newBlog.text.slice(0, 100);
         delete newBlog.likes.users;
         return {
           blog: { ...newBlog, liked },
@@ -84,11 +86,15 @@ async function createTestPosts(req, res) {
 }
 
 export const createNewPost = async (req, res) => {
+  // console.log("create new post");
   const userId = req.userId;
   let currentTag;
   const tagList = [];
   const tagObjects = [];
-  const { title, text, tags, image } = req.body;
+  const { title, text } = req.body;
+  const image = req.file;
+  // console.dir(image);
+  const tags = JSON.parse(req.body.tags);
   if (!title || !text || !tags) {
     return res.status(400).json({ message: "Not enough data" });
   }
@@ -114,10 +120,14 @@ export const createNewPost = async (req, res) => {
       tags: tagList,
       slug: stringToSlug(title),
     });
-    await post.save();
     for (const tag of tagObjects) {
       tag.count++;
       tag.save();
+    }
+    await post.save();
+    if (image) {
+      // console.dir(image);
+      post.cover = uploadPicture(image, post);
     }
     return res.status(200).json({ post });
   } catch (err) {
@@ -130,10 +140,10 @@ export const getPostBySlug = async (req, res) => {
   const slug = req.params.slug;
   if (!slug) return res.sendStatus(404);
 
-  const post = await Post.findOne({ slug }, "user title text tags")
+  const post = await Post.findOne({ slug }, "user title text tags cover.image")
     .populate("user", "firstname lastname href profilePicture.thumbnail -_id")
     .populate("tags", "name")
-    .exec();
+    .lean();
   return res.json({ post });
 };
 
