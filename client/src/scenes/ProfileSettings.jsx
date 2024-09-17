@@ -1,30 +1,27 @@
-import { useEffect, useState } from 'react';
-import { Header } from '../components/Header';
-import axios from 'axios';
-import { getCookie } from '../util/basic';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Header } from "../components/Header";
+import axios from "axios";
+import { getCookie } from "../util/basic";
 
 export function ProfileSettings() {
-  const navigate = useNavigate();
-
   const [profile, setProfile] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    profilePicture: '',
+    firstname: "",
+    lastname: "",
+    email: "",
+    profilePicture: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const url = 'http://127.0.0.1:3000/users/profile';
+  const url = "http://127.0.0.1:3000/users/profile";
 
   useEffect(() => {
     const options = {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
 
@@ -69,27 +66,28 @@ export function ProfileSettings() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     const formData = new FormData();
-    formData.append('firstname', profile.firstname);
-    formData.append('lastname', profile.lastname);
-    formData.append('email', profile.email);
+    formData.append("firstname", profile.firstname);
+    formData.append("lastname", profile.lastname);
+    formData.append("email", profile.email);
     if (profile.profilePicture) {
-      formData.append('profilePicture', profile.profilePicture);
+      formData.append("image", profile.profilePicture);
     }
 
     axios
       .put(url, formData, {
         withCredentials: true,
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${getCookie('_token')}`,
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${getCookie("_token")}`,
         },
       })
       .then(() => {
         setSuccess(true);
         setLoading(false);
-        setTimeout(() => navigate('/profile'), 3000);
+        setTimeout(() => (window.location.href = "/profile"), 3000);
       })
       .catch((err) => {
         setError(err);
@@ -98,7 +96,12 @@ export function ProfileSettings() {
   }
 
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return (
+      <>
+        <Header />
+        <div className="text-center mt-10">Loading...</div>
+      </>
+    );
   }
 
   if (error) {
@@ -116,14 +119,12 @@ export function ProfileSettings() {
           <form onSubmit={handleSubmit}>
             {/* Profile Picture */}
             <div className="flex flex-col items-center">
-              <label
-                htmlFor="profilePicture"
-                className="cursor-pointer">
+              <label htmlFor="profilePicture" className="cursor-pointer">
                 <img
                   src={
                     imagePreview ||
                     profile.profilePicture ||
-                    '/default-avatar.png'
+                    "/default-avatar.png"
                   }
                   alt="Profile Preview"
                   className="w-32 h-32 rounded-full mb-4"
@@ -186,7 +187,8 @@ export function ProfileSettings() {
             <div className="mt-6">
               <button
                 type="submit"
-                className="px-6 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 focus:outline-none">
+                className="px-6 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 focus:outline-none"
+              >
                 Save Changes
               </button>
             </div>

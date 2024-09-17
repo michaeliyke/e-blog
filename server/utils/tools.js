@@ -65,7 +65,7 @@ const uploadToImgBB = async (image) => {
     });
     return {
       image: response.data.data?.url || null,
-      thumbnail: response.data.data.thumb?.url || null,
+      thumbnail: response.data.data.thumb?.url || response.data.data?.url,
       medium: response.data.data.medium?.url || response.data.data?.url,
       deleteUrl: response.data.data.delete_url || null,
     };
@@ -91,30 +91,3 @@ export const uploadImage = async (image, user) => {
     user.save();
   }
 };
-
-// export const uploadPicture = async (image, post) => {
-//   const IMG_BB = process.env.IMGBB_KEY;
-//   const IMG_BB_URL = `https://api.imgbb.com/1/upload?&key=${IMG_BB}`;
-//   // compress the image first
-//   const compressedImageBuffer = await sharp(image.buffer)
-//     .jpeg({ quality: 80 })
-//     .toBuffer();
-//   const base64Image = compressedImageBuffer.toString("base64");
-//   const formData = new URLSearchParams();
-//   formData.append("image", base64Image);
-//   try {
-//     const res = await axios.post(IMG_BB_URL, formData, {
-//       headers: {
-//         "Content-Type": "application/x-www-form-urlencoded",
-//       },
-//     });
-//     (post.cover.image = res.data.data.url),
-//       (post.cover.thumbnail = res.data.data.thumb.url),
-//       (post.cover.deleteUrl = res.data.data.delete_url),
-//       (post.cover.medium = res.data.data.medium.url),
-//       post.save();
-//   } catch (err) {
-//     console.dir(err);
-//     axios.delete(res.data.data.delete_url);
-//   }
-// };

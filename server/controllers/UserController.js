@@ -195,7 +195,7 @@ export const updateUser = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
     await user.save();
-    if (image) uploadImage(image, user);
+    if (image) await uploadImage(image, user);
     return res.sendStatus(200);
   } catch (err) {
     if (err.code === 11000) {
