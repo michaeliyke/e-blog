@@ -5,19 +5,24 @@ import axios from 'axios';
 
 export function Comments(post) {
   const [comments, setComments] = useState([]);
+  const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const url = `http://127.0.0.1:3000/blogs/${post.post._id}/comments`;
 
-  function shareComment() {
-    const text = document.querySelector('textarea');
-    const comment = { text: DOMPurify.sanitize(text.value) };
+  function shareComment(event) {
+    event.preventDefault();
+    setText(document.querySelector('textarea.comment-box').value);
+    const sanitizedText = DOMPurify.sanitize(text); // Sanitize the text directly
+    const comment = { text: sanitizedText };
     const token = getCookie('_token');
 
     if (!token) {
       console.error('No token found');
       return;
     }
+
+    if (!text) return;
 
     axios
       .post(url, comment, {
@@ -28,6 +33,9 @@ export function Comments(post) {
         },
       })
       .then((res) => {
+        console.log(document.querySelector('textarea').value); // This is the original text
+        document.querySelector('textarea').value = '';
+        console.log(document.querySelector('textarea').value); // This is the original text
         setComments([...comments, res.data.currentComment]);
       })
       .catch((error) => {
@@ -57,16 +65,15 @@ export function Comments(post) {
     return <></>;
   }
 
-  console.log('comments: ', comments);
   return (
     <div className="mt-8 bg-white p-4 rounded shadow-md">
       <h2 className="text-2xl font-bold mb-4">Comments</h2>
       <div className="space-y-6">
         {/* Comment box */}
-        <div className="flex space-x-4">
+        <form className="flex space-x-4">
           <div className="flex-grow">
             <textarea
-              className="w-full h-24 p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none"
+              className="comment-box w-full h-24 p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none"
               placeholder="Write a comment..."></textarea>
             <button
               className="mt-4 mb-10 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition duration-300"
@@ -74,7 +81,7 @@ export function Comments(post) {
               Share comment
             </button>
           </div>
-        </div>
+        </form>
 
         {/* Main Comments */}
         {comments &&
