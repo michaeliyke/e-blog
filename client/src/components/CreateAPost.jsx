@@ -1,21 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { request } from "../util/Tools";
 import { debounce } from "lodash";
 import axios from "axios";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [coverPicture, setCoverPicture] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [tags, setTags] = useState([]);
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+
   const [tagSuggestions, setTagSuggestions] = useState([]);
   const [displaySuggestions, setDisplaySuggestions] = useState(false);
   const [suggestionsStyle, setSuggestionsStyle] = useState({ display: "none" });
   const textAreaRef = useRef(null);
   const inputRef = useRef(null);
+  const [progress, setProgress] = useState(0);
 
   // we use useMemo
   const suggest = useMemo(
@@ -77,14 +79,15 @@ export function CreateAPost() {
   // Handle the file input change
   function handleFileChange(event) {
     event.preventDefault();
-    let file = null;
     if (!(event.target.files && event.target.files[0])) return;
+    let file = null;
     file = event.target.files[0];
     const reader = new FileReader();
     reader.onloadend = function readImageFile() {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+    setCoverPicture(file);
   }
 
   // Remove the image preview
@@ -117,17 +120,32 @@ export function CreateAPost() {
       alert("Please write a post");
       return;
     }
-    const postData = {
-      title,
-      text: content,
-      tags: tags.map((tag) => tag.name),
-      image: imagePreview,
-    };
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("text", content);
+    formData.append("tags", JSON.stringify(tags.map((tag) => tag.name)));
+    if (coverPicture) {
+      console.dir(coverPicture);
+      formData.append("image", coverPicture);
+    }
     setIsLoading(true);
-    request
-      .post("http://127.0.0.1:3000/blogs/new", postData)
+    axios
+      .post("http://127.0.0.1:3000/blogs/new", formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progress) => {
+          const total = progress.total;
+          if (total) {
+            const progre = Math.round((progress.loaded * 100) / total);
+            setProgress(progre);
+          }
+        },
+      })
       .then(() => {
         window.location.href = "/";
+        // alert("seccess");
       })
       .catch((err) => {
         console.log(err);
@@ -160,6 +178,33 @@ export function CreateAPost() {
 
   return (
     <div className="w-full flex flex-col items-center h-full">
+      <div
+        className={`w-80 h-30 fixed flex flex-col justify-center items-center top-4 bg-gray-300 rounded-lg shadow-xl p-4 border border-gray-400
+           transition-transform duration-500 ease-in-out ${
+             isLoading
+               ? "translate-y-0 opacity-100"
+               : "-translate-y-full opacity-0"
+           }`}
+      >
+        <div className="flex flex-col justify-between items-center mb-2">
+          <span className="text-lg font-semibold text-blue-600 dark:text-white">
+            File Upload
+          </span>
+        </div>
+
+        <div className="w-[85%] bg-gray-200 rounded-full h-5 relative overflow-hidden">
+          {/* Gradient progress bar */}
+          <div
+            className="bg-gradient-to-r from-blue-500 to-blue-700 h-5 rounded-full"
+            style={{ width: `${progress}%` }}
+          ></div>
+          {/* Centered progress percentage */}
+          <span className="absolute inset-0 flex justify-center items-center text-[16px] font-medium text-white">
+            {progress !== 100 ? `${progress}%` : "DONE"}
+          </span>
+        </div>
+      </div>
+
       {/* Preview image when selected */}
       <div className="mt-10 flex-1 max-w-[900px] w-[90%] overflow-y-scroll scroll__style px-5">
         {imagePreview && (
