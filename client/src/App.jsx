@@ -3,7 +3,8 @@ import { Home } from "./scenes/Home";
 import { Posts } from "./scenes/Posts";
 import { CreatePost } from "./scenes/CreatePost";
 import { PrivateRoute } from "./components/PrivateRoute";
-import {Profile} from "./scenes/Profile";
+import { Profile } from "./scenes/Profile";
+import { ProfileSettings } from "./scenes/ProfileSettings";
 import "./index.css";
 
 function App() {
@@ -16,6 +17,10 @@ function App() {
         element={<PrivateRoute open={true} element={Posts} />}
       />
       <Route path="/profile" element={<PrivateRoute element={Profile} />} />
+      <Route 
+	  	path="/profile/settings" 
+		element={<PrivateRoute element={ProfileSettings} />}
+	/>
     </Routes>
   );
 }
