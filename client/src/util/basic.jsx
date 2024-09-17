@@ -8,6 +8,12 @@ export const urlComponentSchema = {
   post_title: PropTypes.string.isRequired,
 };
 
+export function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 export const blogPostSchema = {
   post: PropTypes.shape({
     bookmarked: PropTypes.bool,
