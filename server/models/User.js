@@ -54,8 +54,15 @@ const userSchema = new Schema(
         type: String,
         default: "https://i.ibb.co/YBcH51t/no-pic.png",
       },
-      original: { type: String },
-      delete: { type: String },
+      medium: {
+        type: String,
+        default: "https://i.ibb.co/HTt5cbr/no-pic.png",
+      },
+      image: {
+        type: String,
+        default: "https://i.ibb.co/whS5nPK/no-pic.png",
+      },
+      deleteUrl: { type: String },
     },
   },
   { timestamps: true }

@@ -1,5 +1,10 @@
 import User from "../models/User.js";
-import { checkPassword, generateHref, hashPassword } from "../utils/tools.js";
+import {
+  checkPassword,
+  generateHref,
+  hashPassword,
+  uploadImage,
+} from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
@@ -93,7 +98,10 @@ export async function getUserInfo(req, res) {
   const userId = req.query.userId;
   const slug = req.query.slug;
   if (userId) {
-    const user = await User.findById(userId, "firstname lastname email").exec();
+    const user = await User.findById(
+      userId,
+      "firstname lastname profilePicture.medium"
+    ).exec();
     if (user) {
       return res.status(200).json(user);
     }
@@ -101,7 +109,7 @@ export async function getUserInfo(req, res) {
   } else if (slug) {
     const user = await User.findOne(
       { href: slug },
-      "firstname lastname email"
+      "firstname lastname profilePicture.medium"
     ).exec();
     if (user) {
       return res.status(200).json(user);
@@ -168,12 +176,16 @@ export const createUsers = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
+  // console.log("update user");
   const userId = req.userId;
   const { firstname, lastname, email } = req.body;
+  const image = req.file;
+  // console.dir({ firstname, lastname, email, image });
   const newData = {};
   if (firstname) newData.firstname = firstname;
   if (lastname) newData.lastname = lastname;
   if (email) newData.email = email;
+  // console.dir(newData);
 
   try {
     const user = await User.findByIdAndUpdate(userId, newData, {
@@ -183,6 +195,7 @@ export const updateUser = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
     await user.save();
+    if (image) uploadImage(image, user);
     return res.sendStatus(200);
   } catch (err) {
     if (err.code === 11000) {

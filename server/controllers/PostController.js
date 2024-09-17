@@ -3,7 +3,7 @@ import Post from "../models/Post.js";
 import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
-import { getNextTagId, stringToSlug, uploadPicture } from "../utils/tools.js";
+import { getNextTagId, stringToSlug, uploadCover } from "../utils/tools.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -126,8 +126,7 @@ export const createNewPost = async (req, res) => {
     }
     await post.save();
     if (image) {
-      // console.dir(image);
-      post.cover = uploadPicture(image, post);
+      uploadCover(image, post);
     }
     return res.status(200).json({ post });
   } catch (err) {
