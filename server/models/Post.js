@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import { likeSchema } from "./Likes.js";
 import { v4 as uuidv4 } from "uuid";
 
 const postSchema = new Schema(
@@ -18,6 +17,12 @@ const postSchema = new Schema(
       // users: [likeSchema], changed this for easier query
       users: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
       count: { type: Number, default: 0 },
+    },
+    cover: {
+      thumbnail: { type: String },
+      medium: { type: String },
+      image: { type: String },
+      deleteUrl: { type: String },
     },
   },
   { timestamps: true }
