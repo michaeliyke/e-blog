@@ -87,7 +87,7 @@ export const MiddleSide = () => {
         >
           {/* User Information */}
           <figure className="flex items-center mb-4 relative">
-            <a href={`/user/${blog.user.href}`}>
+            <a href={`/profile/${blog.user.href}`}>
               <img
                 src={blog.user.profilePicture.thumbnail}
                 alt="User avatar"
@@ -98,7 +98,7 @@ export const MiddleSide = () => {
             </a>
             <figcaption>
               <h3 className="font-bold text-gray-700">
-                <a href={`/user/${blog.user.href}`}>
+                <a href={`/profile/${blog.user.href}`}>
                   {blog.user.firstname} {blog.user.lastname}
                 </a>
                 <BookmarkButton post={blog} />

@@ -1,34 +1,47 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
+import { request } from '../util/Tools';
+import { useLocation } from 'react-router-dom';
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const url = 'http://127.0.0.1:3000/users/profile';
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const slug = queryParams.get('slug');
+
+  let url = 'http://127.0.0.1:3000/users/profile';
+  if (slug) url = `http://127.0.0.1:3000/users/info/?slug=${slug}`;
+
   const navigate = useNavigate();
 
-  useEffect(function cb() {
-    const options = {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+  console.log('Profile');
 
-    fetch(url, options)
-      .then((res) => res.json())
-      .then((data) => {
-        setProfile(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
+  useEffect(
+    function cb() {
+      request
+        .get(url)
+        .then((res) => {
+          if (!res.statusText == 'OK')
+            throw new Error('Failed to fetch profile data');
+          return res.data;
+        })
+        .then((data) => {
+          console.dir(data.user);
+          setProfile(data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error message:', error);
+          setError(error);
+          setLoading(false);
+        });
+    },
+    [url]
+  );
 
   if (loading) {
     return <div className="text-center mt-10">Loading...</div>;
@@ -44,13 +57,13 @@ export function Profile() {
     <>
       <Header />
       <div className="max-w-4xl mx-auto mt-14 p-5">
-        {profile && profile.user ? (
+        {profile ? (
           <div className="bg-white relative shadow-lg rounded-lg p-8">
             <div className="absolute left-1/2 transform -translate-x-1/2 -top-16">
               {/* Profile image */}
               <img
                 src={
-                  profile.user.profilePicture.thumbnail || '/default-avatar.png'
+                  profile.user.profilePicture.medium || '/default-avatar.png'
                 }
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-4 border-white"
@@ -69,7 +82,9 @@ export function Profile() {
               <h2 className="text-2xl font-semibold">
                 {profile.user.firstname} {profile.user.lastname}
               </h2>
-              <p className="text-gray-600">{profile.user.email}</p>
+              {profile.user.email ? (
+                <p className="text-gray-600">{profile.user.email}</p>
+              ) : null}
             </div>
           </div>
         ) : (

@@ -5,6 +5,7 @@ import { CreatePost } from "./scenes/CreatePost";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { Profile } from "./scenes/Profile";
 import { ProfileSettings } from "./scenes/ProfileSettings";
+import { NotFoundPage, NotFoundRedirect } from "./scenes/NotFound";
 import "./index.css";
 
 function App() {
@@ -12,15 +13,22 @@ function App() {
     <Routes>
       <Route path="/" element={<PrivateRoute open={true} element={Home} />} />
       <Route path="/post/new" element={<PrivateRoute element={CreatePost} />} />
-      <Route
-        path="/posts/:post_title"
+      <Route path="/posts/:post_title"
         element={<PrivateRoute open={true} element={Posts} />}
       />
+
+	  {/* Public profile view */}
+      <Route path="/profile/:slug" element={<Profile/>} />
+
+	  {/* Private profile view */}
       <Route path="/profile" element={<PrivateRoute element={Profile} />} />
-      <Route 
-	  	path="/profile/settings" 
+      <Route path="/profile/settings" 
 		element={<PrivateRoute element={ProfileSettings} />}
 	/>
+
+	{/* 404 route */}
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<NotFoundRedirect />} />
     </Routes>
   );
 }
