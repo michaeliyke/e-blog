@@ -7,7 +7,7 @@ export const Home = () => {
   return (
     <div className="w-full h-full">
       <Header />
-      <div className="flex gap-4 py-4 px-8 justify-center">
+      <div className="flex py-4 p-0 sm:px-4 justify-center">
         <LeftSide />
         <MiddleSide />
         <RightSide />

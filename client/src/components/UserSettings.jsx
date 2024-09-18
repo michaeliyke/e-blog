@@ -60,8 +60,10 @@ export const UserSettings = () => {
     <div className="relative">
       <figure onClick={handleShowOptions} ref={triggerRef}>
         <img
+          width={50}
+          height={50}
           src={user.profilePicture.thumbnail}
-          className="rounded-full w-12 h-12 hover:shadow-xl transition-all duration-200 border-2 border-transparent hover:border-gray-500"
+          className="rounded-full  hover:shadow-xl transition-all duration-200 border-2 border-transparent hover:border-gray-500"
           alt="User Thumbnail"
         />
       </figure>
@@ -77,9 +79,12 @@ export const UserSettings = () => {
           <ul className="font-medium text-[15px]">
             <li className="hover:bg-gray-300 pl-3 py-2 grid grid-cols-[20px_1fr] items-center">
               <img src={profilePic} width={15} height={15} />
-              <button className="ml-1 text-left" onClick={() => window.location.href = "/profile"}>
-				Profile
-				</button>
+              <button
+                className="ml-1 text-left"
+                onClick={() => (window.location.href = "/profile")}
+              >
+                Profile
+              </button>
             </li>
             <li className="hover:bg-gray-300 pl-3 py-2 grid grid-cols-[20px_1fr] items-center">
               <img src={logOutPic} width={16} height={16} />

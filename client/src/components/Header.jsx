@@ -25,27 +25,19 @@ export const Header = () => {
         </>
       )}
       <div
-        className="flex items-center border-b-2 border-black h-16  justify-between p-1
-      bg-[#f2f2f2]"
+        className="flex items-center  h-16  justify-between p-1
+       bg-white shadow-xl border border-gray-300"
       >
         <div
           onClick={() => navigate("/")}
-          className="flex items-center justify-center pb-0.5 h-auto bg-[#b5b5b5]
-        w-[120px] rounded-md ml-4 cursor-pointer border-2 border-[#8e8e8e]
-        home__btn hover:bg-[#969696]"
+          className="flex items-center justify-center h-auto
+        w-[120px] rounded-md ml-4 cursor-pointer home__btn border"
         >
-          <span className="relative top-1 font-Teko text-[40px] font-bold">
-            <p style={{ lineHeight: 0.9 }}>Blog</p>
-          </span>
-          <img
-            className="relative bottom-1 size-9 home__img_btn"
-            src="/pic_1.png"
-            width={200}
-            height={200}
-            alt="pic"
-          />
+          <img src="/B.png" alt="" width={100} />
         </div>
-        <SearchEngine />
+        <div className="flex w-full max-w-[500px] justify-center ">
+          <SearchEngine />
+        </div>
         <div className="mr-4">
           {isAuthenticated ? (
             <UserSettings />
