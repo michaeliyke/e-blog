@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import dbInfo from "../models/DbInfo.js";
 import axios from "axios";
 import sharp from "sharp";
+import Post from "../models/Post.js";
 
 export const createId = () => {
   return v4();
@@ -95,4 +96,36 @@ export const uploadImage = async (image, user) => {
 export const unify = (word) => {
   if (!word) return "";
   return word[0].toUpperCase() + word.slice(1).toLowerCase();
+};
+
+export const getTrendingPage = async (page = 1) => {
+  try {
+    const posts = await Post.aggregate([
+      {
+        $addFields: {
+          timeSinsePosted: {
+            $divide: [{ $subtract: [new Date(), "$createdAt"] }, 3600000],
+          },
+          trendingScore: {
+            // add 1 to prevent division by zero
+            $divide: ["likes.count", { $add: ["$timeSincePosted", 1] }],
+          },
+        },
+      },
+      { $sort: { trendingScore: -1 } },
+      { $skip: (page - 1) * 10 },
+      { $limit: 10 },
+      {
+        $project: {
+          _id: 0,
+          title: 1,
+          slug: 1,
+        },
+      },
+    ]);
+    return posts;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 };
