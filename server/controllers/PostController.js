@@ -163,4 +163,22 @@ export const getTopTen = async (req, res) => {
   return res.json({ topPosts });
 };
 
+export const searchEngine = async (req, res) => {
+  const searchText = req.query.text || "";
+  const keywords = searchText.trim().split(/\s+/);
+
+  const query = {
+    $and: keywords.map((keyword) => ({
+      title: { $regex: keyword, $options: "i" },
+    })),
+  };
+
+  const posts = await Post.find(query, "title slug")
+    .sort({ "likes.count": -1 })
+    .limit(10)
+    .lean();
+
+  return res.json(posts);
+};
+
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };
