@@ -64,6 +64,10 @@ const userSchema = new Schema(
       },
       deleteUrl: { type: String },
     },
+    saved: {
+      posts: [{ type: String, ref: "Post", required: true }],
+      count: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 );

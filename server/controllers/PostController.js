@@ -28,6 +28,7 @@ async function getPageOfBlogs(req, res) {
     const pageNumber = parseInt(req.params.page) || 1;
     const limit = 10;
     const skip = (pageNumber - 1) * limit;
+    let user;
 
     const blogsList = await Post.find(
       {},
@@ -39,15 +40,18 @@ async function getPageOfBlogs(req, res) {
       .populate("user", "firstname lastname href profilePicture -_id")
       .populate("tags", "name")
       .exec();
-    let data;
-    data = await Promise.all(
+    if (userId) {
+      user = await User.findById(userId, "saved.posts").lean();
+    }
+    const data = await Promise.all(
       blogsList.map(async (blog) => {
         const liked = userId ? blog.likes.users.includes(userId) : false;
+        const saved = userId ? user.saved.posts.includes(blog._id) : false;
         const newBlog = blog.toObject();
         newBlog.text = newBlog.text.slice(0, 100);
         delete newBlog.likes.users;
         return {
-          blog: { ...newBlog, liked },
+          blog: { ...newBlog, liked, saved },
         };
       })
     );

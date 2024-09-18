@@ -7,6 +7,7 @@ import {
   getUserProfile,
   getUserPosts,
   updateUserPassword,
+  postSaveUnsave,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
@@ -32,6 +33,8 @@ userRouter.get("/posts", isAuthenticated, getUserPosts);
 
 // update user password
 userRouter.put("/pwd-ch", isAuthenticated, updateUserPassword);
+
+userRouter.post("/bookmarks", isAuthenticated, postSaveUnsave);
 
 // drops the users collection
 userRouter.delete("/", async (req, res) => {

@@ -9,6 +9,37 @@ import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
 
+export const postSaveUnsave = async (req, res) => {
+  const userId = req.userId;
+  const postId = req.query.postId;
+
+  if (!postId) {
+    return res.sendStatus(400);
+  } else if (!(await Post.exists({ _id: postId }))) {
+    return res.sendStatus(404);
+  }
+
+  try {
+    const user = await User.findById(userId);
+    const saved = user.saved.posts.includes(postId);
+    if (saved) {
+      user.saved.posts.pull(postId);
+      user.saved.count--;
+    } else {
+      user.saved.posts.push(postId);
+      user.saved.count++;
+    }
+    await user.save();
+    return res.json({
+      liked: !saved,
+    });
+  } catch (err) {
+    console.dir(err);
+    res.sendStatus(500);
+  }
+  return res.status(200).json({ message: "post found" });
+};
+
 export const getAuthInfo = async (req, res) => {
   // get a user by id
   // or 404 (not found) status if teh user is not found
