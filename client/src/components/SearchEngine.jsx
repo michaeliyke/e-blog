@@ -62,6 +62,11 @@ export const SearchEngine = () => {
   const handleFocus = () => setFocused(true);
   const handleBlur = () => setFocused(false);
 
+  const handleMouseDown = (e) => {
+    // Prevent onBlur from firing when clicking inside the results field
+    e.preventDefault();
+  };
+
   return (
     <div className="w-full px-5">
       <div
@@ -90,6 +95,7 @@ export const SearchEngine = () => {
     bg-[#f9f9f9] border border-gray-300 shadow-lg rounded-md z-50 scroll__style overflow-x-hidden
     ${focused && searchText ? "block" : "hidden"}`}
           onMouseEnter={() => setCurrentChoice(-1)}
+          onMouseDown={handleMouseDown}
         >
           <ul className="list-none py-2 m-0 scroll__style">
             {isLoading && result.length === 0 ? ( // If loading and no results yet
