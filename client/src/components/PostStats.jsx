@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
-import {
-  AiOutlineLike,
-  AiFillLike,
-  AiOutlineStar,
-  AiFillStar,
-} from 'react-icons/ai'; // Add AiFillLike for the filled icon
+import { AiOutlineLike, AiFillLike } from 'react-icons/ai';
 import { FaRegComment } from 'react-icons/fa';
 import { urlenCode, blogPostSchema } from '../util/basic';
+import { request } from '../util/Tools';
 
 function CommentButton({ post }) {
   post.numOfComments = post.numOfComments || 0;
@@ -35,13 +31,28 @@ function CommentButton({ post }) {
   );
 }
 
+let exec = true;
 function BookmarkButton({ post }) {
-  post.bookmarked = post.bookmarked || false;
-  const [bookmarked, setBookmarked] = useState(post.bookmarked);
+  const [bookmarked, setBookmarked] = useState(post.saved === true);
+  const url = `http://127.0.0.1:3000/users/bookmarks?postId=${post._id}`;
 
   function handleBookmark() {
+    request
+      .post(url)
+      .then((res) => {
+        return res.data;
+      })
+      .then((data) => {
+        // console.dir('BookmarkButton:', data);
+        setBookmarked(data.liked === true); // === for boolean safety
+      })
+      .catch((error) => {
+        console.error('BookmarkButton:', error);
+      });
     setBookmarked(!bookmarked);
   }
+
+  if (exec) exec = console.dir('BookmarkButton:', post);
 
   return (
     <button
