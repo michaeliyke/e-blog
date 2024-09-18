@@ -3,6 +3,7 @@ import { PostStats } from './PostStats';
 import { useSelector } from 'react-redux';
 import { request } from '../util/Tools';
 import { BookmarkButton } from './PostStats';
+import moment from 'moment';
 
 export const MiddleSide = () => {
   const [data, setData] = useState([]);
@@ -53,7 +54,7 @@ export const MiddleSide = () => {
     };
   }, [pageNumber, pageLoading]);
 
-  //   if(data && data.length > 0) console.dir('data:', data[0].blog);
+  if (data && data.length > 0) console.dir('data:', data[0].blog);
   return (
     <div className="lg:w-[700px] md:w-[600px] w-full mx-0 md:mx-5 h-full ">
       <div className="bg-white text-center mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
@@ -107,7 +108,10 @@ export const MiddleSide = () => {
                 </a>
                 <BookmarkButton post={blog} />
               </h3>
-              <p className="text-xs text-gray-500">2 days ago</p>
+              {/* <p className="text-xs text-gray-500">2 days ago</p> */}
+              <p className="text-xs text-gray-500">
+                {moment(blog.createdAt).fromNow()}
+              </p>
             </figcaption>
           </figure>
 
