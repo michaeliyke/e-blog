@@ -43,17 +43,16 @@ export const SearchEngine = () => {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setCurrentChoice((prev) => (prev < resultLength - 1 ? prev + 1 : 0));
+        setCurrentChoice((prev) => (prev < resultLength ? prev + 1 : 0));
         break;
       case "ArrowUp":
         e.preventDefault();
-        setCurrentChoice((prev) =>
-          prev < resultLength - 1 ? prev - 1 : resultLength
-        );
+        setCurrentChoice((prev) => (prev > 0 ? prev - 1 : resultLength));
         break;
       case "Enter":
         e.preventDefault();
-        console.log("enter");
+        // console.log("enter");
+        if (!result[currentChoice]) return;
         window.location.href = `/posts/${result[currentChoice].slug}`;
         break;
     }
