@@ -44,7 +44,7 @@ export const NavDock = () => {
           <hr className="absolute " />
         </li>
         {/* ---------start---------- */}
-        {isAuthenticated ? (
+        {isAuthenticated && (
           <>
             <li
               onClick={() => navigate('/post/new')}
@@ -97,10 +97,6 @@ export const NavDock = () => {
               <hr className="absolute " />
             </li>
           </>
-        ) : (
-          <p className="text-center text-sm text-gray-500 pl-0 pt-0 -mt-2 -ml-4 p-2 italic">
-            Log in to see more actions
-          </p>
         )}
         {/* -------end------------- */}
         <li
@@ -129,6 +125,14 @@ export const NavDock = () => {
           <hr className="absolute " />
         </li>
       </ul>
+      {isAuthenticated === false && (
+        <p className="text-center text-sm text-gray-500 mt-4 p-2 italic">
+          <span className="text-indigo-600 font-semibold cursor-pointer hover:underline">
+            Log in
+          </span>
+          &nbsp;to see more actions
+        </p>
+      )}
     </div>
   );
 };
