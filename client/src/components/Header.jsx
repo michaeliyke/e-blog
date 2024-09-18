@@ -31,7 +31,7 @@ export const Header = () => {
         <div
           onClick={() => navigate("/")}
           className="flex items-center justify-center h-auto
-        w-[120px] rounded-md ml-4 cursor-pointer home__btn border"
+        w-[120px] rounded-md ml-4 cursor-pointer home__btn"
         >
           <img src="/B.png" alt="" width={100} />
         </div>

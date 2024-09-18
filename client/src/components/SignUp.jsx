@@ -38,13 +38,13 @@ export const SignUp = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(formData);
+    // console.log(formData);
     e.preventDefault();
     setError(<br />);
     if (!formValidator(formData, setError)) {
       return;
     }
-    console.log(formData);
+    // console.log(formData);
     register(formData).then((status) => {
       if (status === 201) {
         dispatch(toggleSignIn());
@@ -71,7 +71,7 @@ export const SignUp = () => {
         onClick={clearPopUp}
       ></div>
       <div
-        className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
+        className={`text-white fixed w-[90%] sm:w-[500px] h-auto border bg-[#2b2738] flex flex-col items-center popup
           rounded-md p-9 z-10
           ${cardisVisible ? "" : "hide__popup"}`}
       >
@@ -150,12 +150,11 @@ export const SignUp = () => {
               <input
                 type="checkbox"
                 name="termsAgreed"
-                checked={formData.agreedToTerms}
+                checked={formData.termsAgreed}
                 onChange={handleCheckBox}
               />
 
               <span className="text-[15px] text-white">
-                {" "}
                 I agree to the{" "}
                 <a href="#" className="underline text-sky-300">
                   Terms & Conditions

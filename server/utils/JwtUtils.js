@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 
 const jwtSecret = process.env["JWT_SECRET"] || "create a new secret";
 
-export const createJwtToken = async (payload) => {
+export const createJwtToken = async (payload, checked) => {
   // create a JWT token
-  return jwt.sign(payload, jwtSecret, { expiresIn: "15d" });
+  return jwt.sign(payload, jwtSecret, { expiresIn: checked ? "15d" : "2h" });
 };
 
 export const verifyToken = async (token) => {

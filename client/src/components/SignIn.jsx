@@ -12,6 +12,7 @@ export const SignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    checkBox: false,
   });
   const [error, setError] = useState(<br />);
   const cardisVisible = useSelector((state) => state.app.card.signin);
@@ -25,7 +26,7 @@ export const SignIn = () => {
     dispatch(toggleSignUp());
   };
 
-  const handleCheckBox = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -39,12 +40,21 @@ export const SignIn = () => {
     if (!signInFormValidator(formData, setError)) {
       return;
     }
+    console.log(formData);
     login(formData).then(({ status, message }) => {
       if (status === 200) {
         window.location.href = "/";
       } else if (status === 403) {
         setError(message);
       }
+    });
+  };
+
+  const handleCheckBox = (e) => {
+    const { name, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: checked,
     });
   };
   return (
@@ -56,11 +66,11 @@ export const SignIn = () => {
         onClick={clearPopUp}
       ></div>
       <div
-        className={`text-white fixed w-[90%] sm:w-[500px] h-auto  shadow-sm shadow-white  bg-[#2b2738] flex flex-col items-center popup
+        className={`text-white fixed w-[90%] sm:w-[500px] h-auto border bg-[#2b2738] flex flex-col items-center popup
               rounded-md p-9 z-10
               ${cardisVisible ? "" : "hide__popup"}`}
       >
-        <h3 className="font-bold text-3xl mb-5 text-white ">Sign In</h3>
+        <h3 className="font-bold text-3xl mb-5 text-white ">Login</h3>
         <p className="text-center underline underline-offset-[4px] font-pompiere text-[22px]  mb-7 font-medium text-gray-300">
           Welcome to e-Blog <br /> Your blogging platform
         </p>
@@ -72,7 +82,7 @@ export const SignIn = () => {
               name="email"
               placeholder="Email"
               className="input__box w-full"
-              onChange={handleCheckBox}
+              onChange={handleChange}
             />
           </div>
           <div className="relative flex items-center mb-3">
@@ -81,7 +91,7 @@ export const SignIn = () => {
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
-              onChange={handleCheckBox}
+              onChange={handleChange}
             />
             <TogglePasswordVisibility
               visible={showPassword}
@@ -91,15 +101,20 @@ export const SignIn = () => {
 
           <div className="flex flex-col h-full">
             <div className="flex items-center mb-4">
-              <input type="checkbox" name="" id="" className="" />
+              <input
+                type="checkbox"
+                name="checkBox"
+                checked={formData.checkBox}
+                onChange={handleCheckBox}
+              />
 
-              <span className="text-[15px] text-white">Remembre me</span>
+              <span className="text-[15px] text-white">Remember me</span>
             </div>
             <button
               onClick={handleSubmit}
               className="mb-2 mt-6 border border-black w-full h-10 text-white rounded-sm bg-[#6e54b5]"
             >
-              Sign In
+              Login
             </button>
           </div>
         </form>

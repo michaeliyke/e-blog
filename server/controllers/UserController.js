@@ -84,21 +84,21 @@ export const getUserPosts = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   // login function
-  const { email, password } = req.body;
+  const { email, password, checkBox } = req.body;
 
   if (!email || !password) {
     return res.status(401).json({ status: "credential(s) missing" });
   }
 
   try {
-    //Later try using static method to validate user
+    // Later try using static method to validate user
     const user = await User.findOne({ email }, "password");
     if (!user) return res.status(403).json({ message: "Invalid user email" });
     if (!(await checkPassword(password, user.password)))
       return res.status(403).json({ message: "Invalid user password" });
 
     // return the JWT
-    const token = await createJwtToken({ userId: user._id });
+    const token = await createJwtToken({ userId: user._id }, checkBox);
     res.cookie("_token", `Bearer ${token}`);
     return res.status(200).json({ message: "success" });
   } catch (err) {
