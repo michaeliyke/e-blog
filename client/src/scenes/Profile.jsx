@@ -1,24 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { request } from '../util/Tools';
-import { useLocation } from 'react-router-dom';
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const slug = queryParams.get('slug');
+  const { slug } = useParams();
 
   let url = 'http://127.0.0.1:3000/users/profile';
   if (slug) url = `http://127.0.0.1:3000/users/info/?slug=${slug}`;
 
   const navigate = useNavigate();
-
-  console.log('Profile');
 
   useEffect(
     function cb() {
@@ -30,7 +25,8 @@ export function Profile() {
           return res.data;
         })
         .then((data) => {
-          console.dir(data.user);
+          if (data.user == null) data.user = data;
+          //   console.dir(data);
           setProfile(data);
           setLoading(false);
         })
@@ -71,11 +67,13 @@ export function Profile() {
             </div>
 
             {/* Edit profile button */}
-            <button
-              onClick={() => navigate('/profile/settings')}
-              className="absolute top-6 right-6 bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
-              Edit profile
-            </button>
+            {Boolean(slug) === false && (
+              <button
+                onClick={() => navigate('/profile/settings')}
+                className="absolute top-6 right-6 bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
+                Edit profile
+              </button>
+            )}
 
             {/* User info */}
             <div className="flex items-center flex-col my-14">
