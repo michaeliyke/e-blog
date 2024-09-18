@@ -21,11 +21,12 @@ export const likeUnlike = async (req, res) => {
     const content = await model.findById(id, "likes");
     if (!content)
       return res.status(404).json({
-        message: postId
-          ? "Blog not found"
-          : commentId
-          ? "Comment not found"
-          : "Reply not found",
+        message:
+          model === Post
+            ? "Blog not found"
+            : model === Comment
+            ? "Comment not found"
+            : "Reply not found",
       });
 
     const alreadyLiked = content.likes.users.includes(userId);
@@ -74,11 +75,12 @@ export const getLikes = async (req, res) => {
       .lean();
     if (!content)
       return res.status(404).json({
-        message: postId
-          ? "Blog not found"
-          : commentId
-          ? "Comment not found"
-          : "Reply not found",
+        message:
+          model === Post
+            ? "Blog not found"
+            : model === Comment
+            ? "Comment not found"
+            : "Reply not found",
       });
     return res.json({ users: content.likes.users, count: content.likes.count });
   } catch (err) {
