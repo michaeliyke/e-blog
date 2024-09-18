@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
 import { getCookie } from '../util/basic';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 export function Comments(post) {
   const [comments, setComments] = useState([]);
@@ -9,6 +10,8 @@ export function Comments(post) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const url = `http://127.0.0.1:3000/blogs/${post.post._id}/comments`;
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   function shareComment(event) {
     event.preventDefault();
@@ -70,19 +73,22 @@ export function Comments(post) {
       <h2 className="text-2xl font-bold mb-4">Comments</h2>
       <div className="space-y-6">
         {/* Comment box */}
-        <form className="flex space-x-4">
-          <div className="flex-grow">
-            <textarea
-              className="comment-box w-full h-24 p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none"
-              placeholder="Write a comment..."></textarea>
-            <button
-              className="mt-4 mb-10 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition duration-300"
-              onClick={shareComment}>
-              Share comment
-            </button>
-          </div>
-        </form>
-
+        {isAuthenticated ? (
+          <form className="flex space-x-4">
+            <div className="flex-grow">
+              <textarea
+                className="comment-box w-full h-24 p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none"
+                placeholder="Write a comment..."></textarea>
+              <button
+                className="mt-4 mb-10 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition duration-300"
+                onClick={shareComment}>
+                Share comment
+              </button>
+            </div>
+          </form>
+        ) : (
+          <p className="text-gray-600">Please log in to comment</p>
+        )}
         {/* Main Comments */}
         {comments &&
           Array.isArray(comments) &&
