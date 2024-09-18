@@ -46,7 +46,7 @@ export const getNextTagId = async () => {
   return info.tagCount;
 };
 
-const uploadToImgBB = async (image) => {
+export const uploadToImgBB = async (image) => {
   let response;
   const IMG_BB = process.env.IMGBB_KEY;
   const IMG_BB_URL = `https://api.imgbb.com/1/upload?&key=${IMG_BB}`;
@@ -90,4 +90,9 @@ export const uploadImage = async (image, user) => {
     user.profilePicture = { ...data };
     user.save();
   }
+};
+
+export const unify = (word) => {
+  if (!word) return "";
+  return word[0].toUpperCase() + word.slice(1).toLowerCase();
 };

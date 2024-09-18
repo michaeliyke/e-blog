@@ -125,3 +125,8 @@ export const deleteCookie = (name, path = "/", domain = "") => {
   }
   document.cookie = cookieString;
 };
+
+export const unify = (word) => {
+  if (!word) return "";
+  return word[0].toUpperCase() + word.slice(1).toLowerCase();
+};

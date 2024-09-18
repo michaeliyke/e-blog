@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import axios from "axios";
+import { unify } from "../util/Tools";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
@@ -51,17 +52,10 @@ export function CreateAPost() {
   // Add a tag when the user types a space or a comma
   function handleInputChange(eventObj) {
     const value = eventObj.target.value;
-    if (value.includes(" ") || value.includes(",")) {
-      const newTag = value.trim().replace(",", "");
-      if (newTag && tags.length < 4 && !tags.includes(newTag)) {
-        setTags([...tags, newTag]);
-      }
-      setInput(""); // Clear the input after adding the tag
-    } else {
-      setInput(value); // Continue typing
-      if (value) suggest(value);
-      else setTagSuggestions([]);
-    }
+
+    setInput(value); // Continue typing
+    if (value) suggest(value);
+    else setTagSuggestions([]);
   }
 
   // Remove a tag when clicking on it
@@ -157,18 +151,19 @@ export function CreateAPost() {
   // handle the separation of tags
   //
   function handleKeyDown(eventOb) {
+    const value = input.trim();
     if (eventOb.key === " " || eventOb.key === "," || eventOb.key === "Enter") {
       eventOb.preventDefault();
-      if (input.trim() && tags.length < 4) {
-        setTags([...tags, { id: tags.length, name: input.trim() }]);
+      if (value && tags.length < 4) {
+        setTags([...tags, { id: tags.length, name: unify(value) }]);
         setInput("");
       }
     } else if (eventOb.key === "Tab") {
       eventOb.preventDefault();
       if (tagSuggestions[0]) handleSuggestion(eventOb, tagSuggestions[0]);
-      else if (input) handleSuggestion(eventOb, { name: input });
+      else if (value) handleSuggestion(eventOb, { name: unify(value) });
     } else if (eventOb.key === "Backspace") {
-      if (!input && tags.length !== 0) {
+      if (!value && tags.length !== 0) {
         eventOb.preventDefault();
         setInput(tags[tags.length - 1].name);
         setTags(tags.slice(0, -1));
@@ -181,7 +176,7 @@ export function CreateAPost() {
       <div
         className={`w-80 h-30 fixed flex flex-col justify-center items-center top-4 bg-gray-300 rounded-lg shadow-xl p-4 border border-gray-400
            transition-transform duration-500 ease-in-out ${
-             isLoading
+             isLoading && coverPicture
                ? "translate-y-0 opacity-100"
                : "-translate-y-full opacity-0"
            }`}

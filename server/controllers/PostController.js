@@ -3,7 +3,12 @@ import Post from "../models/Post.js";
 import Tag from "../models/Tag.js";
 import User from "../models/User.js";
 import { fakeUsers, fakeBlogs } from "../utils/FakeData.js";
-import { getNextTagId, stringToSlug, uploadCover } from "../utils/tools.js";
+import {
+  getNextTagId,
+  stringToSlug,
+  unify,
+  uploadToImgBB,
+} from "../utils/tools.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -104,13 +109,14 @@ export const createNewPost = async (req, res) => {
   }
 
   for (const tag of tags) {
-    currentTag = await Tag.findOne({ name: tag }).exec();
+    const newTag = unify(tag);
+    currentTag = await Tag.findOne({ name: newTag }).exec();
     if (currentTag) {
       tagList.push(currentTag._id);
       tagObjects.push(currentTag);
     } else {
       const _id = await getNextTagId();
-      currentTag = await Tag({ name: tag, _id });
+      currentTag = await Tag({ name: newTag, _id });
       await currentTag.save();
       tagList.push(currentTag._id);
       tagObjects.push(currentTag);
@@ -128,13 +134,16 @@ export const createNewPost = async (req, res) => {
       tag.count++;
       tag.save();
     }
-    await post.save();
     if (image) {
-      uploadCover(image, post);
+      const imageData = await uploadToImgBB(image);
+      post.cover = { ...imageData };
+      // await uploadCover(image, post);
     }
+    await post.save();
     return res.status(200).json({ post });
   } catch (err) {
     const statusCode = err.status || 500;
+    console.log(err);
     return res.sendStatus(statusCode);
   }
 };
