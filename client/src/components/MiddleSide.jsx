@@ -10,6 +10,11 @@ export const MiddleSide = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
+  function getUserHref(user) {
+    if (isAuthenticated) return '/profile';
+    return `/profile/${user.href}`;
+  }
+
   // get all the blog and store then in data
   useEffect(() => {
     console.log('get page:', pageNumber);
@@ -86,7 +91,7 @@ export const MiddleSide = () => {
           className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
           {/* User Information */}
           <figure className="flex items-center mb-4 relative">
-            <a href={`/profile/${blog.user.href}`}>
+            <a href={getUserHref(blog.user)}>
               <img
                 src={blog.user.profilePicture.thumbnail}
                 alt="User avatar"
@@ -97,7 +102,7 @@ export const MiddleSide = () => {
             </a>
             <figcaption>
               <h3 className="font-bold text-gray-700">
-                <a href={`/profile/${blog.user.href}`}>
+                <a href={getUserHref(blog.user)}>
                   {blog.user.firstname} {blog.user.lastname}
                 </a>
                 <BookmarkButton post={blog} />
