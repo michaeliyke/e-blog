@@ -6,7 +6,7 @@ import {
   modReply,
   getReplies,
 } from "../controllers/ReplyController.js";
-import { getComment } from "../controllers/CommentController.js";
+// import { getComment } from "../controllers/CommentController.js";
 
 const commentRouter = Router();
 

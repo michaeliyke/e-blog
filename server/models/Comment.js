@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 import { replySchema } from "./Reply.js";
-import { likeSchema } from "./Likes.js";
 
 const commentSchema = new Schema(
   {
@@ -8,7 +7,6 @@ const commentSchema = new Schema(
     text: { type: String, required: true },
     replies: [replySchema],
     likes: {
-      // users: [likeSchema],
       users: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
       count: { type: Number, default: 0 },
     },

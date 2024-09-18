@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { getLikes, likeUnlike } from "../controllers/LikeController.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
-import { getReply } from "../controllers/ReplyController.js";
+// import { getReply } from "../controllers/ReplyController.js";
 
 const replyRouter = Router();
 
