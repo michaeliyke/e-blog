@@ -69,7 +69,7 @@ export const UserSettings = () => {
       </figure>
       <div
         ref={optionsRef}
-        className="options__list absolute w-36 bg-gray-200 border-black right-0 rounded-md overflow-hidden transition-all duration-200 ease-out text-sm"
+        className="options__list z-20 absolute w-36 bg-gray-200 border-black right-0 rounded-md overflow-hidden transition-all duration-200 ease-out text-sm"
         style={style}
       >
         <div className="flex flex-col border border-black rounded-md overflow-hidden">
