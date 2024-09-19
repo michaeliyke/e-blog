@@ -51,6 +51,7 @@ async function getPageOfBlogs(req, res) {
     }
     const data = await Promise.all(
       blogsList.map(async (blog) => {
+        // console.dir(blog.likes.users);
         const liked = userId ? blog.likes.users.includes(userId) : false;
         const saved = userId ? user.saved.posts.includes(blog._id) : false;
         const newBlog = blog.toObject();
@@ -190,6 +191,8 @@ export const searchEngine = async (req, res) => {
 
 export const getTrendingPosts = async (req, res) => {
   const pageNumber = parseInt(req.query.page) || 1;
+  const userId = req.userId;
+  let user;
   const lookups = [
     {
       $lookup: {
@@ -200,7 +203,7 @@ export const getTrendingPosts = async (req, res) => {
       },
     },
     {
-      $unwind: "$user", // Flatten the user array into an object
+      $unwind: "$user",
     },
     {
       $lookup: {
@@ -212,7 +215,6 @@ export const getTrendingPosts = async (req, res) => {
     },
   ];
   const fields = {
-    _id: 0,
     title: 1,
     slug: 1,
     text: { $substrCP: ["$text", 0, 100] },
@@ -224,13 +226,31 @@ export const getTrendingPosts = async (req, res) => {
     "tags.name": 1,
     createdAt: 1,
     "likes.count": 1,
+    "likes.users": 1,
     "comments.count": 1,
     "cover.medium": 1,
-    trendingScore: 1,
   };
-  const topPosts = await getTrendingPage(pageNumber, fields, lookups);
-  // console.dir({ topPosts });
-  return res.json(topPosts);
+  try {
+    const topPosts = await getTrendingPage(pageNumber, fields, lookups);
+    if (userId) {
+      user = await User.findById(userId, "saved.posts").lean();
+    }
+    const data = await Promise.all(
+      topPosts.map(async (blog) => {
+        const liked =
+          userId && blog.likes.users.some((user) => user.equals(userId));
+        const saved = userId ? user.saved.posts.includes(blog._id) : false;
+        delete blog.likes.users;
+        return {
+          blog: { ...blog, liked, saved },
+        };
+      })
+    );
+    return res.json(data);
+  } catch (err) {
+    console.dir(err);
+    return res.sendStatus(400);
+  }
 };
 
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };

@@ -19,7 +19,10 @@ export const isAuthenticated = async (req, res, next) => {
     }
   }
 
-  if (url.startsWith("/blogs/page/") && method === "GET") {
+  if (
+    method === "GET" &&
+    (url.startsWith("/blogs/page/") || url.startsWith("/blogs/trending"))
+  ) {
     return next();
   }
   return res.status(401).json({ message: "UNAUTHORIZED" });

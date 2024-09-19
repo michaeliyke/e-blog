@@ -97,7 +97,7 @@ export const NavDock = () => {
         )}
         {/* -------end------------- */}
         <li
-          onClick={() => navigate("/posts?trending=true")}
+          onClick={() => navigate("/posts/trending")}
           className="relative w-fit mb-3 nav__dock_li"
         >
           <div className="grid grid-cols-[25px_auto] gap-4 items-center">
