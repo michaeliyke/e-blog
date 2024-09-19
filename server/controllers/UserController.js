@@ -8,6 +8,7 @@ import {
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
+import axios from "axios";
 
 export const postSaveUnsave = async (req, res) => {
   const userId = req.userId;
@@ -335,4 +336,33 @@ export const getSavedPosts = async (req, res) => {
     console.dir(err);
     return res.sendStatus(400);
   }
+};
+
+export const deleteUser = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const user = await User.findById(userId).select("posts");
+    if (!user) {
+      console.log("User not found");
+      return;
+    }
+
+    // Delete the user
+    if (user.profilePicture.deleteUrl)
+      axios.delete(user.profilePicture.deleteUrl);
+
+    // Delete the posts
+    console.log(user.posts);
+    if (user.posts.length > 0) {
+      await Post.deleteMany({ _id: { $in: user.posts } });
+      console.log("Posts deleted");
+    } else {
+      console.log("No posts to delete");
+    }
+    await User.findByIdAndDelete(userId);
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("Error deleting user and posts:", error);
+  }
+  return res.sendStatus(400);
 };

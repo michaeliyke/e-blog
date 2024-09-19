@@ -10,6 +10,7 @@ import {
   postSaveUnsave,
   getUserPublicPosts,
   getSavedPosts,
+  deleteUser,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
@@ -29,6 +30,8 @@ userRouter.put("/profile", isAuthenticated, upload.single("image"), updateUser);
 
 // get user info
 userRouter.get("/profile", isAuthenticated, getUserProfile);
+
+userRouter.delete("/profile", isAuthenticated, deleteUser);
 
 // get user posts
 userRouter.get("/posts", isAuthenticated, getUserPosts);
