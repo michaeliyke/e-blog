@@ -10,6 +10,7 @@ import "./index.css";
 import { TrendingPage } from "./scenes/TrendingPage";
 import { UsersProfile } from "./scenes/UsersProfile";
 import { Favorites } from "./scenes/Favorites";
+import { About } from "./scenes/About";
 
 function App() {
   return (
@@ -38,6 +39,12 @@ function App() {
         element={<PrivateRoute element={ProfileSettings} />}
       />
       <Route path="/favorites" element={<PrivateRoute element={Favorites} />} />
+
+      {/* about page */}
+      <Route
+        path="/about"
+        element={<PrivateRoute open={true} element={About} />}
+      />
 
       {/* 404 route */}
       <Route path="/404" element={<NotFoundPage />} />
