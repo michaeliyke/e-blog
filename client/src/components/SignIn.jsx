@@ -43,7 +43,8 @@ export const SignIn = () => {
     console.log(formData);
     login(formData).then(({ status, message }) => {
       if (status === 200) {
-        window.location.href = "/";
+        // window.location.href = "/";
+        window.location.reload();
       } else if (status === 403) {
         setError(message);
       }
@@ -60,7 +61,7 @@ export const SignIn = () => {
   return (
     <>
       <div
-        className={`popup__container z-10 fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
+        className={`popup__container z-[11] fixed bg-black w-full h-full transition-all duration-500 ease-in-out ${
           cardisVisible ? "opacity-60" : "opacity-0 pointer-events-none"
         }`}
         onClick={clearPopUp}
