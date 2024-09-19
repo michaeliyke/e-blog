@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+CU:wght@100..400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pompiere&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #f7f9f9;
+  /* background-color: #cecece; */
+  background-image: url("/public/noisy-texture-100x100.png");
+  /* background-size: cover; */
+  z-index: 5;
+}
+
+.popup {
+  top: 50%;
+  left: 50%;
+  z-index: 15;
+  transform: translate(-50%, -50%) scale(1);
+  transition: all 0.8s ease;
+}
+
+.hide__popup {
+  top: -100%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%) scale(0.1);
+  transition: all 0.8s ease-in-out;
+}
+
+.input__box {
+  @apply p-2 h-10 text-[16px] rounded-sm border border-gray-600 shadow-md outline-none bg-[#3b364c];
+}
+
+.password__section span {
+  @apply border border-gray-600 shadow-md bg-[#3b364c] h-10 text-[16px] rounded-sm;
+  @apply relative flex-grow flex items-center;
+}
+
+.password__section input {
+  @apply bg-transparent outline-none ml-2 w-[78%];
+}
+
+.eye__icon {
+  @apply absolute right-1 top-1/2 transform -translate-y-1/2 cursor-pointer;
+  @apply hover:bg-[#5f587d] size-8 p-1.5 rounded-full;
+  transition: background-color 0.3s ease;
+}
+
+.form__container p {
+  @apply ml-4 font-[400] font-poppins text-gray-100 text-sm mb-3;
+}
+
+.oath__buttons {
+  @apply transition-all border border-white w-1/3 h-11 rounded-sm flex justify-center items-center;
+}
+
+.github__btn {
+  @apply hover:bg-black;
+}
+.google__btn {
+  @apply hover:bg-[#3881f3] hover:border-blue-500;
+}
+
+input[type="checkbox"] {
+  margin: 0 8px 0 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.scroll__style::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.scroll__style::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+.scroll__style::-webkit-scrollbar-thumb {
+  background: #888; /* Thumb color */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.home__btn:hover .home__img_btn {
+  @apply animate-bounce;
+}
+
+@keyframes horizontalBounce {
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.bouncing__msg__container:hover .bouncing__msg {
+  animation: horizontalBounce 1s ease-in-out infinite;
+}

@@ -1,7 +1,3 @@
-temp/
-temp*.*
-temp*/*
-temp.*
 # Logs
 logs
 *.log
