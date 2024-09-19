@@ -5,15 +5,22 @@ import { toggleSignIn } from "../state/appSlice/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SearchEngine } from "./SearchEngine";
+import { useState } from "react";
+import { NavDockMD } from "./NavDockMD";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [isNavDockVisible, setIsNavDockVisible] = useState(false);
   const dispatch = useDispatch();
 
   const toggleFormPopUp = () => {
     // prompt the login card
     dispatch(toggleSignIn());
+  };
+
+  const toggleNav = () => {
+    setIsNavDockVisible(!isNavDockVisible);
   };
 
   return (
@@ -28,10 +35,23 @@ export const Header = () => {
         className="flex items-center  h-16  justify-between p-1
        bg-white shadow-xl border border-gray-300"
       >
+        <div className="block md:hidden">
+          <div
+            className="p-1 mr-2 hover:bg-gray-400 size-[50px] "
+            onClick={toggleNav}
+          >
+            <img src="/menu.svg" alt="" />
+          </div>
+          {isNavDockVisible && (
+            <div className="absolute top-[63px] h-auto z-[100]">
+              <NavDockMD />
+            </div>
+          )}
+        </div>
         <div
           onClick={() => navigate("/")}
           className="flex items-center justify-center h-auto
-        w-[120px] rounded-md ml-4 cursor-pointer home__btn"
+        w-[120px] rounded-md md:ml-4  cursor-pointer home__btn"
         >
           <img src="/B.png" alt="" width={100} />
         </div>
