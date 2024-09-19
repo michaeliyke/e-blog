@@ -98,31 +98,43 @@ export const unify = (word) => {
   return word[0].toUpperCase() + word.slice(1).toLowerCase();
 };
 
-export const getTrendingPage = async (page = 1) => {
+export const getTrendingPage = async (
+  page = 1,
+  fields = null,
+  lookups = []
+) => {
   try {
-    const posts = await Post.aggregate([
+    const query = [
       {
         $addFields: {
-          timeSinsePosted: {
-            $divide: [{ $subtract: [new Date(), "$createdAt"] }, 3600000],
-          },
           trendingScore: {
             // add 1 to prevent division by zero
-            $divide: ["likes.count", { $add: ["$timeSincePosted", 1] }],
+            $divide: [
+              "$likes.count",
+              {
+                $add: [
+                  {
+                    $divide: [
+                      { $subtract: [new Date(), "$createdAt"] },
+                      3600000,
+                    ],
+                  },
+                  1,
+                ],
+              },
+            ],
           },
         },
       },
       { $sort: { trendingScore: -1 } },
       { $skip: (page - 1) * 10 },
       { $limit: 10 },
-      {
-        $project: {
-          _id: 0,
-          title: 1,
-          slug: 1,
-        },
-      },
-    ]);
+    ];
+    // check for any join fields
+    if (lookups.length > 0) query.push(...lookups);
+    // check if given a query fields
+    if (fields) query.push({ $project: fields });
+    const posts = await Post.aggregate(query);
     return posts;
   } catch (err) {
     console.log(err);

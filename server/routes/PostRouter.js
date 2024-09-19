@@ -7,6 +7,7 @@ import {
   getPostBySlug,
   getTopTen,
   searchEngine,
+  getTrendingPosts,
   // createBlog,
   // updateBlog,
 } from "../controllers/PostController.js";
@@ -54,6 +55,7 @@ postRouter.post("/:postId/comments", isAuthenticated, makeComment);
 postRouter.all("/:postId/comments/:commentId", isAuthenticated, modComment);
 
 postRouter.get("/top-ten", getTopTen);
+postRouter.get("/trending", getTrendingPosts);
 
 postRouter.get("/search", searchEngine);
 

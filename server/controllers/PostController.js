@@ -161,9 +161,12 @@ export const getPostBySlug = async (req, res) => {
 };
 
 export const getTopTen = async (req, res) => {
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-  const topPosts = await getTrendingPage();
+  const fields = {
+    _id: 0,
+    title: 1,
+    slug: 1,
+  };
+  const topPosts = await getTrendingPage(1, fields);
   return res.json({ topPosts });
 };
 
@@ -183,6 +186,51 @@ export const searchEngine = async (req, res) => {
     .lean();
 
   return res.json(posts);
+};
+
+export const getTrendingPosts = async (req, res) => {
+  const pageNumber = parseInt(req.query.page) || 1;
+  const lookups = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $unwind: "$user", // Flatten the user array into an object
+    },
+    {
+      $lookup: {
+        from: "tags",
+        localField: "tags",
+        foreignField: "_id",
+        as: "tags",
+      },
+    },
+  ];
+  const fields = {
+    _id: 0,
+    title: 1,
+    slug: 1,
+    text: { $substrCP: ["$text", 0, 100] },
+    "user.firstname": 1,
+    "user.lastname": 1,
+    "user.href": 1,
+    "user.profilePicture.thumbnail": 1,
+    "tags._id": 1,
+    "tags.name": 1,
+    createdAt: 1,
+    "likes.count": 1,
+    "comments.count": 1,
+    "cover.medium": 1,
+    trendingScore: 1,
+  };
+  const topPosts = await getTrendingPage(pageNumber, fields, lookups);
+  // console.dir({ topPosts });
+  return res.json(topPosts);
 };
 
 export { allBlogs, createTestPosts, getPageOfBlogs, getPostById };
