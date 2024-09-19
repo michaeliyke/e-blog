@@ -9,6 +9,7 @@ import { NotFoundPage, NotFoundRedirect } from "./scenes/NotFound";
 import "./index.css";
 import { TrendingPage } from "./scenes/TrendingPage";
 import { UsersProfile } from "./scenes/UsersProfile";
+import { Favorites } from "./scenes/Favorites";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         path="/profile/settings"
         element={<PrivateRoute element={ProfileSettings} />}
       />
+      <Route path="/favorites" element={<PrivateRoute element={Favorites} />} />
 
       {/* 404 route */}
       <Route path="/404" element={<NotFoundPage />} />

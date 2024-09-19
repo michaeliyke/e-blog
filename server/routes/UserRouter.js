@@ -9,6 +9,7 @@ import {
   updateUserPassword,
   postSaveUnsave,
   getUserPublicPosts,
+  getSavedPosts,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
@@ -36,6 +37,9 @@ userRouter.get("/posts", isAuthenticated, getUserPosts);
 userRouter.put("/pwd-ch", isAuthenticated, updateUserPassword);
 
 userRouter.post("/bookmarks", isAuthenticated, postSaveUnsave);
+
+// get saved posts
+userRouter.get("/bookmarks", isAuthenticated, getSavedPosts);
 
 userRouter.get("/:userId/posts", isAuthenticated, getUserPublicPosts);
 

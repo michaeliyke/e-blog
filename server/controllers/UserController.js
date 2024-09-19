@@ -309,3 +309,30 @@ export const getUserPublicPosts = async (req, res) => {
     return res.sendStatus(400);
   }
 };
+
+export const getSavedPosts = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const { saved } = await User.findById(userId, "saved").populate({
+      path: "saved.posts",
+      select:
+        "_id title user slug tags createdAt likes comments.count cover.medium",
+      populate: {
+        path: "tags",
+        select: "name",
+      },
+      populate: {
+        path: "user",
+        select: "firstname lastname href profilePicture.thumbnail -_id",
+      },
+    });
+    const data = saved.posts.map((post) => {
+      return { blog: post };
+    });
+    console.log(data);
+    return res.json(data);
+  } catch (err) {
+    console.dir(err);
+    return res.sendStatus(400);
+  }
+};
