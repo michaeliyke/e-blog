@@ -44,7 +44,7 @@ export const Trending = () => {
     };
   }, [pageNumber, pageIsLoading]);
   return (
-    <div className="">
+    <div>
       {data.map(({ blog }) => (
         <div
           key={blog._id}
@@ -52,7 +52,7 @@ export const Trending = () => {
         >
           {/* User Information */}
           <figure className="flex items-center mb-4 relative">
-            <a href={`/profile/${blog.user.href}`}>
+            <a href={`/user/${blog.user.href}`}>
               <img
                 src={blog.user.profilePicture.thumbnail}
                 alt="User avatar"
@@ -63,7 +63,7 @@ export const Trending = () => {
             </a>
             <figcaption>
               <h3 className="font-bold text-gray-700">
-                <a href={`/profile/${blog.user.href}`}>
+                <a href={`/user/${blog.user.href}`}>
                   {blog.user.firstname} {blog.user.lastname}
                 </a>
                 <BookmarkButton post={blog} />

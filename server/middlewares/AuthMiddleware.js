@@ -21,7 +21,9 @@ export const isAuthenticated = async (req, res, next) => {
 
   if (
     method === "GET" &&
-    (url.startsWith("/blogs/page/") || url.startsWith("/blogs/trending"))
+    (url.startsWith("/blogs/page/") ||
+      url.startsWith("/blogs/trending") ||
+      url.match(/^\/users\/[a-fA-F0-9]{24}\/posts/))
   ) {
     return next();
   }

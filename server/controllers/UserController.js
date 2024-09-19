@@ -131,7 +131,7 @@ export async function getUserInfo(req, res) {
   if (userId) {
     const user = await User.findById(
       userId,
-      "firstname lastname profilePicture.medium"
+      "firstname lastname profilePicture.medium profilePicture.thumbnail"
     ).exec();
     if (user) {
       return res.status(200).json(user);
@@ -140,7 +140,7 @@ export async function getUserInfo(req, res) {
   } else if (slug) {
     const user = await User.findOne(
       { href: slug },
-      "firstname lastname profilePicture.medium"
+      "firstname lastname href profilePicture.medium profilePicture.thumbnail"
     ).exec();
     if (user) {
       return res.status(200).json(user);
@@ -266,5 +266,46 @@ export const updateUserPassword = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(400).json({ message: "Password update failed" });
+  }
+};
+
+export const getUserPublicPosts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const userId = req.params.userId;
+  const authUserId = req.userId;
+  let authUser;
+  try {
+    const { posts } = await User.findById(userId, "posts -_id").populate({
+      path: "posts",
+      select:
+        "_id title user slug tags createdAt likes comments.count cover.medium",
+      populate: {
+        path: "tags",
+        select: "name",
+      },
+    });
+    if (authUserId) {
+      authUser = await User.findById(authUserId, "saved.posts").lean();
+    }
+    // console.log(posts);
+    const data = await Promise.all(
+      posts.map(async (blog) => {
+        const liked =
+          authUserId &&
+          blog.likes.users.some((user) => user.equals(authUserId));
+        const saved = authUserId
+          ? authUser.saved.posts.includes(blog._id)
+          : false;
+        const newBlog = blog.toObject();
+        delete newBlog.likes.users;
+        return {
+          blog: { ...newBlog, liked, saved },
+        };
+      })
+    );
+    return res.json(data);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(400);
   }
 };

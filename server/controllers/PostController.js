@@ -142,6 +142,9 @@ export const createNewPost = async (req, res) => {
       // await uploadCover(image, post);
     }
     await post.save();
+    const user = await User.findById(userId, "posts");
+    user.posts.push(post._id);
+    user.save();
     return res.status(200).json({ post });
   } catch (err) {
     const statusCode = err.status || 500;

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { PostStats } from './PostStats';
-import { useSelector } from 'react-redux';
-import { request } from '../util/Tools';
-import { BookmarkButton } from './PostStats';
-import moment from 'moment';
+import { useEffect, useState } from "react";
+import { PostStats } from "./PostStats";
+import { useSelector } from "react-redux";
+import { request } from "../util/Tools";
+import { BookmarkButton } from "./PostStats";
+import moment from "moment";
 
 export const MiddleSide = () => {
   const [data, setData] = useState([]);
@@ -11,14 +11,9 @@ export const MiddleSide = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
 
-  function getUserHref(user) {
-    if (isAuthenticated) return '/profile';
-    return `/profile/${user.href}`;
-  }
-
   // get all the blog and store then in data
   useEffect(() => {
-    console.log('get page:', pageNumber);
+    console.log("get page:", pageNumber);
     request
       .get(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
       .then((res) => {
@@ -26,7 +21,7 @@ export const MiddleSide = () => {
         setData((prev) => [...prev, ...res.data]);
         setPageLoading(false);
       })
-      .catch((err) => console.log('err:', err));
+      .catch((err) => console.log("err:", err));
   }, [pageNumber]);
 
   useEffect(() => {
@@ -46,15 +41,15 @@ export const MiddleSide = () => {
     };
 
     // Add the scroll event listener
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     // Clean up the event listener when the component unmounts
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [pageNumber, pageLoading]);
 
-  if (data && data.length > 0) console.dir('data:', data[0].blog);
+  if (data && data.length > 0) console.dir("data:", data[0].blog);
   return (
     <div className="lg:w-[700px] md:w-[600px] w-full mx-0 md:mx-5 h-full ">
       <div className="bg-white text-center mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
@@ -68,7 +63,8 @@ export const MiddleSide = () => {
             </p>
             <button
               className="bg-blue-500 text-white w-full py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-              onClick={() => (window.location.href = '/post/new')}>
+              onClick={() => (window.location.href = "/post/new")}
+            >
               <span>Create Post</span>
             </button>
           </>
@@ -89,10 +85,11 @@ export const MiddleSide = () => {
       {data.map(({ blog }) => (
         <div
           key={blog._id}
-          className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
+          className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
+        >
           {/* User Information */}
           <figure className="flex items-center mb-4 relative">
-            <a href={getUserHref(blog.user)}>
+            <a href={`/user/${blog.user.href}`}>
               <img
                 src={blog.user.profilePicture.thumbnail}
                 alt="User avatar"
@@ -103,7 +100,7 @@ export const MiddleSide = () => {
             </a>
             <figcaption>
               <h3 className="font-bold text-gray-700">
-                <a href={getUserHref(blog.user)}>
+                <a href={`/user/${blog.user.href}`}>
                   {blog.user.firstname} {blog.user.lastname}
                 </a>
                 <BookmarkButton post={blog} />

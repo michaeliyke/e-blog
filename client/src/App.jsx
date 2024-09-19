@@ -8,6 +8,7 @@ import { ProfileSettings } from "./scenes/ProfileSettings";
 import { NotFoundPage, NotFoundRedirect } from "./scenes/NotFound";
 import "./index.css";
 import { TrendingPage } from "./scenes/TrendingPage";
+import { UsersProfile } from "./scenes/UsersProfile";
 
 function App() {
   return (
@@ -21,8 +22,8 @@ function App() {
 
       {/* Public profile view */}
       <Route
-        path="/profile/:slug"
-        element={<PrivateRoute open={true} element={Profile} />}
+        path="/user/:slug"
+        element={<PrivateRoute open={true} element={UsersProfile} />}
       />
       <Route
         path="/posts/trending"
