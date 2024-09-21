@@ -2,6 +2,7 @@ import { Reply } from "../models/Reply.js";
 import Comment from "../models/Comment.js";
 import { startSession } from "mongoose";
 
+// Reply to a comment
 export const replyToComment = async (req, res) => {
   const userId = req.userId;
 
@@ -45,6 +46,7 @@ export const replyToComment = async (req, res) => {
   }
 };
 
+// modify (edit, delete) a comment
 export const modReply = async (req, res) => {
   const userId = req.userId;
 
@@ -109,6 +111,7 @@ export const modReply = async (req, res) => {
   }
 };
 
+// get all the current replies for a comment
 export const getReplies = async (req, res) => {
   const commentId = req.params.commentId;
 

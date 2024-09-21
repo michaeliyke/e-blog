@@ -2,6 +2,7 @@ import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
 import { Reply } from "../models/Reply.js";
 
+// Like or unlike a post, comment or reply
 export const likeUnlike = async (req, res) => {
   const userId = req.userId;
 
@@ -47,6 +48,7 @@ export const likeUnlike = async (req, res) => {
   }
 };
 
+// Get likes statistics for a post, comment or reply
 export const getLikes = async (req, res) => {
   const model = {
     "/blogs": Post,
