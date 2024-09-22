@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 
+// Schema definition for a reply object
 const replySchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },

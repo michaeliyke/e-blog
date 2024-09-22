@@ -2,6 +2,7 @@ import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
 import { startSession, Types } from "mongoose";
 
+// Get all the comments for a post
 export const getComments = async (req, res) => {
   const postId = req.params.postId;
   const limit = req.query.limit;
@@ -26,6 +27,7 @@ export const getComments = async (req, res) => {
   }
 };
 
+// Comment on a post
 export const makeComment = async (req, res) => {
   const userId = req.userId;
   const postId = req.params.postId;
@@ -73,6 +75,7 @@ export const makeComment = async (req, res) => {
   }
 };
 
+// Modify (Edit or delete) a comment
 export const modComment = async (req, res) => {
   const userId = req.userId;
 

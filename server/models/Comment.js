@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { replySchema } from "./Reply.js";
 
+// Schema defining the properties of a comment object.
 const commentSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
