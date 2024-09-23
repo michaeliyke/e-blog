@@ -4,11 +4,13 @@ import { SlOptionsVertical } from "react-icons/sl";
 import { MdOutlineEdit, MdDelete } from "react-icons/md";
 import { PopUpConfirme } from "./PopUpConfirme";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 export const PostOptions = ({ postId }) => {
   const [displayOptions, setDisplayOptions] = useState(false);
   const [popUpConfirme, setPopUpConfirme] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const toggleView = (e) => {
     e.preventDefault();
@@ -36,6 +38,10 @@ export const PostOptions = ({ postId }) => {
     };
   }, [displayOptions]);
 
+  function handleEditPost() {
+    navigate("/post/update", { state: { postId } });
+  }
+
   return (
     <div className="absolute right-0 top-0" ref={dropdownRef}>
       <SlOptionsVertical
@@ -48,11 +54,10 @@ export const PostOptions = ({ postId }) => {
         <div className="absolute right-0">
           <div className="bg-white border border-gray-200 rounded-md shadow-md w-40 h-auto py-2">
             <ul className="">
-              {/* <li className="grid grid-cols-[30px__1fr] items-center p-2 hover:bg-gray-200">
-                <CiBookmark size={25} />
-                Save
-              </li> */}
-              <li className="grid grid-cols-[30px__1fr] items-center p-2 hover:bg-gray-200 cursor-pointer">
+              <li
+                className="grid grid-cols-[30px__1fr] items-center p-2 hover:bg-gray-200 cursor-pointer"
+                onClick={handleEditPost}
+              >
                 <MdOutlineEdit size={25} />
                 Edit post
               </li>

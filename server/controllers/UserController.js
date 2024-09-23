@@ -3,13 +3,17 @@ import {
   checkPassword,
   generateHref,
   hashPassword,
+  stringToSlug,
+  unify,
   uploadImage,
+  uploadToImgBB,
 } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
 import axios from "axios";
 import Comment from "../models/Comment.js";
+import Tag from "../models/Tag.js";
 
 export const postSaveUnsave = async (req, res) => {
   const userId = req.userId;
@@ -72,6 +76,94 @@ export const getUserProfile = async (req, res) => {
   }
   return res.status(404).json({ message: "User not found !" });
 };
+
+export async function getUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+
+  try {
+    const post = await Post.findById(
+      postId,
+      "text title cover.medium tags user"
+    ).populate("tags", "name");
+    if (!post) return res.status(404).json({ message: "Post not found !" });
+    if (post.user.toString() !== userId)
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this post !" });
+    return res.status(200).json({
+      cover: { medium: post.cover?.medium },
+      title: post.title,
+      text: post.text,
+      tags: post.tags,
+    });
+  } catch (err) {
+    console.log("Failed getting post:", err);
+    return res.sendStatus(400);
+  }
+}
+
+export async function updateUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+  const { title, text } = req.body;
+  const image = req.file;
+  const tags = JSON.parse(req.body.tags);
+  const deleteCover = req.body.deleteCover || false;
+  let currentTag;
+  const tagObjects = [];
+  const post = await Post.findById(postId).exec();
+
+  console.log({ state: req.body.deleteCover });
+
+  // check if post exists and if the user is the owner of the post
+  if (!post) return res.status(404).json({ message: "Post not found !" });
+  if (post.user.toString() !== userId)
+    return res
+      .status(403)
+      .json({ message: "You are not the owner of this post !" });
+
+  try {
+    for (const tag of tags) {
+      const newTag = unify(tag);
+      currentTag = await Tag.findOne({ name: newTag }).exec();
+      if (currentTag) {
+        tagObjects.push(currentTag);
+      } else {
+        const _id = await getNextTagId();
+        currentTag = await Tag({ name: newTag, _id });
+        await currentTag.save();
+        tagObjects.push(currentTag);
+      }
+    }
+    if (title) {
+      post.title = title;
+      post.slug = stringToSlug(title);
+    }
+    if (text) {
+      post.text = text;
+    }
+    post.tags = [];
+    for (const tag of tagObjects) {
+      post.tags.push(tag._id);
+      tag.count++;
+      tag.save();
+    }
+    if (image) {
+      const imageData = await uploadToImgBB(image);
+      post.cover = { ...imageData };
+      // await uploadCover(image, post);
+    } else if (deleteCover) {
+      post.cover = null;
+    }
+    await post.save();
+    return res.status(200).json({ post });
+  } catch (err) {
+    const statusCode = err.status || 500;
+    console.log(err);
+    return res.sendStatus(statusCode);
+  }
+}
 
 export const getUserPosts = async (req, res) => {
   const userId = req.userId;
