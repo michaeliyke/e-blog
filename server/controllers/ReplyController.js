@@ -37,7 +37,7 @@ export const replyToComment = async (req, res) => {
     await session.commitTransaction();
     const reply = newReply.toObject();
     delete reply.user;
-    return res.status(201).json({ reply });
+    return res.status(201).json(reply);
   } catch (err) {
     session && (await session.abortTransaction());
     return res.sendStatus(500);
@@ -92,7 +92,7 @@ export const modReply = async (req, res) => {
         await comment.save({ session });
 
         await session.commitTransaction();
-        return res.json({ reply });
+        return res.json(reply);
       }
       await session.abortTransaction();
       return res.json({ reply });

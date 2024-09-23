@@ -121,7 +121,7 @@ export const modComment = async (req, res) => {
     });
 
     return req.method === "PUT"
-      ? res.json({ comment })
+      ? res.json(comment)
       : res.json({ message: "Comment deleted successfully" });
   } catch (err) {
     if (err.statusCode === 400)
