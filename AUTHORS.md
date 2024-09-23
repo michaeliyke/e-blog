@@ -2,4 +2,4 @@
 
 - Radouane Abounouas <radouaneabn@gmail.com>
 - Michael C Iyke <ymichaelc@gmail.com>
-- Cyril Ugwuoke <>
+- Cyril Ugwuoke <cyrildaniels20@gmail.com>
