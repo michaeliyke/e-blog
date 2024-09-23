@@ -122,7 +122,6 @@ export const getReplies = async (req, res) => {
         select: "firstname lastname href profilePicture.thumbnail -_id",
       })
       .lean();
-    console.log(comment.replies);
     if (!comment) return res.status(400).json({ message: "Invalid commentId" });
     return res.json({ replies: comment.replies });
   } catch (err) {
