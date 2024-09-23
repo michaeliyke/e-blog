@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Header } from '../components/Header';
-import { useNavigate, useParams } from 'react-router-dom';
-import { request } from '../util/Tools';
+import { useEffect, useState } from "react";
+import { Header } from "../components/Header";
+import { useNavigate, useParams } from "react-router-dom";
+import { request } from "../util/Tools";
+import { PopUpPassword } from "../components/PopUpPassword";
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [toggleVerifyDelete, setToggleVerifyDelete] = useState(false);
   const [error, setError] = useState(null);
 
   const { slug } = useParams();
 
-  let url = 'http://127.0.0.1:3000/users/profile';
+  let url = "http://127.0.0.1:3000/users/profile";
   if (slug) url = `http://127.0.0.1:3000/users/info/?slug=${slug}`;
 
   const navigate = useNavigate();
@@ -20,8 +22,8 @@ export function Profile() {
       request
         .get(url)
         .then((res) => {
-          if (!res.statusText == 'OK')
-            throw new Error('Failed to fetch profile data');
+          if (!res.statusText == "OK")
+            throw new Error("Failed to fetch profile data");
           return res.data;
         })
         .then((data) => {
@@ -31,13 +33,17 @@ export function Profile() {
           setLoading(false);
         })
         .catch((error) => {
-          console.error('Error message:', error);
+          console.error("Error message:", error);
           setError(error);
           setLoading(false);
         });
     },
     [url]
   );
+
+  const verifyDeleteAccount = () => {
+    setToggleVerifyDelete(!toggleVerifyDelete);
+  };
 
   if (loading) {
     return <div className="text-center mt-10">Loading...</div>;
@@ -59,20 +65,28 @@ export function Profile() {
               {/* Profile image */}
               <img
                 src={
-                  profile.user.profilePicture.medium || '/default-avatar.png'
+                  profile.user.profilePicture.medium || "/default-avatar.png"
                 }
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-4 border-white"
               />
             </div>
-
             {/* Edit profile button */}
             {Boolean(slug) === false && (
-              <button
-                onClick={() => navigate('/profile/settings')}
-                className="absolute top-6 right-6 bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
-                Edit profile
-              </button>
+              <div className="absolute top-6 right-6 flex flex-col gap-4">
+                <button
+                  onClick={() => navigate("/profile/settings")}
+                  className=" bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none active:bg-blue-400"
+                >
+                  Edit profile
+                </button>
+                <button
+                  onClick={verifyDeleteAccount}
+                  className=" bg-red-700 hover:bg-red-800 active:bg-red-400 text-white px-4 py-2 rounded-md  focus:outline-none"
+                >
+                  Delete account
+                </button>
+              </div>
             )}
 
             {/* User info */}
@@ -89,6 +103,10 @@ export function Profile() {
           <p className="text-center text-gray-500">No profile data found.</p>
         )}
       </div>
+      <PopUpPassword
+        visible={toggleVerifyDelete}
+        toggle={setToggleVerifyDelete}
+      />
     </>
   );
 }
