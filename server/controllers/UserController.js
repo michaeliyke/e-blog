@@ -118,10 +118,16 @@ export const changePassword = async (req, res) => {
   const { oldPassword, newPassword, id } = req.body;
 
   const user = await User.findById(id).exec();
-  if (checkPassword(oldPassword, user.password)) {
-    user.password = hashPassword(newPassword);
-    user.save();
+  try {
+    if (checkPassword(oldPassword, user.password)) {
+      user.password = hashPassword(newPassword);
+      user.save();
+      return res.sendStatus(200);
+    }
+  } catch (err) {
+    console.log(err);
   }
+  return res.sendStatus(401);
 };
 
 export async function getUserInfo(req, res) {
@@ -164,7 +170,9 @@ export const registerUser = async (req, res) => {
   }
 
   // check if teh href (firstname, lastname) both already exists
-  let href = `${firstname.toLowerCase()}-${lastname.toLowerCase()}`;
+  let href = `${firstname.toLowerCase().trim()}-${lastname
+    .toLowerCase()
+    .trim()}`;
   if (await User.exists({ href }).exec()) {
     href = await generateHref(href);
   }
@@ -340,11 +348,15 @@ export const getSavedPosts = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const userId = req.userId;
+  const { password } = req.body;
+  console.log({ password });
   try {
-    const user = await User.findById(userId).select("posts");
+    const user = await User.findById(userId).select("posts password");
     if (!user) {
-      console.log("User not found");
-      return;
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!(await checkPassword(password, user.password))) {
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     // Delete the user
