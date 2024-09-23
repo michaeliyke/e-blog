@@ -3,6 +3,7 @@ import { Header } from "../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { request } from "../util/Tools";
 import { PopUpPassword } from "../components/PopUpPassword";
+import { AllUserPosts } from "../components/AllUserPosts";
 
 export function Profile() {
   const [profile, setProfile] = useState(null);
@@ -102,6 +103,9 @@ export function Profile() {
         ) : (
           <p className="text-center text-gray-500">No profile data found.</p>
         )}
+        <div className="w-full rounded-lg mt-4 flex justify-center">
+          <AllUserPosts />
+        </div>
       </div>
       <PopUpPassword
         visible={toggleVerifyDelete}

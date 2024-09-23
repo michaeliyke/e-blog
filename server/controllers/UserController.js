@@ -9,6 +9,7 @@ import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
 import axios from "axios";
+import Comment from "../models/Comment.js";
 
 export const postSaveUnsave = async (req, res) => {
   const userId = req.userId;
@@ -74,13 +75,64 @@ export const getUserProfile = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
   const userId = req.userId;
-  const posts = await Post.find({ user: userId }, "_id")
-    .sort({ createdAt: -1 })
-    .lean();
-  if (!posts) {
-    return res.sendStatus(404);
+  const pageNumber = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (pageNumber - 1) * limit;
+  try {
+    const user = await User.findById(
+      userId,
+      "posts firstname lastname href profilePicture.thumbnail saved -_id"
+    )
+      .populate({
+        path: "posts",
+        select:
+          "_id title text user slug tags createdAt likes comments.count cover.medium",
+        options: {
+          sort: { createdAt: -1 },
+          skip,
+          limit,
+        },
+        populate: {
+          path: "tags",
+          select: "name",
+        },
+      })
+      .exec();
+    const data = await Promise.all(
+      user.posts.map((post) => {
+        const liked = post.likes.users.includes(userId);
+        const saved = user.saved.posts.includes(post._id);
+        return {
+          blog: {
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              href: user.href,
+              profilePicture: {
+                thumbnail: user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
+        };
+      })
+    );
+    if (data.length === 0) return res.sendStatus(404);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
   }
-  return res.status(200).json({ posts });
+  return res.sendStatus(400);
 };
 
 export const loginUser = async (req, res) => {
@@ -349,7 +401,6 @@ export const getSavedPosts = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const userId = req.userId;
   const { password } = req.body;
-  console.log({ password });
   try {
     const user = await User.findById(userId).select("posts password");
     if (!user) {
@@ -364,13 +415,13 @@ export const deleteUser = async (req, res) => {
       axios.delete(user.profilePicture.deleteUrl);
 
     // Delete the posts
-    console.log(user.posts);
     if (user.posts.length > 0) {
       await Post.deleteMany({ _id: { $in: user.posts } });
       console.log("Posts deleted");
     } else {
       console.log("No posts to delete");
     }
+    await Comment.deleteMany({ user: userId });
     await User.findByIdAndDelete(userId);
     return res.sendStatus(200);
   } catch (error) {
