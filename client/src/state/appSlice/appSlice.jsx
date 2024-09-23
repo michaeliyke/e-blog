@@ -7,8 +7,18 @@ const visibilitySlice = createSlice({
       signin: false,
       signup: false,
     },
+    data: [],
   },
   reducers: {
+    removeItem: (state, action) => {
+      // Update state.data by filtering out the post with the matching key (post._id)
+      state.data = state.data.filter(
+        (post) => post.blog._id !== action.payload
+      );
+    },
+    appendToData: (state, action) => {
+      state.data = [...state.data, ...action.payload];
+    },
     toggleSignIn: (state) => {
       state.card = {
         signin: true,
@@ -30,7 +40,12 @@ const visibilitySlice = createSlice({
   },
 });
 
-export const { toggleSignIn, toggleSignUp, clearSign } =
-  visibilitySlice.actions;
+export const {
+  toggleSignIn,
+  toggleSignUp,
+  clearSign,
+  removeItem,
+  appendToData,
+} = visibilitySlice.actions;
 
 export default visibilitySlice.reducer;

@@ -10,7 +10,9 @@ import {
   postSaveUnsave,
   getUserPublicPosts,
   getSavedPosts,
+  getUserPost,
   deleteUser,
+  updateUserPost,
 } from "../controllers/UserController.js";
 import User from "../models/User.js";
 import { isAuthenticated } from "../middlewares/AuthMiddleware.js";
@@ -35,6 +37,17 @@ userRouter.delete("/profile", isAuthenticated, deleteUser);
 
 // get user posts
 userRouter.get("/posts", isAuthenticated, getUserPosts);
+
+// get user post
+userRouter.get("/posts/:postId", isAuthenticated, getUserPost);
+
+// update user post
+userRouter.put(
+  "/posts/:postId",
+  isAuthenticated,
+  upload.single("image"),
+  updateUserPost
+);
 
 // update user password
 userRouter.put("/pwd-ch", isAuthenticated, updateUserPassword);

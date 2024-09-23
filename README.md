@@ -1,6 +1,6 @@
 # **e-Blog**
 
-![e-Blog](https://github.com/michaeliyke/e-blog/blob/master/client/public/B.png)
+![e-Blog](https://github.com/michaeliyke/e-blog/blob/master/client/public/B.jpg)
 
 ## Overview
 

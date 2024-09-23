@@ -8,8 +8,7 @@ import {
   getTopTen,
   searchEngine,
   getTrendingPosts,
-  // createBlog,
-  // updateBlog,
+  deletePost,
 } from "../controllers/PostController.js";
 import { getLikes, likeUnlike } from "../controllers/LikeController.js";
 import Post from "../models/Post.js";
@@ -58,6 +57,8 @@ postRouter.get("/top-ten", getTopTen);
 postRouter.get("/trending", isAuthenticated, getTrendingPosts);
 
 postRouter.get("/search", searchEngine);
+
+postRouter.delete("/:postId", isAuthenticated, deletePost);
 
 // drop blogs collection
 postRouter.delete("/", async (req, res) => {

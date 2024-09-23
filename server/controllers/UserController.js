@@ -3,12 +3,17 @@ import {
   checkPassword,
   generateHref,
   hashPassword,
+  stringToSlug,
+  unify,
   uploadImage,
+  uploadToImgBB,
 } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
 import axios from "axios";
+import Comment from "../models/Comment.js";
+import Tag from "../models/Tag.js";
 
 export const postSaveUnsave = async (req, res) => {
   const userId = req.userId;
@@ -72,15 +77,154 @@ export const getUserProfile = async (req, res) => {
   return res.status(404).json({ message: "User not found !" });
 };
 
+export async function getUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+
+  try {
+    const post = await Post.findById(
+      postId,
+      "text title cover.medium tags user"
+    ).populate("tags", "name");
+    if (!post) return res.status(404).json({ message: "Post not found !" });
+    if (post.user.toString() !== userId)
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this post !" });
+    return res.status(200).json({
+      cover: { medium: post.cover?.medium },
+      title: post.title,
+      text: post.text,
+      tags: post.tags,
+    });
+  } catch (err) {
+    console.log("Failed getting post:", err);
+    return res.sendStatus(400);
+  }
+}
+
+export async function updateUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+  const { title, text } = req.body;
+  const image = req.file;
+  const tags = JSON.parse(req.body.tags);
+  const deleteCover = req.body.deleteCover || false;
+  let currentTag;
+  const tagObjects = [];
+  const post = await Post.findById(postId).exec();
+
+  console.log({ state: req.body.deleteCover });
+
+  // check if post exists and if the user is the owner of the post
+  if (!post) return res.status(404).json({ message: "Post not found !" });
+  if (post.user.toString() !== userId)
+    return res
+      .status(403)
+      .json({ message: "You are not the owner of this post !" });
+
+  try {
+    for (const tag of tags) {
+      const newTag = unify(tag);
+      currentTag = await Tag.findOne({ name: newTag }).exec();
+      if (currentTag) {
+        tagObjects.push(currentTag);
+      } else {
+        const _id = await getNextTagId();
+        currentTag = await Tag({ name: newTag, _id });
+        await currentTag.save();
+        tagObjects.push(currentTag);
+      }
+    }
+    if (title) {
+      post.title = title;
+      post.slug = stringToSlug(title);
+    }
+    if (text) {
+      post.text = text;
+    }
+    post.tags = [];
+    for (const tag of tagObjects) {
+      post.tags.push(tag._id);
+      tag.count++;
+      tag.save();
+    }
+    if (image) {
+      const imageData = await uploadToImgBB(image);
+      post.cover = { ...imageData };
+      // await uploadCover(image, post);
+    } else if (deleteCover) {
+      post.cover = null;
+    }
+    await post.save();
+    return res.status(200).json({ post });
+  } catch (err) {
+    const statusCode = err.status || 500;
+    console.log(err);
+    return res.sendStatus(statusCode);
+  }
+}
+
 export const getUserPosts = async (req, res) => {
   const userId = req.userId;
-  const posts = await Post.find({ user: userId }, "_id")
-    .sort({ createdAt: -1 })
-    .lean();
-  if (!posts) {
-    return res.sendStatus(404);
+  const pageNumber = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (pageNumber - 1) * limit;
+  try {
+    const user = await User.findById(
+      userId,
+      "posts firstname lastname href profilePicture.thumbnail saved -_id"
+    )
+      .populate({
+        path: "posts",
+        select:
+          "_id title text user slug tags createdAt likes comments.count cover.medium",
+        options: {
+          sort: { createdAt: -1 },
+          skip,
+          limit,
+        },
+        populate: {
+          path: "tags",
+          select: "name",
+        },
+      })
+      .exec();
+    const data = await Promise.all(
+      user.posts.map((post) => {
+        const liked = post.likes.users.includes(userId);
+        const saved = user.saved.posts.includes(post._id);
+        return {
+          blog: {
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              href: user.href,
+              profilePicture: {
+                thumbnail: user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
+        };
+      })
+    );
+    if (data.length === 0) return res.sendStatus(404);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
   }
-  return res.status(200).json({ posts });
+  return res.sendStatus(400);
 };
 
 export const loginUser = async (req, res) => {
@@ -349,7 +493,6 @@ export const getSavedPosts = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const userId = req.userId;
   const { password } = req.body;
-  console.log({ password });
   try {
     const user = await User.findById(userId).select("posts password");
     if (!user) {
@@ -364,13 +507,13 @@ export const deleteUser = async (req, res) => {
       axios.delete(user.profilePicture.deleteUrl);
 
     // Delete the posts
-    console.log(user.posts);
     if (user.posts.length > 0) {
       await Post.deleteMany({ _id: { $in: user.posts } });
       console.log("Posts deleted");
     } else {
       console.log("No posts to delete");
     }
+    await Comment.deleteMany({ user: userId });
     await User.findByIdAndDelete(userId);
     return res.sendStatus(200);
   } catch (error) {

@@ -11,12 +11,17 @@ import { TrendingPage } from "./scenes/TrendingPage";
 import { UsersProfile } from "./scenes/UsersProfile";
 import { Favorites } from "./scenes/Favorites";
 import { About } from "./scenes/About";
+import { UpdatePost } from "./scenes/UpdatePost";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<PrivateRoute open={true} element={Home} />} />
       <Route path="/post/new" element={<PrivateRoute element={CreatePost} />} />
+      <Route
+        path="/post/update"
+        element={<PrivateRoute element={UpdatePost} />}
+      />
       <Route
         path="/posts/:post_title"
         element={<PrivateRoute open={true} element={Posts} />}
