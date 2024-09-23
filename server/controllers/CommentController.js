@@ -1,6 +1,7 @@
 import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
-import { startSession, Types } from "mongoose";
+import { Reply } from "../models/Reply.js";
+import { startSession } from "mongoose";
 
 // Get all the comments for a post
 export const getComments = async (req, res) => {
@@ -109,6 +110,9 @@ export const modComment = async (req, res) => {
             post.comments.ids.pull(comment._id);
             post.comments.count--;
             await post.save({ session });
+            await Reply.deleteMany({ _id: { $in: comment.replies } }).session(
+              session
+            );
             await comment.deleteOne({ session });
             return;
           }
