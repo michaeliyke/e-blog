@@ -29,7 +29,7 @@ export const replyToComment = async (req, res) => {
 
     const newReply = new Reply({ user: userId, text });
 
-    comment.replies.push(newReply);
+    comment.replies.push(newReply.id);
 
     await newReply.save({ session });
     await comment.save({ session });
@@ -74,7 +74,7 @@ export const modReply = async (req, res) => {
       !!reply &&
       (await Comment.findOne({
         _id: commentId,
-        replies: { $elemMatch: { _id: replyId } },
+        replies: { $elemMatch: { $eq: replyId } },
       }).exec());
 
     if (!comment) {
@@ -84,9 +84,9 @@ export const modReply = async (req, res) => {
 
     if (method === "PUT") {
       if (reply.text !== text) {
-        comment.replies.pull(reply);
+        comment.replies.pull(reply.id);
         reply.text = text;
-        comment.replies.push(reply);
+        comment.replies.push(reply.id);
 
         await reply.save({ session });
         await comment.save({ session });
@@ -98,7 +98,7 @@ export const modReply = async (req, res) => {
       return res.json({ reply });
     }
 
-    comment.replies.pull(reply);
+    comment.replies.pull(reply.id);
     await comment.save({ session });
     await reply.deleteOne({ session });
     await session.commitTransaction();
@@ -118,8 +118,11 @@ export const getReplies = async (req, res) => {
   try {
     const comment = await Comment.findById(commentId, "replies -_id")
       .populate({
-        path: "replies.user",
-        select: "firstname lastname href profilePicture.thumbnail -_id",
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstname lastname href profilePicture.thumbnail -_id",
+        },
       })
       .lean();
     if (!comment) return res.status(400).json({ message: "Invalid commentId" });
