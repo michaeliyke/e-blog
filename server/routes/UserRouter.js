@@ -57,6 +57,7 @@ userRouter.post("/bookmarks", isAuthenticated, postSaveUnsave);
 // get saved posts
 userRouter.get("/bookmarks", isAuthenticated, getSavedPosts);
 
+// get posts of any user
 userRouter.get("/:userId/posts", isAuthenticated, getUserPublicPosts);
 
 // drops the users collection

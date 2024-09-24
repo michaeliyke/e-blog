@@ -52,7 +52,7 @@ export const getAuthInfo = async (req, res) => {
   const userId = req.userId;
   const user = await User.findById(
     userId,
-    "-_id firstname lastname profilePicture.thumbnail"
+    "-_id firstname lastname href profilePicture.thumbnail"
   ).exec();
   if (user) {
     if (!user.thumbnail) {
@@ -426,35 +426,60 @@ export const updateUserPassword = async (req, res) => {
 
 export const getUserPublicPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
+  const limit = 5;
+  const skip = (page - 1) * limit;
   const userId = req.params.userId;
   const authUserId = req.userId;
   let authUser;
   try {
-    const { posts } = await User.findById(userId, "posts -_id").populate({
+    const user = await User.findById(
+      userId,
+      "posts firstname lastname profilePicture.thumbnail href -_id"
+    ).populate({
       path: "posts",
       select:
-        "_id title user slug tags createdAt likes comments.count cover.medium",
+        "_id title text user slug tags createdAt likes comments.count cover.medium",
       populate: {
         path: "tags",
         select: "name",
       },
+      skip,
+      limit,
     });
+    if (user.posts.length === 0) return res.sendStatus(404);
     if (authUserId) {
       authUser = await User.findById(authUserId, "saved.posts").lean();
     }
-    // console.log(posts);
     const data = await Promise.all(
-      posts.map(async (blog) => {
-        const liked =
-          authUserId &&
-          blog.likes.users.some((user) => user.equals(authUserId));
-        const saved = authUserId
-          ? authUser.saved.posts.includes(blog._id)
+      user.posts.map((post) => {
+        const liked = authUserId
+          ? post.likes.users.includes(authUserId)
           : false;
-        const newBlog = blog.toObject();
-        delete newBlog.likes.users;
+        const saved = authUserId
+          ? authUser.saved.posts.includes(post._id)
+          : false;
         return {
-          blog: { ...newBlog, liked, saved },
+          blog: {
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              href: user.href,
+              profilePicture: {
+                thumbnail: user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
         };
       })
     );
