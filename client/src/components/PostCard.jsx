@@ -5,7 +5,7 @@ import { PostOptions } from "./PostOptions";
 
 export const PostCard = ({ post, withOptions = false }) => {
   return (
-    <div
+    <li
       key={post._id}
       className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
     >
@@ -45,10 +45,10 @@ export const PostCard = ({ post, withOptions = false }) => {
             </h2>
             {/* Post Text */}
             <p className="font-poppins text-sm whitespace-pre-wrap overflow-hidden overflow-ellipsis">
-              {post.text}... <br />
-            </p>
-            <p className="text-indigo-500 text-[13px]">
-              click to continue reading
+              {post.text}...{" "}
+              <span className="text-indigo-400 text-[13px]">
+                click to continue reading
+              </span>
             </p>
           </a>
         </div>
@@ -64,7 +64,7 @@ export const PostCard = ({ post, withOptions = false }) => {
       )}
 
       {/* Impressions and Comments */}
-      <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+      <div className="flex items-center justify-between text-xs text-gray-500 my-3">
         <p>{post.likes.count} impressions</p>
         <p>{post.comments.count} comments</p>
       </div>
@@ -80,7 +80,7 @@ export const PostCard = ({ post, withOptions = false }) => {
       <PostStats post={post} />
 
       {/* Bookmark Button */}
-    </div>
+    </li>
   );
 };
 

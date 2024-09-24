@@ -1,6 +1,6 @@
 export const WelcomeSideMessage = () => {
   return (
-    <div className="font-poppins rounded-md lg:w-80 overflow-hidden md:w-52 hidden md:block border-2 shadow border-[#e5e5e5] h-auto text-black bg-[#f2f2f2]">
+    <div className="font-poppins rounded-md lg:w-80 overflow-hidden md:w-52 hidden md:block border-2 shadow-lg border-gray-300 h-auto text-black bg-white">
       <div className="p-2">
         <h2 className="text-md font-bold text-center">Welcome to e-Blog</h2>
         <hr className="border-b-1 border-black" />

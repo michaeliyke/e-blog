@@ -24,7 +24,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="h-16 w-full">
+    <header className="h-16 w-full sticky top-0 z-20 md:static">
       {!isAuthenticated && (
         <>
           <SignIn />
@@ -32,7 +32,7 @@ export const Header = () => {
         </>
       )}
       <div
-        className="flex items-center  h-16  justify-between p-1
+        className="flex items-center h-16 justify-between p-1
        bg-white shadow-xl border border-gray-300"
       >
         <div className="block md:hidden">

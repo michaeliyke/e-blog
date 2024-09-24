@@ -33,16 +33,16 @@ export const PopUpPassword = ({ visible, toggle }) => {
   return (
     <>
       <div
-        className={`bg-black opacity-40 top-0 w-full h-full fixed border-2 border-black ${
+        className={`bg-black z-20 opacity-40 top-0 w-full h-full fixed border-2 border-black ${
           Boolean(visible) === true ? "opacity-40" : "hidden"
         }`}
         onClick={toggleVisibility}
       ></div>
       <div
-        className={`w-80 h-30 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col justify-center items-center bg-gray-100 rounded-lg shadow-xl p-4 border border-gray-400
+        className={`w-80 h-30 z-30 fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col justify-center items-center bg-gray-100 rounded-lg shadow-xl p-4 border border-gray-400
            transition-transform duration-500 ease-in-out ${
              Boolean(visible) === true
-               ? "translate-y-0 opacity-100"
+               ? "translate-y-50 opacity-100"
                : "-translate-y-96 opacity-0"
            }`}
       >

@@ -13,7 +13,7 @@ export const Favorites = () => {
         </div>
 
         {/* post container */}
-        <div className="p-8 rounded-lg z-10">
+        <div className="rounded-lg z-10">
           <FavoritesContainer />
         </div>
 

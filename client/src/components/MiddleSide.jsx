@@ -80,9 +80,11 @@ export const MiddleSide = () => {
         )}
       </div>
 
-      {data.map(({ blog }) => (
-        <PostCard key={blog._id} post={blog} />
-      ))}
+      <ul className="list-none">
+        {data.map(({ blog }) => (
+          <PostCard key={blog._id} post={blog} />
+        ))}
+      </ul>
 
       {pageLoading && (
         <div className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">

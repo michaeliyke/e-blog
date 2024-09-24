@@ -29,20 +29,20 @@ export const AllUserPosts = () => {
   };
   return (
     <div className="flex flex-col w-full">
-      <div className="posts_container">
+      <ul className="list-none">
         {posts.map((post) => (
           <PostCard key={post.blog._id} post={post.blog} withOptions={true} />
         ))}
-      </div>
+      </ul>
       {!allPostsFetched ? (
-        <span className="flex w-full items-center">
-          <hr className="w-full h-1 bg-gray-300" />
+        <span className="flex w-full justify-center mt-5">
+          {/* <hr className="w-full h-1 bg-gray-300" /> */}
           <button
             onClick={loadMorePosts}
             className="w-80 bg-blue-700 text-white mx-5 px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none active:bg-blue-400"
           >
             {dataLoading ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 <img
                   src="/loading_circle.svg"
                   alt=""
@@ -54,7 +54,7 @@ export const AllUserPosts = () => {
               "Load posts"
             )}
           </button>
-          <hr className="w-full h-1 bg-gray-300" />
+          {/* <hr className="w-full h-1 bg-gray-300" /> */}
         </span>
       ) : (
         <span className="flex w-full items-center">

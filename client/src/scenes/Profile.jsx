@@ -103,7 +103,16 @@ export function Profile() {
         ) : (
           <p className="text-center text-gray-500">No profile data found.</p>
         )}
-        <div className="w-full rounded-lg mt-4 flex justify-center">
+        <div className="w-full rounded-lg mt-4 flex flex-col items-center">
+          <div className="flex w-full items-center">
+            <hr className="w-full my-0.5 h-1 shadow bg-black" />
+
+            <h4 className="text-lg font-poppins w-auto text-nowrap text-center mx-4">
+              See posts
+            </h4>
+
+            <hr className="w-full my-0.5 h-1 shadow bg-black" />
+          </div>
           <AllUserPosts />
         </div>
       </div>

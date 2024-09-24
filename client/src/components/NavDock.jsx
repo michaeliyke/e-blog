@@ -20,7 +20,7 @@ export const NavDock = () => {
   };
 
   return (
-    <div className="font-poppins rounded-md lg:w-auto overflow-hidden md:w-52 hidden md:block border-2 shadow border-[#e5e5e5] h-auto text-black bg-[#f2f2f2] sticky top-4 z-0">
+    <div className="font-poppins rounded-md lg:w-auto overflow-hidden md:w-52 hidden md:block border shadow-lg border-gray-300 h-auto text-black bg-[#ffffff] sticky top-4 z-0">
       <div className="p-2">
         <h2 className="text-md font-bold text-center">NavDock</h2>
         <hr className="border-b-1 border-black" />
