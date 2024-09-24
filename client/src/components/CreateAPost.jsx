@@ -67,6 +67,7 @@ export function CreateAPost() {
   // Trigger hidden file input on button click
   function triggerFileInput(e) {
     e.preventDefault();
+    if (isLoading) return;
     hiddenFileInput.current.click();
   }
 
@@ -86,6 +87,7 @@ export function CreateAPost() {
 
   // Remove the image preview
   function handleRemoveImage() {
+    if (isLoading) return;
     setImagePreview(null);
   }
 
@@ -138,7 +140,7 @@ export function CreateAPost() {
         },
       })
       .then(() => {
-        window.location.href = "/";
+        // window.location.href = "/";
         // alert("seccess");
       })
       .catch((err) => {
@@ -177,7 +179,7 @@ export function CreateAPost() {
         className={`w-80 h-30 fixed flex flex-col justify-center items-center top-4 bg-gray-300 rounded-lg shadow-xl p-4 border border-gray-400
            transition-transform duration-500 ease-in-out ${
              isLoading && coverPicture
-               ? "translate-y-0 opacity-100"
+               ? "translate-y-20 opacity-100"
                : "-translate-y-full opacity-0"
            }`}
       >
