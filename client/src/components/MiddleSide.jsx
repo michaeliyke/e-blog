@@ -8,6 +8,7 @@ export const MiddleSide = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageLoading, setPageLoading] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const currentUserHref = useSelector((state) => state.auth?.user?.href);
 
   // get all the blog and store then in data
   useEffect(() => {
@@ -82,7 +83,7 @@ export const MiddleSide = () => {
 
       <ul className="list-none">
         {data.map(({ blog }) => (
-          <PostCard key={blog._id} post={blog} />
+          <PostCard key={blog._id} post={blog} checkSlug={currentUserHref} />
         ))}
       </ul>
 

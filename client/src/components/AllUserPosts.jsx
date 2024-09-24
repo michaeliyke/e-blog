@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const AllUserPosts = () => {
   const posts = useSelector((state) => state.app.data);
+  const currentUserHref = useSelector((state) => state.auth?.user?.href);
   // const [posts, setPosts] = useState([]);
   const url = new URL("http://127.0.0.1:3000/users/posts");
   const [pageNumber, setPageNumber] = useState(1);
@@ -31,7 +32,12 @@ export const AllUserPosts = () => {
     <div className="flex flex-col w-full">
       <ul className="list-none">
         {posts.map((post) => (
-          <PostCard key={post.blog._id} post={post.blog} withOptions={true} />
+          <PostCard
+            key={post.blog._id}
+            post={post.blog}
+            withOptions={true}
+            checkSlug={currentUserHref}
+          />
         ))}
       </ul>
       {!allPostsFetched ? (

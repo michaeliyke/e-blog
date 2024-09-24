@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { request } from "../../util/Tools";
 import { PostCard } from "../PostCard";
+import { useSelector } from "react-redux";
 
 export const Trending = () => {
+  const currentUserHref = useSelector((state) => state.auth?.user?.href);
   const url = new URL("http://127.0.0.1:3000/blogs/trending");
   const [pageIsLoading, setPageIsLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -44,7 +46,7 @@ export const Trending = () => {
   return (
     <ul className="list-none">
       {data.map(({ blog }) => (
-        <PostCard key={blog._id} post={blog} />
+        <PostCard key={blog._id} post={blog} checkSlug={currentUserHref} />
       ))}
     </ul>
   );

@@ -3,7 +3,9 @@ import { BookmarkButton, PostStats } from "./PostStats";
 import moment from "moment";
 import { PostOptions } from "./PostOptions";
 
-export const PostCard = ({ post, withOptions = false }) => {
+export const PostCard = ({ post, withOptions = false, checkSlug = "" }) => {
+  const profileUrl =
+    checkSlug === post.user.href ? "/profile" : `/user/${post.user.href}`;
   return (
     <li
       key={post._id}
@@ -11,7 +13,7 @@ export const PostCard = ({ post, withOptions = false }) => {
     >
       {/* User Information */}
       <figure className="flex items-center mb-4 relative">
-        <a href={`/user/${post.user.href}`}>
+        <a href={profileUrl}>
           <img
             src={post.user.profilePicture.thumbnail}
             alt="User avatar"
@@ -22,7 +24,7 @@ export const PostCard = ({ post, withOptions = false }) => {
         </a>
         <figcaption>
           <h3 className="font-bold text-gray-700">
-            <a href={`/user/${post.user.href}`}>
+            <a href={profileUrl}>
               {post.user.firstname} {post.user.lastname}
             </a>
             <BookmarkButton post={post} />
@@ -87,4 +89,5 @@ export const PostCard = ({ post, withOptions = false }) => {
 PostCard.propTypes = {
   post: PropTypes.object.isRequired,
   withOptions: PropTypes.bool,
+  checkSlug: PropTypes.string,
 };
