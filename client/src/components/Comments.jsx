@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
-import { getCookie } from "../util/basic";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
@@ -18,13 +17,7 @@ export function Comments(post) {
     // setText(document.querySelector("textarea.comment-box").value);
     const sanitizedText = DOMPurify.sanitize(newComment); // Sanitize the text directly
     const comment = { text: sanitizedText };
-    const token = getCookie("_token");
     // console.log({ newComment });
-
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
 
     if (!newComment) return;
 
@@ -33,7 +26,6 @@ export function Comments(post) {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {

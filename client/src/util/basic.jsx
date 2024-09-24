@@ -1,18 +1,12 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export function urlenCode(str) {
-  return str.replace(/\s+/g, '-');
+  return str.replace(/\s+/g, "-");
 }
 
 export const urlComponentSchema = {
   post_title: PropTypes.string.isRequired,
 };
-
-export function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
 
 export const blogPostSchema = {
   post: PropTypes.shape({
