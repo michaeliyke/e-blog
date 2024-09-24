@@ -239,13 +239,33 @@ export const getTrendingPosts = async (req, res) => {
       user = await User.findById(userId, "saved.posts").lean();
     }
     const data = await Promise.all(
-      topPosts.map(async (blog) => {
-        const liked =
-          userId && blog.likes.users.some((user) => user.equals(userId));
-        const saved = userId ? user.saved.posts.includes(blog._id) : false;
-        delete blog.likes.users;
+      topPosts.map((post) => {
+        const liked = userId
+          ? post.likes.users.some((user) => user.equals(userId))
+          : false;
+        const saved = userId ? user.saved.posts.includes(post._id) : false;
         return {
-          blog: { ...blog, liked, saved },
+          blog: {
+            user: {
+              firstname: post.user.firstname,
+              lastname: post.user.lastname,
+              href: post.user.href,
+              profilePicture: {
+                thumbnail: post.user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
         };
       })
     );

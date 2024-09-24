@@ -399,18 +399,20 @@ export const updateUser = async (req, res) => {
 
 export const updateUserPassword = async (req, res) => {
   const userId = req.userId;
-  const { oldPassword, newPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  console.log({ oldPassword, newPassword, confirmPassword });
 
-  if ((!oldPassword || !newPassword, !userId)) {
-    return res
-      .status(400)
-      .json({ message: "Old and new password are required" });
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "Make sure you fill all fields" });
   }
 
   try {
     const user = await User.findById(userId, "password").exec();
     if (!(await checkPassword(oldPassword, user.password)))
       return res.status(403).json({ message: "Invalid user password" });
+
+    if (newPassword !== confirmPassword)
+      return res.status(403).json({ message: "Passwords do not match" });
 
     const hashedPassword = await hashPassword(newPassword);
     user.password = hashedPassword;
@@ -469,7 +471,7 @@ export const getSavedPosts = async (req, res) => {
     const { saved } = await User.findById(userId, "saved").populate({
       path: "saved.posts",
       select:
-        "_id title user slug tags createdAt likes comments.count cover.medium",
+        "_id title user text slug tags createdAt likes comments.count cover.medium",
       populate: {
         path: "tags",
         select: "name",
@@ -479,10 +481,35 @@ export const getSavedPosts = async (req, res) => {
         select: "firstname lastname href profilePicture.thumbnail -_id",
       },
     });
-    const data = saved.posts.map((post) => {
-      return { blog: post };
-    });
-    console.log(data);
+    const data = await Promise.all(
+      saved.posts.map((post) => {
+        const liked = userId ? post.likes.users.includes(userId) : false;
+        const saved = true;
+        return {
+          blog: {
+            user: {
+              firstname: post.user.firstname,
+              lastname: post.user.lastname,
+              href: post.user.href,
+              profilePicture: {
+                thumbnail: post.user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
+        };
+      })
+    );
     return res.json(data);
   } catch (err) {
     console.dir(err);
