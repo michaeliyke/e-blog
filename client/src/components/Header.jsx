@@ -64,7 +64,7 @@ export const Header = () => {
           ) : (
             <button
               onClick={toggleFormPopUp}
-              className="bg-indigo-600 text-lg font-poppins text-white border-2 border-indigo-800 rounded-xl w-20 h-10 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
+              className=" bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none active:bg-blue-400"
             >
               Sign in
             </button>

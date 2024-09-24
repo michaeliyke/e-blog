@@ -2,10 +2,12 @@ import PropTypes from "prop-types";
 import { BookmarkButton, PostStats } from "./PostStats";
 import moment from "moment";
 import { PostOptions } from "./PostOptions";
+import { isUserOwner } from "../util/Tools";
 
 export const PostCard = ({ post, withOptions = false, checkSlug = "" }) => {
-  const profileUrl =
-    checkSlug === post.user.href ? "/profile" : `/user/${post.user.href}`;
+  const profileUrl = isUserOwner(post.user.href, checkSlug)
+    ? "/profile"
+    : `/user/${post.user.href}`;
   return (
     <li
       key={post._id}

@@ -130,3 +130,7 @@ export const unify = (word) => {
   if (!word) return "";
   return word[0].toUpperCase() + word.slice(1).toLowerCase();
 };
+
+export function isUserOwner(href, userHref) {
+  return href === userHref;
+}
