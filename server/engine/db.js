@@ -10,19 +10,19 @@ import "dotenv/config";
 
 const MongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017";
 
-// connect to the data base using mongoose
-mongoose
-  .connect(MongoUrl, {
-    connectTimeoutMS: 60000,
-    retryWrites: true, // Allows MongoDB to retry failed write operations
-    appName: "e-blog-db",
-  })
-  .then(() => {
-    console.log("Database connected successfuly");
-  })
-  .catch((err) => {
-    console.log("Database failed to load do to this err:\n");
-    console.log(err);
-  });
-
-export default mongoose;
+export async function connectToDB() {
+  // this function will call it self after 5 seconds on error
+  // connect to Mongodb atlas
+  try {
+    await mongoose.connect(MongoUrl, {
+      connectTimeoutMS: 60000,
+      retryWrites: true,
+      appName: "e-blog-db",
+    });
+    console.log("Database connected successfully");
+  } catch (err) {
+    console.error("Database failed to connect due to this error:", err);
+    console.log("Retrying to connect to the database in 5 seconds...");
+    setTimeout(connectToDB, 5000); // Retry connection after 5 seconds
+  }
+}
