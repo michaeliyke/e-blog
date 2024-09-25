@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import axios from "axios";
 import { unify } from "../util/Tools";
+import { useNavigate } from "react-router-dom";
 
 export function CreateAPost() {
   const hiddenFileInput = useRef(null);
@@ -19,12 +20,12 @@ export function CreateAPost() {
   const textAreaRef = useRef(null);
   const inputRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const navigate = useNavigate();
 
   // we use useMemo
   const suggest = useMemo(
     () =>
       debounce(async (name) => {
-        // console.log("search");
         try {
           const suggestionUrl = new URL("http://127.0.0.1:3000/tags/suggest");
           suggestionUrl.searchParams.set("tag", name);
@@ -139,9 +140,8 @@ export function CreateAPost() {
           }
         },
       })
-      .then(() => {
-        // window.location.href = "/";
-        // alert("seccess");
+      .then((res) => {
+        navigate(`/posts/${res.data.post.slug}`);
       })
       .catch((err) => {
         console.log(err);
