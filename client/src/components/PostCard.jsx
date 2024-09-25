@@ -9,10 +9,7 @@ export const PostCard = ({ post, withOptions = false, checkSlug = "" }) => {
     ? "/profile"
     : `/user/${post.user.href}`;
   return (
-    <li
-      key={post._id}
-      className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
-    >
+    <li className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">
       {/* User Information */}
       <figure className="flex items-center mb-4 relative">
         <a href={profileUrl}>
@@ -30,7 +27,10 @@ export const PostCard = ({ post, withOptions = false, checkSlug = "" }) => {
               {post.user.firstname} {post.user.lastname}
             </a>
             <BookmarkButton post={post} />
-            {Boolean(withOptions) === true && <PostOptions postId={post._id} />}
+            {Boolean(withOptions) === true &&
+              isUserOwner(post.user.href, checkSlug) && (
+                <PostOptions postId={post._id} />
+              )}
           </h3>
           {/* <p className="text-xs text-gray-500">2 days ago</p> */}
           <p className="text-xs text-gray-500">
