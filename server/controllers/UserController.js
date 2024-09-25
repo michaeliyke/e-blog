@@ -114,8 +114,6 @@ export async function updateUserPost(req, res) {
   const tagObjects = [];
   const post = await Post.findById(postId).exec();
 
-  console.log({ state: req.body.deleteCover });
-
   // check if post exists and if the user is the owner of the post
   if (!post) return res.status(404).json({ message: "Post not found !" });
   if (post.user.toString() !== userId)
@@ -136,7 +134,7 @@ export async function updateUserPost(req, res) {
         tagObjects.push(currentTag);
       }
     }
-    if (title) {
+    if (title && title !== post.title) {
       post.title = title;
       post.slug = stringToSlug(title);
     }
@@ -345,10 +343,8 @@ export const registerUser = async (req, res) => {
 
 export const createUsers = async (req, res) => {
   // create fake users
-  console.log("create fake users ...");
   await Promise.all(
     fakeUsers.map(async (data) => {
-      console.log(data);
       if (await User.exists({ email: data.email })) {
         return;
       }
@@ -360,16 +356,13 @@ export const createUsers = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  // console.log("update user");
   const userId = req.userId;
   const { firstname, lastname, email } = req.body;
   const image = req.file;
-  // console.dir({ firstname, lastname, email, image });
   const newData = {};
   if (firstname) newData.firstname = firstname;
   if (lastname) newData.lastname = lastname;
   if (email) newData.email = email;
-  // console.dir(newData);
 
   try {
     const user = await User.findByIdAndUpdate(userId, newData, {
@@ -400,7 +393,6 @@ export const updateUser = async (req, res) => {
 export const updateUserPassword = async (req, res) => {
   const userId = req.userId;
   const { oldPassword, newPassword, confirmPassword } = req.body;
-  console.log({ oldPassword, newPassword, confirmPassword });
 
   if (!oldPassword || !newPassword || !confirmPassword) {
     return res.status(400).json({ message: "Make sure you fill all fields" });
@@ -535,7 +527,7 @@ export const getSavedPosts = async (req, res) => {
         };
       })
     );
-    return res.json(data);
+    return res.json(data.reverse());
   } catch (err) {
     console.dir(err);
     return res.sendStatus(400);
