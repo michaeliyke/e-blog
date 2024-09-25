@@ -161,9 +161,8 @@ export function UpdateAPost() {
           }
         },
       })
-      .then(() => {
-        window.location.href = "/profile";
-        // alert("seccess");
+      .then((res) => {
+        window.location.href = `/posts/${res.data.post.slug}`;
       })
       .catch((err) => {
         console.log(err);
@@ -173,7 +172,6 @@ export function UpdateAPost() {
   }
 
   // handle the separation of tags
-  //
   function handleKeyDown(eventOb) {
     const value = input.trim();
     if (eventOb.key === " " || eventOb.key === "," || eventOb.key === "Enter") {
@@ -201,7 +199,7 @@ export function UpdateAPost() {
         className={`w-80 h-30 fixed flex flex-col justify-center items-center top-4 bg-gray-300 rounded-lg shadow-xl p-4 border border-gray-400
            transition-transform duration-500 ease-in-out ${
              isLoading && coverPicture
-               ? "translate-y-0 opacity-100"
+               ? "translate-y-20 opacity-100"
                : "-translate-y-full opacity-0"
            }`}
       >
