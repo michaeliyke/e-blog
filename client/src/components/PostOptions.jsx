@@ -6,7 +6,7 @@ import { PopUpConfirme } from "./PopUpConfirme";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-export const PostOptions = ({ postId }) => {
+export const PostOptions = ({ postId, redirectTo = null }) => {
   const [displayOptions, setDisplayOptions] = useState(false);
   const [popUpConfirme, setPopUpConfirme] = useState(false);
   const dropdownRef = useRef(null);
@@ -77,6 +77,7 @@ export const PostOptions = ({ postId }) => {
           visible={popUpConfirme}
           toggle={setPopUpConfirme}
           postId={postId}
+          redirectTo={redirectTo}
         />
       </div>
     </div>
@@ -85,4 +86,5 @@ export const PostOptions = ({ postId }) => {
 
 PostOptions.propTypes = {
   postId: PropTypes.string.isRequired,
+  redirectTo: PropTypes.string,
 };
