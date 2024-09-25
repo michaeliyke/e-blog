@@ -12,11 +12,11 @@ export function PostLeftSide({ handleToggle, toggleBg }) {
 
   return (
     <div
-      className="mx-auto w-60 h-auto flex flex-col sticky top-3 z-20 bg-[#f5f5df] rounded-full
+      className="ml-auto w-20 h-auto p-4 flex flex-col sticky top-3 z-20 bg-[#f5f5df] rounded-full
           border-2 border-gray-400"
     >
       {/* left container */}
-      <div className="w-full flex h-16 justify-evenly items-center">
+      <div className="w-auto flex gap-2 flex-col h-auto justify-evenly items-center">
         {/* controle buttons */}
         <button>
           <FaArrowLeft

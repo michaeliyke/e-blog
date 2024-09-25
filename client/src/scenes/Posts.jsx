@@ -22,7 +22,7 @@ export function Posts() {
         }`}
       ></div>
       <Header />
-      <div className="grid grid-cols-1 justify-evenly sm:grid-cols-[80%] md:grid-cols-[20%_70%] lg:grid-cols-[18%_60%_18%] gap-5 p-5">
+      <div className="grid grid-cols-1 justify-evenly sm:grid-cols-[80%] md:grid-cols-[10%_90%] lg:grid-cols-[18%_60%_18%] gap-5 p-5">
         <div className="hidden sm:hidden md:block">
           <PostLeftSide handleToggle={handleToggle} toggleBg={toggleBg} />
         </div>
