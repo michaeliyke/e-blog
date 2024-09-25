@@ -8,12 +8,12 @@ export const Favorites = () => {
     <div className="w-full h-full">
       <Header />
       <div className="grid grid-cols-1 justify-evenly sm:grid-cols-[100%] md:grid-cols-[20%_70%] lg:grid-cols-[18%_60%_18%] gap-5 p-5">
-        <div className="hidden sm:hidden md:block bg-slate-50">
+        <div className="hidden sm:hidden md:block py-4">
           <NavDock />
         </div>
 
         {/* post container */}
-        <div className="rounded-lg z-10">
+        <div className="sm:px-8 p-0 rounded-lg z-10">
           <FavoritesContainer />
         </div>
 
