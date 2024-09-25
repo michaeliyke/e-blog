@@ -173,7 +173,7 @@ export const getPostBySlug = async (req, res) => {
     .populate("tags", "name")
     .lean();
   const liked = user
-    ? post.likes.users.some((user) => user.equals(user._id))
+    ? post.likes.users.some((likedUserId) => likedUserId.equals(user._id))
     : false;
   const saved = user ? user.saved.posts.includes(post._id) : false;
   const data = {

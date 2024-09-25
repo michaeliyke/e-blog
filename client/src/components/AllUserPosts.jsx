@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { request } from "../util/Tools";
 import { PostCard } from "./PostCard";
-import { appendToData } from "../state/appSlice/appSlice";
+import { appendToData, resetData } from "../state/appSlice/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export const AllUserPosts = () => {
@@ -13,6 +13,11 @@ export const AllUserPosts = () => {
   const [dataLoading, setDataLoading] = useState(false);
   const [allPostsFetched, setAllDataFetched] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // clear the data when the component mounts
+    dispatch(resetData());
+  }, []);
 
   const loadMorePosts = async () => {
     if (dataLoading) return;
