@@ -2,18 +2,28 @@ import PropTypes from "prop-types";
 import { request } from "../util/Tools";
 import { useDispatch } from "react-redux";
 import { removeItem } from "../state/appSlice/appSlice";
+import { useNavigate } from "react-router-dom";
 
-export const PopUpConfirme = ({ visible, toggle, postId }) => {
+export const PopUpConfirme = ({
+  visible,
+  toggle,
+  postId,
+  redirectTo = null,
+}) => {
   const url = `http://127.0.0.1:3000/blogs/${postId}`;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleDeleteAccount = async () => {
-    // delete account
-    console.log("delete:>", url);
+    // delete Post
     try {
-      dispatch(removeItem(postId));
-      toggle(!visible);
       request.delete(url).then(toggleVisibility);
+      if (redirectTo) {
+        navigate(-1);
+      } else {
+        dispatch(removeItem(postId));
+        toggle(!visible);
+      }
     } catch (res) {
       console.log(res);
     }
@@ -60,4 +70,5 @@ PopUpConfirme.propTypes = {
   visible: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   postId: PropTypes.string.isRequired,
+  redirectTo: PropTypes.string,
 };
