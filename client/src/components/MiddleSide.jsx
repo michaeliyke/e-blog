@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { request } from "../util/Tools";
 import { PostCard } from "./PostCard";
+import { appendToData, resetData } from "../state/appSlice/appSlice";
 
 export const MiddleSide = () => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageLoading, setPageLoading] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const data = useSelector((state) => state.app.data);
   const currentUserHref = useSelector((state) => state.auth?.user?.href);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // clear the data when the component mounts
+    dispatch(resetData());
+  }, []);
 
   // get all the blog and store then in data
   useEffect(() => {
-    console.log("get page:", pageNumber);
     request
       .get(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
       .then((res) => {
         if (!res.data.length) return;
-        setData((prev) => [...prev, ...res.data]);
+        // setData((prev) => [...prev, ...res.data]);
+        dispatch(appendToData(res.data));
         setPageLoading(false);
       })
       .catch((err) => console.log("err:", err));
@@ -83,7 +91,12 @@ export const MiddleSide = () => {
 
       <ul className="list-none">
         {data.map(({ blog }) => (
-          <PostCard key={blog._id} post={blog} checkSlug={currentUserHref} />
+          <PostCard
+            key={blog._id}
+            post={blog}
+            checkSlug={currentUserHref}
+            withOptions={true}
+          />
         ))}
       </ul>
 

@@ -19,6 +19,9 @@ const visibilitySlice = createSlice({
     appendToData: (state, action) => {
       state.data = [...state.data, ...action.payload];
     },
+    resetData: (state) => {
+      state.data = [];
+    },
     toggleSignIn: (state) => {
       state.card = {
         signin: true,
@@ -46,6 +49,7 @@ export const {
   clearSign,
   removeItem,
   appendToData,
+  resetData,
 } = visibilitySlice.actions;
 
 export default visibilitySlice.reducer;
