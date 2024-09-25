@@ -8,6 +8,8 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(comment.text);
   const isOwner = useIsUserOwnPost(comment);
+  const path = `blogs/${post.post._id}/comments/${comment._id}`;
+  const url = `http://127.0.0.1:3000/${path}`;
 
   function handleDeleteClick() {
     setIsDeleting(true);
@@ -19,9 +21,8 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
 
   function handleConfirmDelete() {
     // DELETE /blogs/:postId/comments/:commentId : Delete a comment
-    const path = `blogs/${post.post._id}/comments/${comment._id}`;
     request
-      .delete(`http://127.0.0.1:3000/${path}`)
+      .delete(url)
       .then(() => {
         onDelete(comment._id);
       })
@@ -37,7 +38,15 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
 
   function handleEditSubmit(e) {
     e.preventDefault();
-    console.log('Updated Comment: ', editedText);
+    // console.log('Updated Comment: ', editedText);
+    request
+      .put(url, { text: editedText })
+      .then(() => {
+        onEdit(comment._id, editedText);
+      })
+      .catch((err) => {
+        console.error('Error updating comment: ', err.response);
+      });
     setIsEditing(false);
   }
 

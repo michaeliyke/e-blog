@@ -24,9 +24,8 @@ export function Comments(post) {
   // Handler for editing a comment
   function handleEdit(commentId, updatedText) {
     const updatedComments = comments.map((comment) => {
-      return comment.id === commentId
-        ? { ...comment, text: updatedText }
-        : comment;
+      if (comment._id === commentId) return { ...comment, text: updatedText };
+      return comment;
     });
 
     setComments(updatedComments);
