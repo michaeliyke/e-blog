@@ -1,12 +1,20 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 export function urlenCode(str) {
-  return str.replace(/\s+/g, "-");
+  return str.replace(/\s+/g, '-');
 }
 
 export const urlComponentSchema = {
   post_title: PropTypes.string.isRequired,
 };
+
+// Determine if current user is the owner of a post or comment
+export function useIsUserOwnPost(post) {
+  const userHref = useSelector((state) => state.auth?.user?.href);
+  if (!userHref) return false;
+  return post?.user?.href === userHref;
+}
 
 export const blogPostSchema = {
   post: PropTypes.shape({
