@@ -1,15 +1,20 @@
+/**
+ * This module connects to MongoDB using the Mongoose library.
+ *
+ * Environment variables:
+ * - `MONGO_URL`: The URL of the MongoDB instance to connect to.
+ */
+
 import mongoose from "mongoose";
 import "dotenv/config";
 
 const MongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017";
 
-// console.log("Mongo url:", MongoUrl);
 // connect to the data base using mongoose
 mongoose
   .connect(MongoUrl, {
     connectTimeoutMS: 60000,
-    retryWrites: true,
-    w: "majority",
+    retryWrites: true, // Allows MongoDB to retry failed write operations
     appName: "e-blog-db",
   })
   .then(() => {
