@@ -308,7 +308,7 @@ export function CreateAPost() {
           <hr className="mb-5 border-t-[3px] border-gray-200" />
           <textarea
             ref={textAreaRef}
-            className="scroll__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none "
+            className="scroll__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none mb-2"
             placeholder="Start Writing ..."
             onChange={(e) => setContent(e.target.value)}
             value={content}
