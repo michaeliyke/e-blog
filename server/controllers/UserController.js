@@ -3,12 +3,17 @@ import {
   checkPassword,
   generateHref,
   hashPassword,
+  stringToSlug,
+  unify,
   uploadImage,
+  uploadToImgBB,
 } from "../utils/tools.js";
 import { fakeUsers } from "../utils/FakeData.js";
 import { createJwtToken } from "../utils/JwtUtils.js";
 import Post from "../models/Post.js";
 import axios from "axios";
+import Comment from "../models/Comment.js";
+import Tag from "../models/Tag.js";
 
 export const postSaveUnsave = async (req, res) => {
   const userId = req.userId;
@@ -47,7 +52,7 @@ export const getAuthInfo = async (req, res) => {
   const userId = req.userId;
   const user = await User.findById(
     userId,
-    "-_id firstname lastname profilePicture.thumbnail"
+    "-_id firstname lastname href profilePicture.thumbnail"
   ).exec();
   if (user) {
     if (!user.thumbnail) {
@@ -72,15 +77,152 @@ export const getUserProfile = async (req, res) => {
   return res.status(404).json({ message: "User not found !" });
 };
 
+export async function getUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+
+  try {
+    const post = await Post.findById(
+      postId,
+      "text title cover.medium tags user"
+    ).populate("tags", "name");
+    if (!post) return res.status(404).json({ message: "Post not found !" });
+    if (post.user.toString() !== userId)
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this post !" });
+    return res.status(200).json({
+      cover: { medium: post.cover?.medium },
+      title: post.title,
+      text: post.text,
+      tags: post.tags,
+    });
+  } catch (err) {
+    console.log("Failed getting post:", err);
+    return res.sendStatus(400);
+  }
+}
+
+export async function updateUserPost(req, res) {
+  const userId = req.userId;
+  const postId = req.params.postId;
+  const { title, text } = req.body;
+  const image = req.file;
+  const tags = JSON.parse(req.body.tags);
+  const deleteCover = req.body.deleteCover || false;
+  let currentTag;
+  const tagObjects = [];
+  const post = await Post.findById(postId).exec();
+
+  // check if post exists and if the user is the owner of the post
+  if (!post) return res.status(404).json({ message: "Post not found !" });
+  if (post.user.toString() !== userId)
+    return res
+      .status(403)
+      .json({ message: "You are not the owner of this post !" });
+
+  try {
+    for (const tag of tags) {
+      const newTag = unify(tag);
+      currentTag = await Tag.findOne({ name: newTag }).exec();
+      if (currentTag) {
+        tagObjects.push(currentTag);
+      } else {
+        const _id = await getNextTagId();
+        currentTag = await Tag({ name: newTag, _id });
+        await currentTag.save();
+        tagObjects.push(currentTag);
+      }
+    }
+    if (title && title !== post.title) {
+      post.title = title;
+      post.slug = stringToSlug(title);
+    }
+    if (text) {
+      post.text = text;
+    }
+    post.tags = [];
+    for (const tag of tagObjects) {
+      post.tags.push(tag._id);
+      tag.count++;
+      tag.save();
+    }
+    if (image) {
+      const imageData = await uploadToImgBB(image);
+      post.cover = { ...imageData };
+      // await uploadCover(image, post);
+    } else if (deleteCover) {
+      post.cover = null;
+    }
+    await post.save();
+    return res.status(200).json({ post });
+  } catch (err) {
+    const statusCode = err.status || 500;
+    console.log(err);
+    return res.sendStatus(statusCode);
+  }
+}
+
 export const getUserPosts = async (req, res) => {
   const userId = req.userId;
-  const posts = await Post.find({ user: userId }, "_id")
-    .sort({ createdAt: -1 })
-    .lean();
-  if (!posts) {
-    return res.sendStatus(404);
+  const pageNumber = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (pageNumber - 1) * limit;
+  try {
+    const user = await User.findById(
+      userId,
+      "posts firstname lastname href profilePicture.thumbnail saved -_id"
+    )
+      .populate({
+        path: "posts",
+        select:
+          "_id title text user slug tags createdAt likes comments.count cover.medium",
+        options: {
+          sort: { createdAt: -1 },
+          skip,
+          limit,
+        },
+        populate: {
+          path: "tags",
+          select: "name",
+        },
+      })
+      .exec();
+    const data = await Promise.all(
+      user.posts.map((post) => {
+        const liked = post.likes.users.includes(userId);
+        const saved = user.saved.posts.includes(post._id);
+        return {
+          blog: {
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              href: user.href,
+              profilePicture: {
+                thumbnail: user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
+        };
+      })
+    );
+    if (data.length === 0) return res.sendStatus(404);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
   }
-  return res.status(200).json({ posts });
+  return res.sendStatus(400);
 };
 
 export const loginUser = async (req, res) => {
@@ -118,10 +260,16 @@ export const changePassword = async (req, res) => {
   const { oldPassword, newPassword, id } = req.body;
 
   const user = await User.findById(id).exec();
-  if (checkPassword(oldPassword, user.password)) {
-    user.password = hashPassword(newPassword);
-    user.save();
+  try {
+    if (checkPassword(oldPassword, user.password)) {
+      user.password = hashPassword(newPassword);
+      user.save();
+      return res.sendStatus(200);
+    }
+  } catch (err) {
+    console.log(err);
   }
+  return res.sendStatus(401);
 };
 
 export async function getUserInfo(req, res) {
@@ -164,7 +312,9 @@ export const registerUser = async (req, res) => {
   }
 
   // check if teh href (firstname, lastname) both already exists
-  let href = `${firstname.toLowerCase()}-${lastname.toLowerCase()}`;
+  let href = `${firstname.toLowerCase().trim()}-${lastname
+    .toLowerCase()
+    .trim()}`;
   if (await User.exists({ href }).exec()) {
     href = await generateHref(href);
   }
@@ -193,10 +343,8 @@ export const registerUser = async (req, res) => {
 
 export const createUsers = async (req, res) => {
   // create fake users
-  console.log("create fake users ...");
   await Promise.all(
     fakeUsers.map(async (data) => {
-      console.log(data);
       if (await User.exists({ email: data.email })) {
         return;
       }
@@ -208,16 +356,13 @@ export const createUsers = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  // console.log("update user");
   const userId = req.userId;
   const { firstname, lastname, email } = req.body;
   const image = req.file;
-  // console.dir({ firstname, lastname, email, image });
   const newData = {};
   if (firstname) newData.firstname = firstname;
   if (lastname) newData.lastname = lastname;
   if (email) newData.email = email;
-  // console.dir(newData);
 
   try {
     const user = await User.findByIdAndUpdate(userId, newData, {
@@ -247,18 +392,19 @@ export const updateUser = async (req, res) => {
 
 export const updateUserPassword = async (req, res) => {
   const userId = req.userId;
-  const { oldPassword, newPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
 
-  if ((!oldPassword || !newPassword, !userId)) {
-    return res
-      .status(400)
-      .json({ message: "Old and new password are required" });
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "Make sure you fill all fields" });
   }
 
   try {
     const user = await User.findById(userId, "password").exec();
     if (!(await checkPassword(oldPassword, user.password)))
       return res.status(403).json({ message: "Invalid user password" });
+
+    if (newPassword !== confirmPassword)
+      return res.status(403).json({ message: "Passwords do not match" });
 
     const hashedPassword = await hashPassword(newPassword);
     user.password = hashedPassword;
@@ -272,35 +418,60 @@ export const updateUserPassword = async (req, res) => {
 
 export const getUserPublicPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
+  const limit = 5;
+  const skip = (page - 1) * limit;
   const userId = req.params.userId;
   const authUserId = req.userId;
   let authUser;
   try {
-    const { posts } = await User.findById(userId, "posts -_id").populate({
+    const user = await User.findById(
+      userId,
+      "posts firstname lastname profilePicture.thumbnail href -_id"
+    ).populate({
       path: "posts",
       select:
-        "_id title user slug tags createdAt likes comments.count cover.medium",
+        "_id title text user slug tags createdAt likes comments.count cover.medium",
       populate: {
         path: "tags",
         select: "name",
       },
+      skip,
+      limit,
     });
+    if (user.posts.length === 0) return res.sendStatus(404);
     if (authUserId) {
       authUser = await User.findById(authUserId, "saved.posts").lean();
     }
-    // console.log(posts);
     const data = await Promise.all(
-      posts.map(async (blog) => {
-        const liked =
-          authUserId &&
-          blog.likes.users.some((user) => user.equals(authUserId));
-        const saved = authUserId
-          ? authUser.saved.posts.includes(blog._id)
+      user.posts.map((post) => {
+        const liked = authUserId
+          ? post.likes.users.includes(authUserId)
           : false;
-        const newBlog = blog.toObject();
-        delete newBlog.likes.users;
+        const saved = authUserId
+          ? authUser.saved.posts.includes(post._id)
+          : false;
         return {
-          blog: { ...newBlog, liked, saved },
+          blog: {
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              href: user.href,
+              profilePicture: {
+                thumbnail: user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
         };
       })
     );
@@ -317,7 +488,7 @@ export const getSavedPosts = async (req, res) => {
     const { saved } = await User.findById(userId, "saved").populate({
       path: "saved.posts",
       select:
-        "_id title user slug tags createdAt likes comments.count cover.medium",
+        "_id title user text slug tags createdAt likes comments.count cover.medium",
       populate: {
         path: "tags",
         select: "name",
@@ -327,11 +498,36 @@ export const getSavedPosts = async (req, res) => {
         select: "firstname lastname href profilePicture.thumbnail -_id",
       },
     });
-    const data = saved.posts.map((post) => {
-      return { blog: post };
-    });
-    console.log(data);
-    return res.json(data);
+    const data = await Promise.all(
+      saved.posts.map((post) => {
+        const liked = userId ? post.likes.users.includes(userId) : false;
+        const saved = true;
+        return {
+          blog: {
+            user: {
+              firstname: post.user.firstname,
+              lastname: post.user.lastname,
+              href: post.user.href,
+              profilePicture: {
+                thumbnail: post.user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
+        };
+      })
+    );
+    return res.json(data.reverse());
   } catch (err) {
     console.dir(err);
     return res.sendStatus(400);
@@ -340,11 +536,14 @@ export const getSavedPosts = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const userId = req.userId;
+  const { password } = req.body;
   try {
-    const user = await User.findById(userId).select("posts");
+    const user = await User.findById(userId).select("posts password");
     if (!user) {
-      console.log("User not found");
-      return;
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!(await checkPassword(password, user.password))) {
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     // Delete the user
@@ -352,13 +551,13 @@ export const deleteUser = async (req, res) => {
       axios.delete(user.profilePicture.deleteUrl);
 
     // Delete the posts
-    console.log(user.posts);
     if (user.posts.length > 0) {
       await Post.deleteMany({ _id: { $in: user.posts } });
       console.log("Posts deleted");
     } else {
       console.log("No posts to delete");
     }
+    await Comment.deleteMany({ user: userId });
     await User.findByIdAndDelete(userId);
     return res.sendStatus(200);
   } catch (error) {

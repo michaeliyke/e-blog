@@ -2,13 +2,13 @@ import express, { json } from "express";
 import postRouter from "./routes/PostRouter.js";
 import userRouter from "./routes/UserRouter.js";
 import likeRouter from "./routes/LikeRouter.js";
-import mongoose from "./engine/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/AuthRouter.js";
 import tagRouter from "./routes/TagRouter.js";
 import commentRouter from "./routes/CommentsRouter.js";
 import replyRouter from "./routes/ReplyRouter.js";
+import { connectToDB } from "./engine/db.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -39,8 +39,8 @@ app.use("/tags", tagRouter);
 app.use("/comments", commentRouter);
 app.use("/replies", replyRouter);
 
-// wait until the database is up before running the server
-mongoose.connection.once("open", () => {
+connectToDB().then(() => {
+  // express server start after the database starts successfuly
   app.listen(PORT, HOST, () => {
     console.log("Server is running!");
   });

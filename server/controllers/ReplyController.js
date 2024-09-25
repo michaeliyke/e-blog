@@ -2,6 +2,7 @@ import { Reply } from "../models/Reply.js";
 import Comment from "../models/Comment.js";
 import { startSession } from "mongoose";
 
+// Reply to a comment
 export const replyToComment = async (req, res) => {
   const userId = req.userId;
 
@@ -28,7 +29,7 @@ export const replyToComment = async (req, res) => {
 
     const newReply = new Reply({ user: userId, text });
 
-    comment.replies.push(newReply);
+    comment.replies.push(newReply.id);
 
     await newReply.save({ session });
     await comment.save({ session });
@@ -36,7 +37,7 @@ export const replyToComment = async (req, res) => {
     await session.commitTransaction();
     const reply = newReply.toObject();
     delete reply.user;
-    return res.status(201).json({ reply });
+    return res.status(201).json(reply);
   } catch (err) {
     session && (await session.abortTransaction());
     return res.sendStatus(500);
@@ -45,6 +46,7 @@ export const replyToComment = async (req, res) => {
   }
 };
 
+// modify (edit, delete) a comment
 export const modReply = async (req, res) => {
   const userId = req.userId;
 
@@ -72,7 +74,7 @@ export const modReply = async (req, res) => {
       !!reply &&
       (await Comment.findOne({
         _id: commentId,
-        replies: { $elemMatch: { _id: replyId } },
+        replies: { $elemMatch: { $eq: replyId } },
       }).exec());
 
     if (!comment) {
@@ -82,21 +84,21 @@ export const modReply = async (req, res) => {
 
     if (method === "PUT") {
       if (reply.text !== text) {
-        comment.replies.pull(reply);
+        comment.replies.pull(reply.id);
         reply.text = text;
-        comment.replies.push(reply);
+        comment.replies.push(reply.id);
 
         await reply.save({ session });
         await comment.save({ session });
 
         await session.commitTransaction();
-        return res.json({ reply });
+        return res.json(reply);
       }
       await session.abortTransaction();
       return res.json({ reply });
     }
 
-    comment.replies.pull(reply);
+    comment.replies.pull(reply.id);
     await comment.save({ session });
     await reply.deleteOne({ session });
     await session.commitTransaction();
@@ -109,17 +111,20 @@ export const modReply = async (req, res) => {
   }
 };
 
+// get all the current replies for a comment
 export const getReplies = async (req, res) => {
   const commentId = req.params.commentId;
 
   try {
     const comment = await Comment.findById(commentId, "replies -_id")
       .populate({
-        path: "replies.user",
-        select: "firstname lastname href profilePicture.thumbnail -_id",
+        path: "replies",
+        populate: {
+          path: "user",
+          select: "firstname lastname href profilePicture.thumbnail -_id",
+        },
       })
       .lean();
-    console.log(comment.replies);
     if (!comment) return res.status(400).json({ message: "Invalid commentId" });
     return res.json({ replies: comment.replies });
   } catch (err) {

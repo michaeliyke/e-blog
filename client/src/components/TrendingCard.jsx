@@ -14,7 +14,7 @@ export const TrendingCard = () => {
     fetchData();
   }, []);
   return (
-    <div className="my-4 pb-2 font-poppins rounded-md md:w-60 sm:w-64 w-[80%] border-2 shadow border-[#e5e5e5] h-auto text-black bg-[#f2f2f2]">
+    <div className="my-4 pb-2 font-poppins rounded-md md:w-60 sm:w-64 w-[80%] border shadow-lg border-gray-300 h-auto text-black bg-white">
       <div className="p-2">
         <h2 className="text-md font-bold text-center">Trending Posts</h2>
         <hr className="border-b-1 border-black" />

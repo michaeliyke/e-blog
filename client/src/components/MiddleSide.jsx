@@ -1,24 +1,31 @@
 import { useEffect, useState } from "react";
-import { PostStats } from "./PostStats";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { request } from "../util/Tools";
-import { BookmarkButton } from "./PostStats";
-import moment from "moment";
+import { PostCard } from "./PostCard";
+import { appendToData, resetData } from "../state/appSlice/appSlice";
 
 export const MiddleSide = () => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageLoading, setPageLoading] = useState(true);
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const data = useSelector((state) => state.app.data);
+  const currentUserHref = useSelector((state) => state.auth?.user?.href);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // clear the data when the component mounts
+    dispatch(resetData());
+  }, []);
 
   // get all the blog and store then in data
   useEffect(() => {
-    console.log("get page:", pageNumber);
     request
       .get(`http://127.0.0.1:3000/blogs/page/${pageNumber}`)
       .then((res) => {
         if (!res.data.length) return;
-        setData((prev) => [...prev, ...res.data]);
+        // setData((prev) => [...prev, ...res.data]);
+        dispatch(appendToData(res.data));
         setPageLoading(false);
       })
       .catch((err) => console.log("err:", err));
@@ -82,83 +89,16 @@ export const MiddleSide = () => {
         )}
       </div>
 
-      {data.map(({ blog }) => (
-        <div
-          key={blog._id}
-          className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300"
-        >
-          {/* User Information */}
-          <figure className="flex items-center mb-4 relative">
-            <a href={`/user/${blog.user.href}`}>
-              <img
-                src={blog.user.profilePicture.thumbnail}
-                alt="User avatar"
-                className="w-10 h-10 rounded-full mr-3"
-                width={40}
-                height={40}
-              />
-            </a>
-            <figcaption>
-              <h3 className="font-bold text-gray-700">
-                <a href={`/user/${blog.user.href}`}>
-                  {blog.user.firstname} {blog.user.lastname}
-                </a>
-                <BookmarkButton post={blog} />
-              </h3>
-              {/* <p className="text-xs text-gray-500">2 days ago</p> */}
-              <p className="text-xs text-gray-500">
-                {moment(blog.createdAt).fromNow()}
-              </p>
-            </figcaption>
-          </figure>
-
-          {/* Post Content */}
-          <div className="flex items-start max-h-[40%] overflow-clip">
-            <div className="flex-1">
-              <a href={`/posts/${blog.slug}`}>
-                {/* Post Title */}
-                <h2 className="text-blue-600 text-xl font-[600] mb-2 font-poppins">
-                  {blog.title}
-                </h2>
-                {/* Post Text */}
-                <p className="font-poppins text-sm whitespace-pre-wrap overflow-hidden overflow-ellipsis">
-                  {blog.text}... <br />
-                </p>
-                <p className="text-indigo-500 text-[13px]">
-                  click to continue reading
-                </p>
-              </a>
-            </div>
-          </div>
-          {blog.cover?.medium && (
-            <a href={`/posts/${blog.slug}`}>
-              <img
-                className="w-auto mx-auto max-h-[300px] my-3"
-                src={blog.cover.medium}
-                alt="Post cover"
-              />
-            </a>
-          )}
-
-          {/* Impressions and Comments */}
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-            <p>{blog.likes.count} impressions</p>
-            <p>{blog.comments.count} comments</p>
-          </div>
-
-          {/* The tags section */}
-          <div className="flex gap-2 justify-start text-gray-400 font-poppins text-[13px]">
-            {blog.tags.map((tag, index) => (
-              <span key={index}>#{tag.name}</span>
-            ))}
-          </div>
-
-          {/* Like and Comment Buttons */}
-          <PostStats post={blog} />
-
-          {/* Bookmark Button */}
-        </div>
-      ))}
+      <ul className="list-none">
+        {data.map(({ blog }) => (
+          <PostCard
+            key={blog._id}
+            post={blog}
+            checkSlug={currentUserHref}
+            withOptions={true}
+          />
+        ))}
+      </ul>
 
       {pageLoading && (
         <div className="bg-white mx-2 my-4 p-6 shadow-lg rounded-lg border border-gray-300">

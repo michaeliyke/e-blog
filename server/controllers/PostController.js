@@ -10,6 +10,7 @@ import {
   unify,
   uploadToImgBB,
 } from "../utils/tools.js";
+import { verifyToken } from "../utils/JwtUtils.js";
 
 async function allBlogs(req, res) {
   // get all blogs
@@ -97,7 +98,6 @@ async function createTestPosts(req, res) {
 }
 
 export const createNewPost = async (req, res) => {
-  // console.log("create new post");
   const userId = req.userId;
   let currentTag;
   const tagList = [];
@@ -155,13 +155,50 @@ export const createNewPost = async (req, res) => {
 
 export const getPostBySlug = async (req, res) => {
   const slug = req.params.slug;
+  let user = null;
   if (!slug) return res.sendStatus(404);
+  const token = req.cookies._token;
+  if (token && token.startsWith("Bearer ")) {
+    const { userId } = await verifyToken(token.slice(7));
+    try {
+      user = await User.findById(userId, "saved.posts").lean();
+    } catch {}
+  }
 
-  const post = await Post.findOne({ slug }, "user title text tags cover.image")
+  const post = await Post.findOne(
+    { slug },
+    "user title text slug tags cover.image likes comments.count"
+  )
     .populate("user", "firstname lastname href profilePicture.thumbnail -_id")
     .populate("tags", "name")
     .lean();
-  return res.json({ post });
+  const liked = user
+    ? post.likes.users.some((likedUserId) => likedUserId.equals(user._id))
+    : false;
+  const saved = user ? user.saved.posts.includes(post._id) : false;
+  const data = {
+    post: {
+      user: {
+        firstname: post.user.firstname,
+        lastname: post.user.lastname,
+        href: post.user.href,
+        profilePicture: {
+          thumbnail: post.user.profilePicture.thumbnail,
+        },
+      },
+      comments: { count: post.comments.count },
+      likes: { count: post.likes.count },
+      cover: { image: post.cover?.image || undefined },
+      _id: post._id,
+      title: post.title,
+      text: post.text,
+      slug: post.slug,
+      tags: post.tags,
+      liked,
+      saved,
+    },
+  };
+  return res.json(data);
 };
 
 export const getTopTen = async (req, res) => {
@@ -239,13 +276,33 @@ export const getTrendingPosts = async (req, res) => {
       user = await User.findById(userId, "saved.posts").lean();
     }
     const data = await Promise.all(
-      topPosts.map(async (blog) => {
-        const liked =
-          userId && blog.likes.users.some((user) => user.equals(userId));
-        const saved = userId ? user.saved.posts.includes(blog._id) : false;
-        delete blog.likes.users;
+      topPosts.map((post) => {
+        const liked = userId
+          ? post.likes.users.some((user) => user.equals(userId))
+          : false;
+        const saved = userId ? user.saved.posts.includes(post._id) : false;
         return {
-          blog: { ...blog, liked, saved },
+          blog: {
+            user: {
+              firstname: post.user.firstname,
+              lastname: post.user.lastname,
+              href: post.user.href,
+              profilePicture: {
+                thumbnail: post.user.profilePicture.thumbnail,
+              },
+            },
+            comments: { count: post.comments.count },
+            likes: { count: post.likes.count },
+            cover: { medium: post.cover?.medium || undefined },
+            _id: post._id,
+            title: post.title,
+            text: post.text.slice(0, 100),
+            slug: post.slug,
+            tags: post.tags,
+            createdAt: post.createdAt,
+            liked,
+            saved,
+          },
         };
       })
     );
@@ -253,6 +310,26 @@ export const getTrendingPosts = async (req, res) => {
   } catch (err) {
     console.dir(err);
     return res.sendStatus(400);
+  }
+};
+
+export const deletePost = async (req, res) => {
+  const userId = req.userId;
+  const postId = req.params.postId;
+  if (!postId) return res.status(400).json({ message: "Post ID is required" });
+  try {
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (post.user.toString() !== userId)
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to delete this post" });
+
+    await Post.findByIdAndDelete(postId);
+    return res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

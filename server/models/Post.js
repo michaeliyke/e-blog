@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+// Schema definition for a blog post object
 const postSchema = new Schema(
   {
     _id: { type: String, default: uuidv4 },

@@ -108,7 +108,6 @@ export const getTrendingPage = async (
       {
         $addFields: {
           trendingScore: {
-            // add 1 to prevent division by zero
             $divide: [
               "$likes.count",
               {

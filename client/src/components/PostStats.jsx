@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleSignIn } from "../state/appSlice/appSlice";
 
 function CommentButton({ post }) {
-  post.numOfComments = post.numOfComments || 0;
+  // post.numOfComments = post.numOfComments || 0;
   // const [numOfComments, setNumOfComments] = useState(post.numOfComments);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ function BookmarkButton({ post }) {
   if (exec) exec = console.dir("BookmarkButton:", post);
 
   return (
-    <button className="absolute right-0 top-0" onClick={handleBookmark}>
+    <button className="absolute right-20 top-0 p-1" onClick={handleBookmark}>
       {bookmarked ? (
         <FaBookmark size={25} color="blue" />
       ) : (

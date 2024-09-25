@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import axios from "axios";
-import { unify } from "../util/Tools";
-import { useNavigate } from "react-router-dom";
+import { request, unify } from "../util/Tools";
+import { useLocation } from "react-router-dom";
 
-export function CreateAPost() {
+export function UpdateAPost() {
   const hiddenFileInput = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [coverPicture, setCoverPicture] = useState(null);
@@ -13,14 +13,17 @@ export function CreateAPost() {
   const [input, setInput] = useState("");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-
+  const [postLoading, setPostLoading] = useState(true);
   const [tagSuggestions, setTagSuggestions] = useState([]);
   const [displaySuggestions, setDisplaySuggestions] = useState(false);
   const [suggestionsStyle, setSuggestionsStyle] = useState({ display: "none" });
   const textAreaRef = useRef(null);
   const inputRef = useRef(null);
   const [progress, setProgress] = useState(0);
-  const navigate = useNavigate();
+  const location = useLocation();
+  const postId = location.state?.postId;
+  const [previewLink, setPreviewLink] = useState("");
+  const url = `http://127.0.0.1:3000/users/posts/${postId}`;
 
   // we use useMemo
   const suggest = useMemo(
@@ -38,8 +41,23 @@ export function CreateAPost() {
         } catch (err) {
           console.log({ err });
         }
-      }, 200), // 200 ms delay
+      }, 200),
     [tags]
+  );
+
+  useEffect(
+    function cb() {
+      request.get(url).then((res) => {
+        setTitle(res.data.title);
+        setContent(res.data.text);
+        setTags(
+          res.data.tags.map((tag, index) => ({ name: tag.name, id: index }))
+        );
+        setPreviewLink(res.data.cover.medium);
+        setPostLoading(false);
+      });
+    },
+    [url]
   );
 
   useEffect(() => {
@@ -59,6 +77,8 @@ export function CreateAPost() {
     else setTagSuggestions([]);
   }
 
+  if (postLoading) return <div className="text-center mt-20">Loading...</div>;
+
   // Remove a tag when clicking on it
   function removeTag(tagId) {
     const newTags = tags.filter((tag) => tag.id !== tagId);
@@ -68,7 +88,6 @@ export function CreateAPost() {
   // Trigger hidden file input on button click
   function triggerFileInput(e) {
     e.preventDefault();
-    if (isLoading) return;
     hiddenFileInput.current.click();
   }
 
@@ -88,8 +107,9 @@ export function CreateAPost() {
 
   // Remove the image preview
   function handleRemoveImage() {
-    if (isLoading) return;
     setImagePreview(null);
+    setPreviewLink(null);
+    setCoverPicture(null);
   }
 
   const handleSuggestion = (e, suggestion = null) => {
@@ -122,12 +142,13 @@ export function CreateAPost() {
     formData.append("text", content);
     formData.append("tags", JSON.stringify(tags.map((tag) => tag.name)));
     if (coverPicture) {
-      console.dir(coverPicture);
       formData.append("image", coverPicture);
+    } else if (!previewLink) {
+      formData.append("deleteCover", true);
     }
     setIsLoading(true);
     axios
-      .post("http://127.0.0.1:3000/blogs/new", formData, {
+      .put(`http://127.0.0.1:3000/users/posts/${postId}`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -141,7 +162,7 @@ export function CreateAPost() {
         },
       })
       .then((res) => {
-        navigate(`/posts/${res.data.post.slug}`);
+        window.location.href = `/posts/${res.data.post.slug}`;
       })
       .catch((err) => {
         console.log(err);
@@ -151,7 +172,6 @@ export function CreateAPost() {
   }
 
   // handle the separation of tags
-  //
   function handleKeyDown(eventOb) {
     const value = input.trim();
     if (eventOb.key === " " || eventOb.key === "," || eventOb.key === "Enter") {
@@ -204,10 +224,10 @@ export function CreateAPost() {
 
       {/* Preview image when selected */}
       <div className="mt-10 flex-1 max-w-[900px] w-[90%] overflow-y-scroll scroll__style px-5">
-        {imagePreview && (
+        {(imagePreview || previewLink) && (
           <div className="flex justify-start mb-0 gap-6 max-h-[150px]">
             <img
-              src={imagePreview}
+              src={imagePreview || previewLink}
               alt="Preview of selected image"
               className="w-150 h-auto object-cover mb-1 rounded"
               style={{ width: "auto", height: "auto", objectFit: "contain" }}
@@ -228,7 +248,7 @@ export function CreateAPost() {
         {/* Textarea for post title and tags */}
         <div className="border-2 shadow-md border-gray-300 rounded-md p-4">
           <textarea
-            className="scroll__style mt-1  text-ellipsis  w-full h-20 focus:outline-none appearance-none resize-none text-2xl font-poppins font-medium"
+            className="scroll__style mt-1  text-ellipsis  w-full h-10 focus:outline-none appearance-none resize-none text-2xl font-poppins font-medium"
             placeholder="New post title here..."
             onChange={(eventObj) => setTitle(eventObj.target.value)}
             value={title}
@@ -304,11 +324,11 @@ export function CreateAPost() {
         </div>
 
         {/* Textarea for post content */}
-        <div className=" h-[50%] mt-6  rounded-md p-4">
+        <div className=" h-full mt-6  rounded-md p-4">
           <hr className="mb-5 border-t-[3px] border-gray-200" />
           <textarea
             ref={textAreaRef}
-            className="scroll__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none mb-2"
+            className="scroll__style h-full w-full focus:outline-none border-none rounded appearance-none resize-none "
             placeholder="Start Writing ..."
             onChange={(e) => setContent(e.target.value)}
             value={content}
@@ -357,7 +377,7 @@ export function CreateAPost() {
             "Publish"
           )}
         </button>
-        {!imagePreview ? (
+        {!(imagePreview || previewLink) ? (
           <button
             title="cover preview"
             onClick={triggerFileInput}

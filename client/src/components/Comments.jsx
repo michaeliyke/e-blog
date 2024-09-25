@@ -1,30 +1,42 @@
-import { useState, useEffect } from "react";
-import DOMPurify from "dompurify";
-import { getCookie } from "../util/basic";
-import axios from "axios";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { CommentComponent } from './CommentComponent';
 
 export function Comments(post) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const url = `http://127.0.0.1:3000/blogs/${post.post._id}/comments`;
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+  // Handler for deleting a comment
+  function handleDelete(commentId) {
+    const updatedComments = comments.filter(
+      (comment) => comment._id !== commentId
+    );
+    setComments(updatedComments);
+  }
+
+  // Handler for editing a comment
+  function handleEdit(commentId, updatedText) {
+    const updatedComments = comments.map((comment) => {
+      if (comment._id === commentId) return { ...comment, text: updatedText };
+      return comment;
+    });
+
+    setComments(updatedComments);
+  }
 
   function shareComment(event) {
     event.preventDefault();
     // setText(document.querySelector("textarea.comment-box").value);
     const sanitizedText = DOMPurify.sanitize(newComment); // Sanitize the text directly
     const comment = { text: sanitizedText };
-    const token = getCookie("_token");
     // console.log({ newComment });
-
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
 
     if (!newComment) return;
 
@@ -32,12 +44,11 @@ export function Comments(post) {
       .post(url, comment, {
         withCredentials: true,
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       })
       .then((res) => {
-        setNewComment("");
+        setNewComment('');
         setComments([
           ...comments,
           {
@@ -74,7 +85,6 @@ export function Comments(post) {
   }
 
   const handleComment = (e) => {
-    console.log(e.target.value);
     setNewComment(e.target.value);
   };
 
@@ -90,12 +100,10 @@ export function Comments(post) {
                 className="comment-box w-full h-24 p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none"
                 placeholder="Write a comment..."
                 onChange={handleComment}
-                value={newComment}
-              ></textarea>
+                value={newComment}></textarea>
               <button
                 className="mt-4 mb-10 px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow-md hover:shadow-lg transition duration-300"
-                onClick={shareComment}
-              >
+                onClick={shareComment}>
                 Share comment
               </button>
             </div>
@@ -107,36 +115,18 @@ export function Comments(post) {
         {comments &&
           Array.isArray(comments) &&
           comments.map((comment, index) => (
-            <div key={index} className="space-y-4">
+            <div
+              key={index}
+              className="space-y-4">
               {/* Parent Comment */}
-              <div className="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
-                <div className="flex-shrink-0">
-                  <img
-                    // src="https://randomuser.me/api/portraits/men/75.jpg"
-                    src={comment.user.profilePicture.thumbnail}
-                    alt="User avatar"
-                    className="w-12 h-12 rounded-full mr-3 hover:opacity-80 transition duration-200"
-                    width={48}
-                    height={48}
-                  />
-                </div>
-                <div className="flex-grow">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">
-                      <a
-                        href={comment.user.href}
-                        className="text-blue-500 hover:underline"
-                      >
-                        {comment.user.firstname} {comment.user.lastname}
-                      </a>
-                    </h3>
-                  </div>
-                  <p className="text-gray-700 text-base">{comment.text}</p>
-                  <button className="text-blue-500 hover:underline mt-2">
-                    Reply
-                  </button>
-                </div>
-              </div>
+              <CommentComponent
+                key={comment.id}
+                comment={comment}
+                user={user}
+                post={post}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+              />
 
               {/* Replies (One-Level) */}
               {comment.replies &&
@@ -144,8 +134,7 @@ export function Comments(post) {
                 comment.replies.map((reply, replyIndex) => (
                   <div
                     key={replyIndex}
-                    className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg"
-                  >
+                    className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg">
                     <div className="flex-shrink-0">
                       <img
                         src="https://randomuser.me/api/portraits/women/25.jpg"
@@ -160,8 +149,7 @@ export function Comments(post) {
                         <h3 className="text-md font-medium">
                           <a
                             href={reply.user.href}
-                            className="text-blue-500 hover:underline"
-                          >
+                            className="text-blue-500 hover:underline">
                             {reply.user.firstname} {reply.user.lastname}
                           </a>
                         </h3>

@@ -24,7 +24,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="h-16 w-full">
+    <header className="h-16 w-full sticky top-0 z-20 md:static">
       {!isAuthenticated && (
         <>
           <SignIn />
@@ -32,7 +32,7 @@ export const Header = () => {
         </>
       )}
       <div
-        className="flex items-center  h-16  justify-between p-1
+        className="flex items-center h-16 justify-between p-1
        bg-white shadow-xl border border-gray-300"
       >
         <div className="block md:hidden">
@@ -64,7 +64,8 @@ export const Header = () => {
           ) : (
             <button
               onClick={toggleFormPopUp}
-              className="bg-indigo-600 text-lg font-poppins text-white border-2 border-indigo-800 rounded-xl w-20 h-10 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
+              // className="bg-blue-700 text-lg focus:outline-none font-poppins text-white rounded-xl w-20 h-10 hover:bg-indigo-500 active:bg-indigo-100 active:text-indigo-600 mr-0.5"
+              className=" bg-blue-700 text-lg text-white rounded-md hover:bg-blue-800 focus:outline-none active:bg-blue-400 w-20 h-10 mr-0.5"
             >
               Sign in
             </button>

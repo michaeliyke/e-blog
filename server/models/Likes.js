@@ -1,5 +1,6 @@
 import { Schema } from "mongoose";
 
+// Schema definition for a like object
 const likeSchema = new Schema(
   {
     user: {

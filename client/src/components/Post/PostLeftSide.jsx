@@ -1,6 +1,6 @@
 import { MdNightlight, MdOutlineLightMode, MdHome } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { FaArrowUp } from "react-icons/fa";
+import { FaArrowUp, FaArrowLeft } from "react-icons/fa";
 import PropTypes from "prop-types";
 
 export function PostLeftSide({ handleToggle, toggleBg }) {
@@ -12,12 +12,20 @@ export function PostLeftSide({ handleToggle, toggleBg }) {
 
   return (
     <div
-      className="mx-auto w-48 h-auto flex flex-col sticky top-3 z-20 bg-[#f5f5df] rounded-full
+      className="ml-auto w-20 h-auto p-4 flex flex-col sticky top-3 z-20 bg-[#f5f5df] rounded-full
           border-2 border-gray-400"
     >
       {/* left container */}
-      <div className="w-full flex h-16 justify-evenly items-center">
+      <div className="w-auto flex gap-2 flex-col h-auto justify-evenly items-center">
         {/* controle buttons */}
+        <button>
+          <FaArrowLeft
+            color="white"
+            size={30}
+            onClick={() => navigate(-1)}
+            className="size-10 bg-black p-0.5 rounded-md hover:scale-110 "
+          />
+        </button>
         <button>
           <MdHome
             color="white"
