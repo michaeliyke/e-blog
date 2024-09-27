@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIsUserOwnPost } from '../util/basic';
 import { request } from '../util/Tools';
+import moment from 'moment';
 
 export function CommentComponent({ comment, post, onDelete, onEdit }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -63,13 +64,17 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
       </div>
       <div className="flex-grow">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">
+          <h3 className="text-lg mb-4 font-medium">
             <a
               href={isOwner ? '/profile' : comment.user.href}
               className="text-blue-500 hover:underline">
               {comment.user.firstname} {comment.user.lastname}
             </a>
+            <p className="text-xs text-gray-500">
+              {moment(comment.createdAt).fromNow()}
+            </p>
           </h3>
+          {/* <p className="text-xs text-gray-500">2 days ago</p> */}
           {!isDeleting && !isEditing && isOwner && (
             <div className="flex space-x-2 text-sm text-gray-400">
               <button
@@ -160,6 +165,7 @@ CommentComponent.propTypes = {
     }).isRequired,
   }).isRequired,
   comment: PropTypes.shape({
+    createdAt: PropTypes.string,
     _id: PropTypes.string.isRequired,
     postId: PropTypes.string,
     user: PropTypes.shape({
