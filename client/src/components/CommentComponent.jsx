@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import { useIsUserOwnPost } from '../util/basic';
 import { request } from '../util/Tools';
 import moment from 'moment';
+import { Reply } from './ReplyToComment';
 
 export function CommentComponent({ comment, post, onDelete, onEdit }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(comment.text);
+
   const isOwner = useIsUserOwnPost(comment);
   const path = `blogs/${post.post._id}/comments/${comment._id}`;
   const url = `http://127.0.0.1:3000/${path}`;
@@ -132,8 +134,11 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
             </button>
           </form>
         ) : (
-          // Display comment text if not editing
-          <p className="text-gray-700 text-base">{comment.text}</p>
+          <div>
+            {/* Display comment text if not editing */}
+            <p className="text-gray-700 text-base">{comment.text}</p>
+            <Reply comment={comment} />
+          </div>
         )}
 
         {/* Delete Confirmation */}
