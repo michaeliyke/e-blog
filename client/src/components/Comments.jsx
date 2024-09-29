@@ -127,37 +127,6 @@ export function Comments(post) {
                 onDelete={handleDelete}
                 onEdit={handleEdit}
               />
-
-              {/* Replies (One-Level) */}
-              {comment.replies &&
-                Array.isArray(comment.replies) &&
-                comment.replies.map((reply, replyIndex) => (
-                  <div
-                    key={replyIndex}
-                    className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg">
-                    <div className="flex-shrink-0">
-                      <img
-                        src="https://randomuser.me/api/portraits/women/25.jpg"
-                        alt="User avatar"
-                        className="w-10 h-10 rounded-full hover:opacity-80 transition duration-200"
-                        width={40}
-                        height={40}
-                      />
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-md font-medium">
-                          <a
-                            href={reply.user.href}
-                            className="text-blue-500 hover:underline">
-                            {reply.user.firstname} {reply.user.lastname}
-                          </a>
-                        </h3>
-                      </div>
-                      <p className="text-gray-600">{reply.text}</p>
-                    </div>
-                  </div>
-                ))}
             </div>
           ))}
       </div>

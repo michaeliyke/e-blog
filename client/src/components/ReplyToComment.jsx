@@ -1,10 +1,56 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { request } from '../util/Tools';
+
+function DisplayReplies({ replies }) {
+  return (
+    <>
+      {replies.map((reply) => (
+        <div
+          key={reply._id}
+          className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg">
+          <div className="flex-shrink-0">
+            <img
+              src="https://randomuser.me/api/portraits/women/25.jpg"
+              alt="User avatar"
+              className="w-10 h-10 rounded-full hover:opacity-80 transition duration-200"
+              width={40}
+              height={40}
+            />
+          </div>
+          <div className="flex-grow">
+            <div className="flex items-center justify-between">
+              <h3 className="text-md font-medium">
+                <a
+                  href={reply.user.href}
+                  className="text-blue-500 hover:underline">
+                  {reply.user.firstname} {reply.user.lastname}
+                </a>
+              </h3>
+            </div>
+            <p className="text-gray-600">{reply.text}</p>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
 
 export function Reply({ comment }) {
   const [replyText, setReplyText] = useState('');
   const [replyId, setReplyId] = useState(null);
+  const [replies, setReplies] = useState([]);
+
+  useEffect(() => {
+    request
+      .get(`http://127.0.0.1:3000/comments/${comment._id}/replies`)
+      .then((response) => {
+        setReplies(response.data.replies);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [comment._id]);
 
   function handleReplyClick(commentId) {
     setReplyId(replyId === commentId ? null : commentId);
@@ -31,6 +77,7 @@ export function Reply({ comment }) {
 
   return (
     <>
+      <DisplayReplies replies={replies} />
       <button
         className="text-blue-500 hover:underline mt-2"
         onClick={() => handleReplyClick(comment._id)}>
@@ -56,21 +103,14 @@ export function Reply({ comment }) {
   );
 }
 
+DisplayReplies.propTypes = {
+  replies: PropTypes.array.isRequired,
+};
+
 Reply.propTypes = {
   replyId: PropTypes.string,
   setReplyId: PropTypes.func,
   comment: PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    replies: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string,
-        text: PropTypes.string,
-        user: PropTypes.shape({
-          firstname: PropTypes.string,
-          lastname: PropTypes.string,
-          href: PropTypes.string,
-        }),
-      })
-    ),
   }).isRequired,
 };
