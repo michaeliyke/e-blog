@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { request } from '../util/Tools';
 
 export function Reply({ comment }) {
   const [replyText, setReplyText] = useState('');
@@ -10,7 +11,20 @@ export function Reply({ comment }) {
   }
 
   function handleReplySubmit(commentId) {
+    if (replyText === '') {
+      return;
+    }
     console.log(`Reply submitted for comment ${commentId}: ${replyText}`);
+    request
+      .post(`http://127.0.0.1:3000/comments/${commentId}/replies`, {
+        text: replyText,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     setReplyText('');
     setReplyId(null);
   }
