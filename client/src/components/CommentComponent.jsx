@@ -137,9 +137,14 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
           <div>
             {/* Display comment text if not editing */}
             <p className="text-gray-700 text-base">{comment.text}</p>
-            <Reply comment={comment} />
           </div>
         )}
+
+        <Reply
+          isEditing={isEditing}
+          isDeleting={isDeleting}
+          comment={comment}
+        />
 
         {/* Delete Confirmation */}
         {isDeleting && (

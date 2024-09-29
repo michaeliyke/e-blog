@@ -4,11 +4,11 @@ import { request } from '../util/Tools';
 
 function DisplayReplies({ replies }) {
   return (
-    <>
+    <div className="py-4">
       {replies.map((reply) => (
         <div
           key={reply._id}
-          className="ml-12 flex space-x-4 bg-gray-50 p-3 rounded-lg">
+          className="ml-12 flex space-x-4 bg-gray-50 p-3 mt-4 rounded-lg">
           <div className="flex-shrink-0">
             <img
               src="https://randomuser.me/api/portraits/women/25.jpg"
@@ -32,11 +32,11 @@ function DisplayReplies({ replies }) {
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
-export function Reply({ comment }) {
+export function Reply({ comment, isEditing, isDeleting }) {
   const [replyText, setReplyText] = useState('');
   const [replyId, setReplyId] = useState(null);
   const [replies, setReplies] = useState([]);
@@ -78,11 +78,13 @@ export function Reply({ comment }) {
   return (
     <>
       <DisplayReplies replies={replies} />
-      <button
-        className="text-blue-500 hover:underline mt-2"
-        onClick={() => handleReplyClick(comment._id)}>
-        {replyId === comment._id ? 'Cancel' : 'Reply'}
-      </button>
+      {isEditing || isDeleting || (
+        <button
+          className="text-blue-500 hover:underline mt-2"
+          onClick={() => handleReplyClick(comment._id)}>
+          {replyId === comment._id ? 'Cancel' : 'Reply'}
+        </button>
+      )}
 
       {replyId === comment._id && (
         <div className="ml-12 mt-2">
@@ -108,6 +110,8 @@ DisplayReplies.propTypes = {
 };
 
 Reply.propTypes = {
+  isDeleting: PropTypes.bool,
+  isEditing: PropTypes.bool,
   replyId: PropTypes.string,
   setReplyId: PropTypes.func,
   comment: PropTypes.shape({
