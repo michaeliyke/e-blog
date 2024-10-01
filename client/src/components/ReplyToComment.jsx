@@ -72,38 +72,44 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
       {replies.map((reply) => (
         <div
           key={reply._id}
-          className="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
+          className="flex space-x-4 bg-white mt-1 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+          {/* Avatar */}
           <div className="flex-shrink-0">
             <img
               src="https://randomuser.me/api/portraits/women/25.jpg"
               alt="User avatar"
-              className="w-10 h-10 rounded-full hover:opacity-80 transition duration-200"
-              width={40}
-              height={40}
+              className="w-12 h-12 rounded-full border-2 border-blue-200 shadow-lg hover:opacity-90 transition duration-200"
+              width={48}
+              height={48}
             />
           </div>
+
+          {/* Main content */}
           <div className="flex-grow">
             <div className="flex items-center justify-between">
+              {/* Name and Date */}
               <div>
                 <a
                   href={reply.user.href}
-                  className="text-md font-medium text-blue-500 hover:underline">
+                  className="text-lg font-semibold text-blue-600 hover:underline">
                   {reply.user.firstname} {reply.user.lastname}
                 </a>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-400">
                   {moment(reply.createdAt).fromNow()}
                 </p>
               </div>
+
+              {/* Edit and Delete buttons */}
               {!isDeleting &&
                 !isEditing &&
                 isUserOwnComment(reply, userHref) && (
-                  <div className="ml-auto flex space-x-2 text-sm text-gray-400">
+                  <div className="ml-auto flex space-x-3 text-sm">
                     <button
                       onClick={() => handleEditClick(reply)}
-                      className="flex items-center space-x-1 hover:text-blue-500 transition duration-200">
+                      className="flex items-center space-x-1 text-gray-500 hover:text-blue-500 transition-all duration-200 ease-in-out">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         viewBox="0 0 20 20"
                         fill="currentColor">
                         <path d="M17.414 2.586a2 2 0 00-2.828 0L7.05 10.12a1 1 0 00-.263.435l-1 4a1 1 0 001.264 1.264l4-1a1 1 0 00.435-.263l7.536-7.536a2 2 0 000-2.828l-1.414-1.414z" />
@@ -112,10 +118,10 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
                     </button>
                     <button
                       onClick={() => handleDeleteClick(reply)}
-                      className="flex items-center space-x-1 hover:text-red-500 transition duration-200">
+                      className="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-all duration-200 ease-in-out">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
+                        className="h-5 w-5"
                         viewBox="0 0 20 20"
                         fill="currentColor">
                         <path
@@ -130,42 +136,44 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
                 )}
             </div>
 
+            {/* Reply Text */}
+            {!isEditing && (
+              <p className="mt-2 text-gray-700 leading-relaxed">{reply.text}</p>
+            )}
+
             {/* Editing form */}
-            {isEditing && editedId === reply._id ? (
+            {isEditing && editedId === reply._id && (
               <form
                 onSubmit={(e) =>
                   e.preventDefault() && handleEditSubmit(comment, reply)
                 }
                 className="mt-2 space-y-2">
                 <textarea
-                  className="w-full border p-2 rounded-lg resize-none"
+                  className="w-full border border-gray-300 focus:outline-none p-3 rounded-lg focus:ring-0.5 focus:ring-blue-500 focus:border-blue-500 resize-none transition ease-in-out"
                   value={editedText}
                   onChange={(e) => setEditedText(e.target.value)}
                 />
-                <button
-                  type="submit"
-                  className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="text-gray-500 hover:underline"
-                  onClick={handleCancelEdit}>
-                  Cancel
-                </button>
+                <div className="flex space-x-3">
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-200 ease-in-out">
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="text-gray-500 hover:underline"
+                    onClick={handleCancelEdit}>
+                    Cancel
+                  </button>
+                </div>
               </form>
-            ) : (
-              <div>
-                {/* Display comment text if not editing */}
-                <p className="text-gray-700 text-base">{reply.text}</p>
-              </div>
             )}
 
             {/* Delete Confirmation */}
             {isDeleting && deletedId === reply._id && (
               <div className="mt-2 space-x-4">
                 <button
-                  className="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600"
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200 ease-in-out"
                   onClick={() => handleConfirmDelete(comment, reply)}>
                   Confirm
                 </button>
@@ -237,7 +245,7 @@ export function Reply({ comment, isEditing, isDeleting }) {
   }
 
   return (
-    <>
+    <div className="mt-6">
       <HandleReplies
         comment={comment}
         replies={replies}
@@ -267,7 +275,7 @@ export function Reply({ comment, isEditing, isDeleting }) {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

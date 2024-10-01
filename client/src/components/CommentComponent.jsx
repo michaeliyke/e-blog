@@ -54,7 +54,7 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
   }
 
   return (
-    <div className="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-sm">
+    <div className="flex space-x-4 bg-gray-50 p-4 rounded-lg shadow-sm">
       <div className="flex-shrink-0">
         <img
           src={comment.user.profilePicture.thumbnail}
@@ -117,7 +117,7 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
             onSubmit={handleEditSubmit}
             className="mt-2 space-y-2">
             <textarea
-              className="w-full border p-2 rounded-lg resize-none"
+              className="w-full border border-gray-300 focus:outline-none p-3 rounded-lg focus:ring-0.5 focus:ring-blue-500 focus:border-blue-500 resize-none transition ease-in-out"
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
             />
