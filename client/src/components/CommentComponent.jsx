@@ -117,7 +117,7 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
             onSubmit={handleEditSubmit}
             className="mt-2 space-y-2">
             <textarea
-              className="w-full border p-2 rounded-lg"
+              className="w-full border p-2 rounded-lg resize-none"
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
             />
