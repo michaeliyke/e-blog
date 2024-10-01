@@ -90,9 +90,9 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
               {/* Name and Date */}
               <div>
                 <a
-                  href={reply.user.href}
+                  href={reply?.user?.href}
                   className="text-lg font-semibold text-blue-600 hover:underline">
-                  {reply.user.firstname} {reply.user.lastname}
+                  {reply?.user?.firstname} {reply?.user?.lastname}
                 </a>
                 <p className="text-xs text-gray-400">
                   {moment(reply.createdAt).fromNow()}
@@ -211,17 +211,18 @@ export function Reply({ comment, isEditing, isDeleting }) {
     setReplyId(replyId === commentId ? null : commentId);
   }
 
-  function handleReplySubmit(commentId) {
+  function handleReplySubmit(comment) {
     if (replyText === '') {
       return;
     }
-    console.log(`Reply submitted for comment ${commentId}: ${replyText}`);
+    console.log(`Reply submitted for comment ${comment._id}: ${replyText}`);
     request
-      .post(`http://127.0.0.1:3000/comments/${commentId}/replies`, {
+      .post(`http://127.0.0.1:3000/comments/${comment._id}/replies`, {
         text: replyText,
       })
       .then((response) => {
         console.log(response);
+        setReplies([...comment.replies, response.data]);
       })
       .catch((error) => {
         console.error(error);
@@ -270,7 +271,7 @@ export function Reply({ comment, isEditing, isDeleting }) {
           <button
             type="button"
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={() => handleReplySubmit(comment._id)}>
+            onClick={() => handleReplySubmit(comment)}>
             Submit Reply
           </button>
         </div>
@@ -295,5 +296,6 @@ Reply.propTypes = {
   setReplyId: PropTypes.func,
   comment: PropTypes.shape({
     _id: PropTypes.string.isRequired,
+    replies: PropTypes.array,
   }).isRequired,
 };
