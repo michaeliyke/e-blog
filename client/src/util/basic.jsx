@@ -16,6 +16,16 @@ export function useIsUserOwnPost(post) {
   return post?.user?.href === userHref;
 }
 
+// Returns the user Href for common uses
+export function useUserHref() {
+  const userHref = useSelector((state) => state.auth?.user?.href);
+  return userHref;
+}
+export function isUserOwnComment(comment, userHref) {
+  if (!userHref) return false;
+  return comment?.user?.href === userHref;
+}
+
 export const blogPostSchema = {
   post: PropTypes.shape({
     bookmarked: PropTypes.bool,
