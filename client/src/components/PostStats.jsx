@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
-import { AiOutlineLike, AiFillLike } from "react-icons/ai";
-import { FaRegComment } from "react-icons/fa";
-import { urlenCode, blogPostSchema } from "../util/basic";
-import { request } from "../util/Tools";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleSignIn } from "../state/appSlice/appSlice";
+import { useState } from 'react';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+import { AiOutlineLike, AiFillLike } from 'react-icons/ai';
+import { FaRegComment } from 'react-icons/fa';
+import { urlenCode, blogPostSchema } from '../util/basic';
+import { request } from '../util/Tools';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleSignIn } from '../state/appSlice/appSlice';
 
 function CommentButton({ post }) {
   // post.numOfComments = post.numOfComments || 0;
@@ -22,16 +22,24 @@ function CommentButton({ post }) {
   }
 
   return (
-    <button className="flex items-center space-x-2" onClick={gotToComments}>
-      <span role="img" aria-label="comment" className="text-2xl">
-        <FaRegComment size={25} color="black" />
+    <button
+      className="flex items-center space-x-2"
+      onClick={gotToComments}>
+      <span
+        role="img"
+        aria-label="comment"
+        className="text-2xl">
+        <FaRegComment
+          size={25}
+          color="black"
+        />
       </span>
       <span className="text-black font-bold">Comment</span>
     </button>
   );
 }
 
-let exec = true;
+// let exec = true;
 function BookmarkButton({ post }) {
   const [bookmarked, setBookmarked] = useState(post.saved === true);
   const url = `http://127.0.0.1:3000/users/bookmarks?postId=${post._id}`;
@@ -54,19 +62,27 @@ function BookmarkButton({ post }) {
         setBookmarked(data.liked === true); // === for boolean safety
       })
       .catch((error) => {
-        console.error("BookmarkButton:", error);
+        console.error('BookmarkButton:', error);
       });
     setBookmarked(!bookmarked);
   }
 
-  if (exec) exec = console.dir("BookmarkButton:", post);
+  //   if (exec) exec = console.dir("BookmarkButton:", post);
 
   return (
-    <button className="absolute right-20 top-0 p-1" onClick={handleBookmark}>
+    <button
+      className="absolute right-20 top-0 p-1"
+      onClick={handleBookmark}>
       {bookmarked ? (
-        <FaBookmark size={25} color="blue" />
+        <FaBookmark
+          size={25}
+          color="blue"
+        />
       ) : (
-        <FaRegBookmark size={25} color="black" />
+        <FaRegBookmark
+          size={25}
+          color="black"
+        />
       )}
     </button>
   );
@@ -95,10 +111,10 @@ function LikeButton({ post }) {
     });
 
     fetch(url, {
-      method: "POST",
-      credentials: "include",
+      method: 'POST',
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     })
       .then((res) => res.json())
@@ -106,17 +122,28 @@ function LikeButton({ post }) {
         setNumOfLikes(data.likes);
       })
       .catch((error) => {
-        console.log("Error updating likes:", error);
+        console.log('Error updating likes:', error);
       });
   }
 
   return (
-    <button className="flex items-center space-x-2" onClick={handleLikeClick}>
-      <span role="img" aria-label="like" className="text-2xl">
+    <button
+      className="flex items-center space-x-2"
+      onClick={handleLikeClick}>
+      <span
+        role="img"
+        aria-label="like"
+        className="text-2xl">
         {liked ? (
-          <AiFillLike size={25} color="#00aaff" />
+          <AiFillLike
+            size={25}
+            color="#00aaff"
+          />
         ) : (
-          <AiOutlineLike size={25} color="black" />
+          <AiOutlineLike
+            size={25}
+            color="black"
+          />
         )}
       </span>
       <span className="text-black font-bold">{numOfLikes}</span>

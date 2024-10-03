@@ -21,6 +21,12 @@ export function useUserHref() {
   const userHref = useSelector((state) => state.auth?.user?.href);
   return userHref;
 }
+
+// Returns the current user
+export function useCurrentUser() {
+  const user = useSelector((state) => state.auth?.user);
+  return user;
+}
 export function isUserOwnComment(comment, userHref) {
   if (!userHref) return false;
   return comment?.user?.href === userHref;

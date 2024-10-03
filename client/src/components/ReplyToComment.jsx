@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { request } from '../util/Tools';
 import moment from 'moment';
-import { useUserHref, isUserOwnComment } from '../util/basic';
+import { useUserHref, isUserOwnComment, useCurrentUser } from '../util/basic';
 
 function HandleReplies({ comment, replies, onDelete, onEdit }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -53,8 +53,9 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
     setEditedText('');
   }
 
-  function handleEditSubmit(comment, reply) {
+  function handleEditSubmit(event, comment, reply) {
     // PUT /comments/:commentId/replies/:replyId : Edit a reply
+    event.preventDefault();
     request
       .put(url(comment._id, reply._id), { text: editedText })
       .then(() => {
@@ -144,9 +145,7 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
             {/* Editing form */}
             {isEditing && editedId === reply._id && (
               <form
-                onSubmit={(e) =>
-                  e.preventDefault() && handleEditSubmit(comment, reply)
-                }
+                onSubmit={(e) => handleEditSubmit(e, comment, reply)}
                 className="mt-2 space-y-2">
                 <textarea
                   className="w-full border border-gray-300 focus:outline-none p-3 rounded-lg focus:ring-0.5 focus:ring-blue-500 focus:border-blue-500 resize-none transition ease-in-out"
@@ -195,6 +194,7 @@ export function Reply({ comment, isEditing, isDeleting }) {
   const [replyText, setReplyText] = useState('');
   const [replyId, setReplyId] = useState(null);
   const [replies, setReplies] = useState([]);
+  const currentUser = useCurrentUser();
 
   useEffect(() => {
     request
@@ -221,8 +221,9 @@ export function Reply({ comment, isEditing, isDeleting }) {
         text: replyText,
       })
       .then((response) => {
-        console.log(response);
-        setReplies([...comment.replies, response.data]);
+        const data = response.data;
+        data.user = data.user || currentUser;
+        setReplies([...replies, data]);
       })
       .catch((error) => {
         console.error(error);
