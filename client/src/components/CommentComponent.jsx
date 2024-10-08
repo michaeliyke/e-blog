@@ -68,7 +68,7 @@ export function CommentComponent({ comment, post, onDelete, onEdit }) {
         <div className="flex items-center justify-between">
           <h3 className="text-lg mb-4 font-medium">
             <a
-              href={isOwner ? '/profile' : comment.user.href}
+              href={isOwner ? '/profile' : '/user/' + comment.user.href}
               className="text-blue-500 hover:underline">
               {comment.user.firstname} {comment.user.lastname}
             </a>

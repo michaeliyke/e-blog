@@ -91,7 +91,11 @@ function HandleReplies({ comment, replies, onDelete, onEdit }) {
               {/* Name and Date */}
               <div>
                 <a
-                  href={reply?.user?.href}
+                  href={
+                    isUserOwnComment(reply, userHref)
+                      ? '/profile'
+                      : '/user/' + reply?.user?.href
+                  }
                   className="text-lg font-semibold text-blue-600 hover:underline">
                   {reply?.user?.firstname} {reply?.user?.lastname}
                 </a>
@@ -254,13 +258,15 @@ export function Reply({ comment, isEditing, isDeleting }) {
         onDelete={onDelete}
         onEdit={onEdit}
       />
-      {isEditing || isDeleting || (
-        <button
-          className="text-blue-500 hover:underline mt-2"
-          onClick={() => handleReplyClick(comment._id)}>
-          {replyId === comment._id ? 'Cancel' : 'Reply'}
-        </button>
-      )}
+      {isEditing ||
+        isDeleting ||
+        (currentUser && (
+          <button
+            className="text-blue-500 hover:underline mt-2"
+            onClick={() => handleReplyClick(comment._id)}>
+            {replyId === comment._id ? 'Cancel' : 'Reply to this comment'}
+          </button>
+        ))}
 
       {replyId === comment._id && (
         <div className="ml-12 mt-2">
